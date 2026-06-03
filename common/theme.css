@@ -1,0 +1,165 @@
+/* =========================================================
+   Dark Theme
+========================================================= */
+
+body.dark-theme {
+    --bg: #050816;
+    --white: #0b1020;
+    --black: #f8fafc;
+    --text: #f8fafc;
+    --muted: #aab7cf;
+    --muted-2: #7d8aa5;
+    --navy: #60a5fa;
+    --navy-dark: #93c5fd;
+    --blue: #38bdf8;
+    --line: rgba(255, 255, 255, 0.12);
+    --panel: rgba(255, 255, 255, 0.07);
+    --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+
+    background:
+        radial-gradient(circle at 15% 10%, rgba(96, 165, 250, 0.18), transparent 30%),
+        radial-gradient(circle at 85% 20%, rgba(56, 189, 248, 0.12), transparent 30%),
+        var(--bg);
+}
+
+body.dark-theme .site-header {
+    background: rgba(5, 8, 22, 0.78);
+    border-bottom-color: rgba(255, 255, 255, 0.10);
+}
+
+body.dark-theme .site-header.scrolled {
+    background: rgba(5, 8, 22, 0.92);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-theme .desktop-nav {
+    color: #cbd5e1;
+}
+
+body.dark-theme .desktop-nav a:hover,
+body.dark-theme .desktop-nav a.active,
+body.dark-theme .brand-name {
+    color: #ffffff;
+}
+
+body.dark-theme .theme-toggle,
+body.dark-theme .login-link,
+body.dark-theme .menu-button,
+body.dark-theme .button.ghost {
+    background: rgba(255, 255, 255, 0.06);
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+body.dark-theme .menu-button span {
+    background: #ffffff;
+}
+
+body.dark-theme .register-link,
+body.dark-theme .button.primary,
+body.dark-theme .service-card-head span,
+body.dark-theme .plan-top small,
+body.dark-theme .roadmap-top small,
+body.dark-theme .auth-submit {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+}
+
+body.dark-theme .mobile-nav {
+    background: rgba(5, 8, 22, 0.98);
+    border-bottom-color: rgba(255, 255, 255, 0.10);
+}
+
+body.dark-theme .mobile-nav a {
+    color: #e5e7eb;
+    border-bottom-color: rgba(255, 255, 255, 0.10);
+}
+
+body.dark-theme .mobile-auth a:first-child {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+body.dark-theme .mobile-auth a:last-child {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+body.dark-theme .hero-meta div,
+body.dark-theme .platform-card,
+body.dark-theme .platform-main,
+body.dark-theme .status-list div,
+body.dark-theme .feature-card,
+body.dark-theme .plan-card,
+body.dark-theme .service-card,
+body.dark-theme .status-box,
+body.dark-theme .operator-page-card,
+body.dark-theme .operator-notice,
+body.dark-theme .roadmap-card,
+body.dark-theme .contact-box,
+body.dark-theme .auth-card {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: var(--shadow);
+}
+
+body.dark-theme .service-section {
+    background: rgba(255, 255, 255, 0.035);
+    border-block-color: rgba(255, 255, 255, 0.10);
+}
+
+body.dark-theme .road-bar,
+body.dark-theme .feature-icon,
+body.dark-theme .spec,
+body.dark-theme .plan-top span,
+body.dark-theme .service-card-head p,
+body.dark-theme .roadmap-top span,
+body.dark-theme .notice-list div {
+    background: rgba(96, 165, 250, 0.12);
+    border-color: rgba(147, 197, 253, 0.20);
+}
+
+body.dark-theme .platform-card-head > span {
+    background: rgba(34, 197, 94, 0.12);
+    border-color: rgba(34, 197, 94, 0.22);
+    color: #86efac;
+}
+
+body.dark-theme .bar {
+    background: rgba(147, 197, 253, 0.20);
+}
+
+body.dark-theme .bar span {
+    background: #60a5fa;
+}
+
+body.dark-theme .dedicated-plan {
+    background:
+        linear-gradient(135deg, rgba(96, 165, 250, 0.14), rgba(255, 255, 255, 0.06)),
+        rgba(255, 255, 255, 0.07);
+    border-color: rgba(147, 197, 253, 0.22);
+}
+
+body.dark-theme .sub-hero {
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(5, 8, 22, 0.86) 0%,
+            rgba(5, 8, 22, 0.62) 45%,
+            rgba(5, 8, 22, 0.20) 100%
+        ),
+        url("/assets/operator-hero.png");
+}
+
+body.dark-theme .form-group input {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #f8fafc;
+}
+
+body.dark-theme .site-footer {
+    background: rgba(5, 8, 22, 0.95);
+    border-top-color: rgba(255, 255, 255, 0.10);
+}

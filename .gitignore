@@ -1,0 +1,30 @@
+# Environment
+.env
+.env.*
+!.env.example
+!.env.dev.example
+!.env.prod.example
+
+# Logs
+storage/logs/*
+!storage/logs/.gitkeep
+*.log
+
+# Test files
+mail-test.php
+db-test.php
+env-test.php
+log-test.php
+mail-config-test.php
+phpinfo.php
+
+# OS
+.DS_Store
+
+# Dependencies
+node_modules/
+vendor/
+
+# Editor
+.vscode/*
+!.vscode/settings.json
