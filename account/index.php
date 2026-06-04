@@ -3,6 +3,7 @@ session_start();
 
 require_once __DIR__ . "/../lib/auth.php";
 require_once __DIR__ . "/../lib/helpers.php";
+require_once __DIR__ . "/../lib/permissions.php";
 
 $user = require_login();
 
@@ -80,7 +81,9 @@ require_once __DIR__ . "/../parts/head.php";
 
                     <div>
                         <span>権限</span>
-                        <strong><?php echo h($user["role"]); ?></strong>
+                            <strong class="role-badge <?php echo h(role_badge_class($user["role"])); ?>">
+                                <?php echo h(role_label($user["role"])); ?>
+                            </strong>
                     </div>
 
                     <div>
