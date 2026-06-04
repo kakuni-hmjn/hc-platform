@@ -4,6 +4,7 @@ session_start();
 require_once __DIR__ . "/../lib/auth.php";
 require_once __DIR__ . "/../lib/helpers.php";
 require_once __DIR__ . "/../lib/db.php";
+require_once __DIR__ . "/../lib/permissions.php";
 
 $user = require_login();
 
@@ -165,6 +166,29 @@ require_once __DIR__ . "/../parts/head.php";
                     <h3>ゲームサーバー管理パネル</h3>
                     <p>契約後のサーバー操作、コンソール、ファイル管理は専用管理パネルで行えます。</p>
                 </a>
+                <?php if (has_role($user, "staff")): ?>
+                    <a href="/staff/" class="menu-card reveal">
+                        <span>05</span>
+                        <h3>スタッフページ</h3>
+                        <p>運営スタッフ向けの確認・対応ページです。</p>
+                    </a>
+                <?php endif; ?>
+
+                <?php if (has_role($user, "developer")): ?>
+                    <a href="/dev/" class="menu-card reveal">
+                        <span>06</span>
+                        <h3>開発者ページ</h3>
+                        <p>開発・保守向けのシステム確認ページです。</p>
+                    </a>
+                <?php endif; ?>
+
+                <?php if (has_role($user, "admin")): ?>
+                    <a href="/admin/" class="menu-card reveal">
+                        <span>07</span>
+                        <h3>管理者ページ</h3>
+                        <p>ユーザー管理、契約管理、サービス設定を行う管理者向けページです。</p>
+                    </a>
+                <?php endif; ?>
             </div>
 
         </div>
