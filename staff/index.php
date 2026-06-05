@@ -45,11 +45,11 @@ require_once __DIR__ . "/../parts/head.php";
             </div>
 
             <div class="staff-menu-grid">
-                <article class="staff-menu-card reveal">
+                <a href="/staff/contacts/" class="staff-menu-card reveal">
                     <span>01</span>
                     <h3>問い合わせ確認</h3>
-                    <p>お問い合わせやサポート対応の確認機能を追加予定です。</p>
-                </article>
+                    <p>お問い合わせやサポート対応の確認を行います。</p>
+                </a>
 
                 <a href="/staff/users/" class="staff-menu-card reveal">
                     <span>02</span>

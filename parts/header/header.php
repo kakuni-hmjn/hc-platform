@@ -19,6 +19,7 @@ $headerUser = current_user();
             <a href="/#service">サービス</a>
             <a href="/#plans">予定プラン</a>
             <a href="/operator/">運営情報</a>
+            <a href="/contact/">お問い合わせ</a>
 
             <?php if ($headerUser): ?>
                 <a href="/dashboard/">ダッシュボード</a>
@@ -56,7 +57,7 @@ $headerUser = current_user();
         <a href="/#service">サービス</a>
         <a href="/#plans">予定プラン</a>
         <a href="/operator/">運営情報</a>
-
+        <a href="/contact/">お問い合わせ</a>
         <?php if ($headerUser): ?>
             <a href="/dashboard/">ダッシュボード</a>
             <a href="/account/">プロフィール設定</a>

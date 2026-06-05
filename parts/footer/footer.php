@@ -15,6 +15,7 @@
             <a href="/company/">運営紹介</a>
             <a href="/terms/">利用規約</a>
             <a href="/privacy/">プライバシーポリシー</a>
+            <a href="/contact/">お問い合わせ</a>
         </nav>
 
         <p class="footer-copy">© 2026 HMJn company. HC Platform.</p>
