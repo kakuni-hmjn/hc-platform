@@ -1,0 +1,423 @@
+.admin-services-page {
+    padding-top: 0;
+}
+
+.admin-services-hero {
+    min-height: 54vh;
+    display: flex;
+    align-items: center;
+    padding: 150px 0 70px;
+}
+
+.admin-services-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.36fr);
+    gap: 34px;
+    align-items: center;
+}
+
+.admin-services-copy,
+.admin-services-status-card,
+.services-panel {
+    min-width: 0;
+}
+
+.admin-services-copy h1 {
+    margin-bottom: 22px;
+    font-size: clamp(42px, 6vw, 76px);
+    line-height: 1.12;
+    letter-spacing: -0.055em;
+    font-weight: 950;
+    word-break: normal;
+    overflow-wrap: anywhere;
+}
+
+.admin-services-copy p:not(.eyebrow) {
+    max-width: 760px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 2;
+}
+
+.admin-services-status-card,
+.services-panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.admin-services-status-card {
+    padding: 30px;
+    border-radius: 30px;
+}
+
+.admin-services-status-card span {
+    display: inline-flex;
+    margin-bottom: 18px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.admin-services-status-card h2 {
+    margin-bottom: 8px;
+    font-size: 28px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+    overflow-wrap: anywhere;
+}
+
+.admin-services-status-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.admin-services-section {
+    padding-top: 30px;
+}
+
+.services-panel {
+    padding: 32px;
+    border-radius: 32px;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.panel-head h2 {
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 1.25;
+    letter-spacing: -0.045em;
+    word-break: normal;
+    overflow-wrap: anywhere;
+}
+
+.panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.back-button,
+.create-button,
+.clear-button,
+.edit-button {
+    min-height: 40px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.back-button,
+.clear-button,
+.edit-button {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    color: var(--text);
+}
+
+.create-button {
+    background: var(--navy);
+    border: 1px solid var(--navy);
+    color: #ffffff;
+}
+
+.back-button:hover,
+.create-button:hover,
+.clear-button:hover,
+.edit-button:hover {
+    transform: translateY(-2px);
+}
+
+.service-search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.service-search-form input,
+.service-search-form select {
+    min-height: 48px;
+    padding: 0 16px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+}
+
+.service-search-form input {
+    flex: 1;
+    min-width: 220px;
+}
+
+.service-search-form select {
+    min-width: 140px;
+    font-weight: 800;
+}
+
+.service-search-form input:focus,
+.service-search-form select:focus {
+    border-color: var(--navy);
+    box-shadow: 0 0 0 4px rgba(7, 38, 90, 0.10);
+}
+
+.service-search-form button {
+    min-height: 48px;
+    padding: 0 22px;
+    border: none;
+    border-radius: 999px;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.service-search-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 38px rgba(7, 38, 90, 0.18);
+}
+
+.admin-alert {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 22px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.services-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.services-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.services-table th {
+    padding: 0 14px 8px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.services-table td {
+    padding: 16px 14px;
+    background: #f8fafc;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.services-table td:first-child {
+    border-left: 1px solid var(--line);
+    border-radius: 18px 0 0 18px;
+}
+
+.services-table td:last-child {
+    border-right: 1px solid var(--line);
+    border-radius: 0 18px 18px 0;
+}
+
+.service-cell {
+    display: grid;
+    gap: 4px;
+    min-width: 260px;
+}
+
+.service-cell strong {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 950;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.service-cell span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.phase-badge,
+.status-badge,
+.detail-url-badge,
+.detail-none-badge {
+    min-height: 30px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.phase-available,
+.status-published,
+.detail-url-badge {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.phase-developing {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.phase-planned,
+.status-draft,
+.detail-none-badge {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-hidden {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.empty-cell {
+    padding: 32px 16px !important;
+    text-align: center;
+    color: var(--muted) !important;
+}
+
+.table-note {
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+body.dark-theme .admin-services-status-card,
+body.dark-theme .services-panel {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .admin-services-status-card span {
+    background: rgba(96, 165, 250, 0.14);
+    color: #bfdbfe;
+}
+
+body.dark-theme .back-button,
+body.dark-theme .clear-button,
+body.dark-theme .edit-button,
+body.dark-theme .services-table td,
+body.dark-theme .service-search-form input,
+body.dark-theme .service-search-form select {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #f8fafc;
+}
+
+body.dark-theme .admin-alert {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(248, 113, 113, 0.24);
+    color: #fecaca;
+}
+
+body.dark-theme .phase-available,
+body.dark-theme .status-published,
+body.dark-theme .detail-url-badge {
+    background: rgba(34, 197, 94, 0.14);
+    color: #86efac;
+}
+
+body.dark-theme .phase-developing {
+    background: rgba(59, 130, 246, 0.16);
+    color: #93c5fd;
+}
+
+body.dark-theme .phase-planned,
+body.dark-theme .status-draft,
+body.dark-theme .detail-none-badge {
+    background: rgba(245, 158, 11, 0.16);
+    color: #fcd34d;
+}
+
+body.dark-theme .status-hidden {
+    background: rgba(148, 163, 184, 0.18);
+    color: #cbd5e1;
+}
+
+@media (max-width: 1000px) {
+    .admin-services-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-head,
+    .service-search-form {
+        flex-direction: column;
+    }
+
+    .panel-actions,
+    .back-button,
+    .create-button,
+    .clear-button,
+    .service-search-form button,
+    .service-search-form select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-services-hero {
+        min-height: auto;
+        padding: 120px 0 60px;
+    }
+
+    .admin-services-copy h1 {
+        font-size: 38px;
+    }
+
+    .admin-services-status-card,
+    .services-panel {
+        padding: 24px;
+        border-radius: 24px;
+    }
+
+    .services-table {
+        min-width: 900px;
+    }
+}

@@ -75,8 +75,14 @@ require_once __DIR__ . "/../parts/head.php";
                     <p>開発・保守向けの確認ページへ移動します。</p>
                 </a>
 
-                <a href="/dashboard/" class="admin-menu-card reveal">
+                <a href="/admin/services/" class="admin-menu-card reveal">
                     <span>06</span>
+                    <h3>事業管理</h3>
+                    <p>トップページや事業一覧に表示する事業情報を追加・編集できます。</p>
+                </a>
+
+                <a href="/dashboard/" class="admin-menu-card reveal">
+                    <span>07</span>
                     <h3>ダッシュボードへ戻る</h3>
                     <p>通常のアカウントダッシュボードへ戻ります。</p>
                 </a>
