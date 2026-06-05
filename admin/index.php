@@ -57,10 +57,10 @@ require_once __DIR__ . "/../parts/head.php";
                     <p>契約中サービス、注文履歴、支払い状況を確認する機能を追加予定です。</p>
                 </a>
 
-                <a href="#" class="admin-menu-card reveal">
+                <a href="/admin/news/" class="admin-menu-card reveal">
                     <span>03</span>
                     <h3>お知らせ管理</h3>
-                    <p>トップページやダッシュボードに表示するお知らせ機能を追加予定です。</p>
+                    <p>トップページやお知らせ一覧に表示するお知らせ情報を管理します。</p>
                 </a>
 
                 <a href="/staff/" class="admin-menu-card reveal">

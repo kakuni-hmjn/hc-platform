@@ -95,6 +95,11 @@ $isDeveloper = in_array($headerRole, ["developer", "admin", "owner"], true);
                 <strong>事業一覧</strong>
             </a>
 
+            <a href="/news/">
+                <span>News</span>
+                <strong>お知らせ</strong>
+            </a>
+
             <a href="/contact/">
                 <span>Contact</span>
                 <strong>お問い合わせ</strong>
@@ -139,6 +144,7 @@ $isDeveloper = in_array($headerRole, ["developer", "admin", "owner"], true);
                 <?php if ($isAdmin): ?>
                     <a href="/admin/">管理者ページ</a>
                     <a href="/admin/services/">事業管理</a>
+                    <a href="/admin/news/">お知らせ管理</a>
                 <?php endif; ?>
 
                 <?php if ($isDeveloper): ?>

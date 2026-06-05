@@ -12,26 +12,53 @@ $pageDescription = "HC Platformは、ゲームサーバー、Webサービス、�
 $pageCss = "/index.css";
 $enableAdsense = true;
 
-$newsItems = [
-    [
-        "date" => "2026.06",
-        "title" => "お問い合わせ受付を開始しました",
-        "text" => "HC Platformへのご相談・ご質問をお問い合わせフォームから送信できるようになりました。",
-        "href" => "/contact/",
-    ],
-    [
-        "date" => "2026.06",
-        "title" => "HC Account機能を整備しました",
-        "text" => "アカウント作成、ログイン、メール認証、ダッシュボード機能を整備しました。",
-        "href" => "/register/",
-    ],
-    [
-        "date" => "2026.06",
-        "title" => "HC Platformサイトを更新しました",
-        "text" => "公開に向けて、トップページと各サービス導線の整備を進めています。",
-        "href" => "/company/",
-    ],
-];
+$newsItems = [];
+$newsErrors = [];
+
+function top_news_category_label(string $category): string
+{
+    $labels = [
+        "site_update" => "サイト更新",
+        "feature" => "機能追加",
+        "important" => "重要",
+        "maintenance" => "メンテナンス",
+        "service" => "サービス",
+        "other" => "その他",
+    ];
+
+    return $labels[$category] ?? "その他";
+}
+
+try {
+    $pdo = db();
+
+    $stmt = $pdo->query("
+        SELECT
+            id,
+            title,
+            slug,
+            category,
+            summary,
+            has_related_link,
+            related_url,
+            related_button_text,
+            is_pinned,
+            published_at
+        FROM news
+        WHERE status = 'published'
+          AND published_at IS NOT NULL
+          AND published_at <= NOW()
+        ORDER BY
+            is_pinned DESC,
+            published_at DESC,
+            id DESC
+        LIMIT 3
+    ");
+
+    $newsItems = $stmt->fetchAll();
+} catch (Throwable $e) {
+    $newsErrors[] = "お知らせ情報の取得中にエラーが発生しました。";
+}
 
 $services = [];
 $serviceErrors = [];
@@ -136,45 +163,80 @@ require_once __DIR__ . "/parts/head.php";
         </div>
     </section>
 
-    <section class="section news-section">
+    <section class="section top-news-section">
         <div class="container">
 
             <div class="section-heading reveal">
                 <p class="eyebrow">News</p>
                 <h2>お知らせ</h2>
                 <p>
-                    HC Platformの更新情報や公開に向けたお知らせを掲載します。
+                    HC Platformの更新情報、機能追加、メンテナンス、サービス情報などをお知らせします。
                 </p>
             </div>
 
-            <div class="news-panel reveal">
-                <div class="news-panel-head">
-                    <div>
-                        <span>Latest News</span>
-                        <h3>最新のお知らせ</h3>
+            <div class="top-news-panel reveal">
+
+                <?php if ($newsErrors): ?>
+                    <div class="top-news-error">
+                        <?php foreach ($newsErrors as $error): ?>
+                            <p><?php echo h($error); ?></p>
+                        <?php endforeach; ?>
                     </div>
+                <?php endif; ?>
 
-                    <a href="/news/" class="news-list-button">お知らせ一覧へ</a>
-                </div>
+                <?php if (!$newsItems && !$newsErrors): ?>
+                    <div class="top-news-empty">
+                        <p>現在表示できるお知らせはありません。</p>
+                    </div>
+                <?php endif; ?>
 
-                <div class="news-list">
+                <div class="top-news-list">
                     <?php foreach ($newsItems as $item): ?>
-                        <a href="<?php echo h($item["href"]); ?>" class="news-row">
-                            <div class="news-date">
-                                <?php echo h($item["date"]); ?>
+                        <article class="top-news-item">
+                            <div class="top-news-meta">
+                                <time datetime="<?php echo h(date("Y-m-d", strtotime($item["published_at"]))); ?>">
+                                    <?php echo h(date("Y.m.d", strtotime($item["published_at"]))); ?>
+                                </time>
+
+                                <span class="top-news-category category-<?php echo h($item["category"]); ?>">
+                                    <?php echo h(top_news_category_label($item["category"])); ?>
+                                </span>
+
+                                <?php if (!empty($item["is_pinned"])): ?>
+                                    <span class="top-news-pin">重要</span>
+                                <?php endif; ?>
                             </div>
 
-                            <div class="news-content">
-                                <h4><?php echo h($item["title"]); ?></h4>
-                                <p><?php echo h($item["text"]); ?></p>
+                            <div class="top-news-content">
+                                <h3>
+                                    <a href="/news/detail/?slug=<?php echo h($item["slug"]); ?>">
+                                        <?php echo h($item["title"]); ?>
+                                    </a>
+                                </h3>
+
+                                <p><?php echo h($item["summary"]); ?></p>
                             </div>
 
-                            <div class="news-arrow">
-                                →
+                            <div class="top-news-actions">
+                                <a href="/news/detail/?slug=<?php echo h($item["slug"]); ?>" class="top-news-detail">
+                                    詳細を見る
+                                    <span>→</span>
+                                </a>
+
+                                <?php if (!empty($item["has_related_link"]) && !empty($item["related_url"]) && !empty($item["related_button_text"])): ?>
+                                    <a href="<?php echo h($item["related_url"]); ?>" class="top-news-related">
+                                        <?php echo h($item["related_button_text"]); ?>
+                                    </a>
+                                <?php endif; ?>
                             </div>
-                        </a>
+                        </article>
                     <?php endforeach; ?>
                 </div>
+
+                <div class="top-news-more">
+                    <a href="/news/" class="button primary">お知らせ一覧を見る</a>
+                </div>
+
             </div>
 
         </div>
