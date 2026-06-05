@@ -1,0 +1,738 @@
+.game-rental-page {
+    padding-top: 0;
+}
+
+/* =========================
+   Hero
+========================= */
+
+.game-hero {
+    min-height: 78vh;
+    display: flex;
+    align-items: center;
+    padding: 150px 0 80px;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 14% 18%, rgba(16, 185, 129, 0.16), transparent 30%),
+        radial-gradient(circle at 78% 12%, rgba(37, 99, 235, 0.15), transparent 30%),
+        radial-gradient(circle at 74% 84%, rgba(14, 165, 233, 0.12), transparent 28%),
+        linear-gradient(180deg, rgba(248,250,252,0.95), rgba(255,255,255,1));
+    pointer-events: none;
+}
+
+.game-hero-bg-blocks {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.42;
+    overflow: hidden;
+}
+
+.game-hero-bg-blocks span {
+    position: absolute;
+    width: 92px;
+    height: 92px;
+    border-radius: 18px;
+    background:
+        linear-gradient(135deg, rgba(34,197,94,0.18), rgba(59,130,246,0.12));
+    border: 1px solid rgba(37,99,235,0.10);
+    transform: rotate(12deg);
+}
+
+.game-hero-bg-blocks span:nth-child(1) {
+    top: 130px;
+    left: 8%;
+}
+
+.game-hero-bg-blocks span:nth-child(2) {
+    top: 210px;
+    right: 12%;
+    width: 66px;
+    height: 66px;
+    transform: rotate(-16deg);
+}
+
+.game-hero-bg-blocks span:nth-child(3) {
+    bottom: 80px;
+    left: 18%;
+    width: 58px;
+    height: 58px;
+    transform: rotate(22deg);
+}
+
+.game-hero-bg-blocks span:nth-child(4) {
+    bottom: 140px;
+    right: 24%;
+    width: 110px;
+    height: 110px;
+    transform: rotate(-8deg);
+}
+
+.game-hero-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.54fr);
+    gap: 38px;
+    align-items: center;
+}
+
+.game-copy,
+.game-hero-side,
+.game-hero-visual,
+.game-status-card,
+.support-card,
+.feature-card,
+.plan-card,
+.flow-list article,
+.ptero-panel,
+.ptero-list article,
+.game-cta {
+    min-width: 0;
+}
+
+.game-copy h1 {
+    margin-bottom: 22px;
+    font-size: clamp(42px, 7vw, 86px);
+    line-height: 1.08;
+    letter-spacing: -0.07em;
+    font-weight: 950;
+    overflow-wrap: anywhere;
+}
+
+.game-copy p:not(.eyebrow) {
+    max-width: 820px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 2.1;
+    overflow-wrap: anywhere;
+}
+
+.hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.hero-badges span {
+    min-height: 34px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: rgba(34, 197, 94, 0.10);
+    border: 1px solid rgba(34, 197, 94, 0.20);
+    color: #047857;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.game-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 32px;
+}
+
+.game-hero-side {
+    display: grid;
+    gap: 18px;
+    align-items: start;
+}
+
+.game-hero-visual {
+    padding: 24px;
+    border-radius: 34px;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(34, 197, 94, 0.18), transparent 36%),
+        radial-gradient(circle at 82% 18%, rgba(59, 130, 246, 0.16), transparent 34%),
+        linear-gradient(180deg, rgba(255,255,255,0.92), rgba(248,250,252,0.92));
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px);
+    overflow: hidden;
+}
+
+.game-hero-visual img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 18px 26px rgba(15, 23, 42, 0.22));
+    transform: scale(1.04);
+}
+
+.game-status-card {
+    width: 100%;
+    padding: 28px;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.82);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px);
+}
+
+.game-status-card span {
+    width: fit-content;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    display: inline-flex;
+    border-radius: 999px;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.game-status-card h2 {
+    margin-bottom: 14px;
+    font-size: clamp(24px, 2.8vw, 30px);
+    line-height: 1.45;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+}
+
+.game-status-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 2;
+}
+
+/* =========================
+   Common
+========================= */
+
+.section {
+    padding: 92px 0;
+}
+
+.section-heading {
+    max-width: 900px;
+    margin-bottom: 34px;
+}
+
+.section-heading h2,
+.software-copy h2,
+.flow-copy h2,
+.ptero-panel h2,
+.game-cta h2 {
+    margin-bottom: 14px;
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.18;
+    letter-spacing: -0.055em;
+    font-weight: 950;
+    overflow-wrap: anywhere;
+}
+
+.section-heading p:not(.eyebrow),
+.software-copy p:not(.eyebrow),
+.flow-copy p:not(.eyebrow),
+.ptero-panel p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 2;
+    overflow-wrap: anywhere;
+}
+
+/* =========================
+   Support
+========================= */
+
+.support-section,
+.plan-section {
+    background: linear-gradient(180deg, rgba(248,250,252,0.5), rgba(255,255,255,1));
+}
+
+.support-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.support-card,
+.feature-card,
+.plan-card,
+.flow-list article,
+.ptero-panel,
+.ptero-list article {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: 0 16px 46px rgba(15, 23, 42, 0.05);
+}
+
+.support-card {
+    min-height: 250px;
+    padding: 28px;
+    border-radius: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.support-card::before {
+    content: "";
+    position: absolute;
+    right: -22px;
+    top: -22px;
+    width: 96px;
+    height: 96px;
+    border-radius: 22px;
+    background: rgba(34, 197, 94, 0.10);
+    transform: rotate(18deg);
+}
+
+.support-card > span {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 950;
+}
+
+.support-card h3 {
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+    font-size: 26px;
+    line-height: 1.35;
+    letter-spacing: -0.045em;
+    overflow-wrap: anywhere;
+}
+
+.support-card p {
+    position: relative;
+    z-index: 1;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 2;
+    overflow-wrap: anywhere;
+}
+
+/* =========================
+   Software
+========================= */
+
+.software-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 32px;
+    align-items: center;
+}
+
+.software-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.software-list span {
+    min-height: 46px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 14px;
+    background:
+        linear-gradient(180deg, rgba(239,246,255,0.96), rgba(219,234,254,0.78));
+    border: 1px solid #dbeafe;
+    color: var(--navy);
+    font-size: 14px;
+    font-weight: 950;
+    white-space: nowrap;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+}
+
+/* =========================
+   Features
+========================= */
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.feature-card {
+    min-height: 260px;
+    padding: 24px;
+    border-radius: 26px;
+}
+
+.feature-card span,
+.flow-list span {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.feature-card h3,
+.flow-list h3,
+.ptero-list h3 {
+    margin-bottom: 10px;
+    font-size: 22px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+    overflow-wrap: anywhere;
+}
+
+.feature-card p,
+.flow-list p,
+.ptero-list p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+/* =========================
+   Plans
+========================= */
+
+.plan-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.plan-card {
+    min-height: 260px;
+    padding: 28px;
+    border-radius: 30px;
+}
+
+.plan-card span {
+    width: fit-content;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    display: inline-flex;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.plan-card h3 {
+    margin-bottom: 8px;
+    font-size: 34px;
+    line-height: 1.15;
+    letter-spacing: -0.05em;
+    overflow-wrap: anywhere;
+}
+
+.plan-card strong {
+    display: block;
+    margin-bottom: 18px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 950;
+}
+
+.plan-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+/* =========================
+   Flow
+========================= */
+
+.flow-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 34px;
+    align-items: start;
+}
+
+.flow-list {
+    display: grid;
+    gap: 14px;
+}
+
+.flow-list article {
+    padding: 24px;
+    border-radius: 26px;
+}
+
+/* =========================
+   Pterodactyl
+========================= */
+
+.ptero-section {
+    background: linear-gradient(180deg, rgba(248,250,252,0.5), rgba(255,255,255,1));
+}
+
+.ptero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.ptero-panel {
+    padding: 34px;
+    border-radius: 32px;
+}
+
+.ptero-panel span {
+    width: fit-content;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    display: inline-flex;
+    border-radius: 999px;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.ptero-list {
+    display: grid;
+    gap: 14px;
+}
+
+.ptero-list article {
+    padding: 24px;
+    border-radius: 26px;
+}
+
+/* =========================
+   CTA
+========================= */
+
+.game-cta-section {
+    padding-bottom: 120px;
+}
+
+.game-cta {
+    padding: 44px;
+    border-radius: 36px;
+    background:
+        radial-gradient(circle at 20% 10%, rgba(96, 165, 250, 0.18), transparent 35%),
+        var(--navy);
+    color: #ffffff;
+    box-shadow: 0 30px 90px rgba(7, 38, 90, 0.25);
+}
+
+.game-cta .eyebrow {
+    color: #bfdbfe;
+}
+
+.game-cta p {
+    max-width: 820px;
+    color: rgba(255,255,255,0.78);
+    font-size: 15px;
+    line-height: 2;
+}
+
+.cta-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.cta-badges span {
+    min-height: 34px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.20);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.game-cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.game-cta .button.primary {
+    background: #ffffff;
+    color: var(--navy);
+}
+
+.game-cta .button.ghost {
+    border-color: rgba(255,255,255,0.32);
+    color: #ffffff;
+}
+
+/* =========================
+   Dark Theme
+========================= */
+
+body.dark-theme .game-hero::before {
+    background:
+        radial-gradient(circle at 14% 18%, rgba(16, 185, 129, 0.16), transparent 30%),
+        radial-gradient(circle at 78% 12%, rgba(37, 99, 235, 0.22), transparent 30%),
+        radial-gradient(circle at 74% 84%, rgba(14, 165, 233, 0.18), transparent 28%),
+        linear-gradient(180deg, rgba(2,6,23,0.95), rgba(2,6,23,1));
+}
+
+body.dark-theme .game-hero-visual {
+    background:
+        radial-gradient(circle at 20% 20%, rgba(34, 197, 94, 0.18), transparent 36%),
+        radial-gradient(circle at 82% 18%, rgba(59, 130, 246, 0.20), transparent 34%),
+        rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .game-status-card,
+body.dark-theme .support-card,
+body.dark-theme .feature-card,
+body.dark-theme .plan-card,
+body.dark-theme .flow-list article,
+body.dark-theme .ptero-panel,
+body.dark-theme .ptero-list article {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .support-section,
+body.dark-theme .plan-section,
+body.dark-theme .ptero-section {
+    background: transparent;
+}
+
+body.dark-theme .hero-badges span {
+    background: rgba(34, 197, 94, 0.14);
+    border-color: rgba(34, 197, 94, 0.22);
+    color: #86efac;
+}
+
+body.dark-theme .support-card::before {
+    background: rgba(34, 197, 94, 0.12);
+}
+
+body.dark-theme .software-list span,
+body.dark-theme .plan-card span {
+    background: rgba(59, 130, 246, 0.16);
+    border-color: rgba(59, 130, 246, 0.24);
+    color: #93c5fd;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 1200px) {
+    .feature-grid,
+    .plan-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1100px) {
+    .game-hero-grid,
+    .software-grid,
+    .flow-grid,
+    .ptero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-hero-side {
+        max-width: 620px;
+    }
+
+    .support-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .game-hero {
+        min-height: auto;
+        padding: 130px 0 70px;
+    }
+
+    .game-copy h1 {
+        font-size: 40px;
+        line-height: 1.12;
+    }
+
+    .game-actions,
+    .game-cta-actions {
+        flex-direction: column;
+    }
+
+    .game-actions .button,
+    .game-cta-actions .button {
+        width: 100%;
+    }
+
+    .feature-grid,
+    .plan-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 70px 0;
+    }
+
+    .game-status-card,
+    .game-hero-visual,
+    .support-card,
+    .feature-card,
+    .plan-card,
+    .flow-list article,
+    .ptero-panel,
+    .ptero-list article,
+    .game-cta {
+        padding: 28px;
+        border-radius: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-copy h1,
+    .section-heading h2,
+    .software-copy h2,
+    .flow-copy h2,
+    .ptero-panel h2,
+    .game-cta h2 {
+        font-size: 32px;
+    }
+
+    .game-status-card h2 {
+        font-size: 24px;
+    }
+
+    .software-list span {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hero-badges span,
+    .cta-badges span {
+        width: 100%;
+        justify-content: center;
+    }
+}
