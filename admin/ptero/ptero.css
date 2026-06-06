@@ -30,7 +30,6 @@
     line-height: 1.12;
     letter-spacing: -0.055em;
     font-weight: 950;
-    word-break: normal;
     overflow-wrap: anywhere;
 }
 
@@ -111,7 +110,6 @@
     font-size: clamp(28px, 4vw, 46px);
     line-height: 1.25;
     letter-spacing: -0.045em;
-    word-break: normal;
     overflow-wrap: anywhere;
 }
 

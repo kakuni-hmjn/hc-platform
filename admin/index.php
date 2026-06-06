@@ -81,8 +81,14 @@ require_once __DIR__ . "/../parts/head.php";
                     <p>トップページや事業一覧に表示する事業情報を追加・編集できます。</p>
                 </a>
 
-                <a href="/dashboard/" class="admin-menu-card reveal">
+                <a href="/admin/ptero/" class="admin-menu-card reveal">
                     <span>07</span>
+                    <h3>Pterodactyl連携</h3>
+                    <p>Pterodactyl APIの接続確認、Node / Nest / Eggの取得テストを行います。</p>
+                </a>
+
+                <a href="/dashboard/" class="admin-menu-card reveal">
+                    <span>08</span>
                     <h3>ダッシュボードへ戻る</h3>
                     <p>通常のアカウントダッシュボードへ戻ります。</p>
                 </a>

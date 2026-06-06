@@ -2,23 +2,11 @@
 
 function load_env(string $path): void
 {
-    static $loaded = false;
-
-    if ($loaded) {
-        return;
-    }
-
     if (!file_exists($path)) {
-        $loaded = true;
         return;
     }
 
     $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-    if ($lines === false) {
-        $loaded = true;
-        return;
-    }
 
     foreach ($lines as $line) {
         $line = trim($line);
@@ -35,19 +23,40 @@ function load_env(string $path): void
 
         $key = trim($key);
         $value = trim($value);
-
         $value = trim($value, "\"'");
 
         if ($key === "") {
             continue;
         }
 
-        if (getenv($key) === false) {
-            putenv($key . "=" . $value);
-            $_ENV[$key] = $value;
-            $_SERVER[$key] = $value;
-        }
+        $_ENV[$key] = $value;
+        putenv($key . "=" . $value);
+    }
+}
+
+function env_value(string $key, mixed $default = null): mixed
+{
+    $value = $_ENV[$key] ?? getenv($key);
+
+    if ($value === false || $value === null || $value === "") {
+        return $default;
     }
 
-    $loaded = true;
+    $lower = strtolower((string)$value);
+
+    if ($lower === "true") {
+        return true;
+    }
+
+    if ($lower === "false") {
+        return false;
+    }
+
+    if ($lower === "null") {
+        return null;
+    }
+
+    return $value;
 }
+
+load_env(__DIR__ . "/../.env");

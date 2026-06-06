@@ -145,6 +145,7 @@ $isDeveloper = in_array($headerRole, ["developer", "admin", "owner"], true);
                     <a href="/admin/">管理者ページ</a>
                     <a href="/admin/services/">事業管理</a>
                     <a href="/admin/news/">お知らせ管理</a>
+                    <a href="/admin/ptero/">Pterodactyl連携</a>
                 <?php endif; ?>
 
                 <?php if ($isDeveloper): ?>
