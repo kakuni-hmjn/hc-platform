@@ -14,6 +14,8 @@ services:
   web:
     build: ./docker/web
     container_name: hc-dev-web
+    env_file:
+      - ./.env.dev
     volumes:
       - ./:/var/www/html
       - ./.env.dev:/var/www/.env:ro

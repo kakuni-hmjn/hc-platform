@@ -783,3 +783,139 @@ body.dark-theme .node-chip small {
         font-size: 28px;
     }
 }
+/* Game plans admin navigation and contract count */
+.panel-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.sub-button,
+.secondary-detail-button {
+    min-height: 40px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.sub-button:hover,
+.secondary-detail-button:hover {
+    transform: translateY(-2px);
+    background: #eff6ff;
+    color: var(--navy);
+}
+
+.plan-card {
+    position: relative;
+}
+
+.plan-contract-badge {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    min-height: 34px;
+    padding: 0 13px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #2563eb, #0f172a);
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.28);
+    font-size: 12px;
+    font-weight: 950;
+    z-index: 2;
+}
+
+.plan-flow-grid {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.plan-flow-grid a {
+    min-width: 0;
+    padding: 13px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    transition: 0.2s ease;
+}
+
+.plan-flow-grid a:hover {
+    transform: translateY(-2px);
+    background: #eff6ff;
+}
+
+.plan-flow-grid span {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 950;
+}
+
+.plan-flow-grid strong {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 950;
+}
+
+.plan-flow-grid small {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 850;
+}
+
+.plan-card-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+body.dark-theme .sub-button,
+body.dark-theme .secondary-detail-button,
+body.dark-theme .plan-flow-grid a {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #f8fafc;
+}
+
+body.dark-theme .plan-contract-badge {
+    background: linear-gradient(135deg, #3b82f6, #1e293b);
+    color: #ffffff;
+}
+
+@media (max-width: 760px) {
+    .panel-actions,
+    .panel-actions .back-button,
+    .panel-actions .sub-button,
+    .plan-card-actions,
+    .plan-card-actions .detail-button,
+    .plan-card-actions .secondary-detail-button {
+        width: 100%;
+    }
+
+    .plan-flow-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .plan-contract-badge {
+        position: static;
+        margin: 12px 0;
+    }
+}

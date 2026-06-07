@@ -1,8 +1,10 @@
 <?php
+
 session_start();
 
 require_once __DIR__ . "/../lib/helpers.php";
 require_once __DIR__ . "/../lib/auth.php";
+require_once __DIR__ . "/../lib/db.php";
 
 $currentUser = current_user();
 
@@ -12,24 +14,126 @@ if (!$currentUser) {
 }
 
 $pageTitle = "マイページ | HC Platform";
-$pageDescription = "HC Platformのマイページです。アカウント情報、契約中サーバー、注文、請求情報などを確認できます。";
+$pageDescription = "HC Platformのマイページです。アカウント情報、契約中サーバー、通知、注文、請求情報などを確認できます。";
 $pageCss = "/dashboard/dashboard.css";
+
+$pdo = db();
+
+$activeServerCount = 0;
+$personalEventUnreadCount = 0;
+$directUnreadCount = 0;
+$personalUnreadCount = 0;
+$globalUnreadCount = 0;
+$totalUnreadNotificationCount = 0;
+
+try {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) AS count
+        FROM ptero_servers ps
+        JOIN game_server_orders gso ON gso.id = ps.order_id
+        WHERE ps.user_id = :user_id
+          AND ps.status != 'deleted'
+          AND gso.status NOT IN ('cancelled', 'expired')
+    ");
+
+    $stmt->execute([
+        "user_id" => (int)$currentUser["id"],
+    ]);
+
+    $row = $stmt->fetch();
+    $activeServerCount = (int)($row["count"] ?? 0);
+} catch (Throwable $e) {
+    $activeServerCount = 0;
+}
+
+try {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) AS count
+        FROM server_order_events soe
+        JOIN game_server_orders gso ON gso.id = soe.order_id
+        LEFT JOIN user_notification_reads unr
+          ON unr.user_id = :user_id
+         AND unr.notification_type = 'personal_event'
+         AND unr.notification_id = soe.id
+        WHERE gso.user_id = :user_id
+          AND unr.id IS NULL
+    ");
+
+    $stmt->execute([
+        "user_id" => (int)$currentUser["id"],
+    ]);
+
+    $row = $stmt->fetch();
+    $personalEventUnreadCount = (int)($row["count"] ?? 0);
+} catch (Throwable $e) {
+    $personalEventUnreadCount = 0;
+}
+
+try {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) AS count
+        FROM user_direct_notifications udn
+        LEFT JOIN user_notification_reads unr
+          ON unr.user_id = :user_id
+         AND unr.notification_type = 'direct_notice'
+         AND unr.notification_id = udn.id
+        WHERE udn.user_id = :user_id
+          AND udn.status = 'published'
+          AND udn.published_at <= NOW()
+          AND unr.id IS NULL
+    ");
+
+    $stmt->execute([
+        "user_id" => (int)$currentUser["id"],
+    ]);
+
+    $row = $stmt->fetch();
+    $directUnreadCount = (int)($row["count"] ?? 0);
+} catch (Throwable $e) {
+    $directUnreadCount = 0;
+}
+
+try {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) AS count
+        FROM site_notifications sn
+        LEFT JOIN user_notification_reads unr
+          ON unr.user_id = :user_id
+         AND unr.notification_type = 'global_notice'
+         AND unr.notification_id = sn.id
+        WHERE sn.status = 'published'
+          AND sn.target_scope = 'all'
+          AND sn.published_at <= NOW()
+          AND unr.id IS NULL
+    ");
+
+    $stmt->execute([
+        "user_id" => (int)$currentUser["id"],
+    ]);
+
+    $row = $stmt->fetch();
+    $globalUnreadCount = (int)($row["count"] ?? 0);
+} catch (Throwable $e) {
+    $globalUnreadCount = 0;
+}
+
+$personalUnreadCount = $personalEventUnreadCount + $directUnreadCount;
+$totalUnreadNotificationCount = $personalUnreadCount + $globalUnreadCount;
 
 require_once __DIR__ . "/../parts/head.php";
 ?>
+
 <body>
 <?php include __DIR__ . "/../parts/header/header.php"; ?>
 
 <main class="dashboard-page">
-
     <section class="dashboard-hero">
         <div class="container dashboard-hero-grid">
-
             <div class="dashboard-copy reveal">
                 <p class="eyebrow">Dashboard</p>
                 <h1>マイページ</h1>
                 <p>
-                    HC Platformで利用中のサービス、契約中サーバー、注文状況、アカウント情報を確認できます。
+                    HC Platformで利用中のサービス、契約中サーバー、通知、注文状況、アカウント情報を確認できます。
                 </p>
             </div>
 
@@ -39,16 +143,29 @@ require_once __DIR__ . "/../parts/head.php";
                 <p>
                     ログイン中のアカウントで利用中のサービス情報を表示しています。
                 </p>
-            </aside>
 
+                <div class="dashboard-mini-stats">
+                    <?php if ($activeServerCount > 0): ?>
+                        <div>
+                            <strong><?php echo h((string)$activeServerCount); ?></strong>
+                            <small>契約中サーバー</small>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($totalUnreadNotificationCount > 0): ?>
+                        <div class="has-unread">
+                            <strong><?php echo h((string)$totalUnreadNotificationCount); ?></strong>
+                            <small>未読通知</small>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </aside>
         </div>
     </section>
 
     <section class="section dashboard-section">
         <div class="container">
-
             <div class="dashboard-panel reveal">
-
                 <div class="panel-head">
                     <div>
                         <p class="eyebrow">Menu</p>
@@ -57,13 +174,47 @@ require_once __DIR__ . "/../parts/head.php";
                 </div>
 
                 <div class="dashboard-action-grid">
-
                     <a href="/dashboard/servers/" class="dashboard-action-card reveal">
                         <span>Game Servers</span>
-                        <h3>契約中サーバー</h3>
+
+                        <div class="dashboard-card-title-line">
+                            <h3>契約中サーバー</h3>
+
+                            <?php if ($activeServerCount > 0): ?>
+                                <strong class="dashboard-card-count">
+                                    <?php echo h((string)$activeServerCount); ?> 件
+                                </strong>
+                            <?php endif; ?>
+                        </div>
+
                         <p>
                             ゲームサーバーレンタルで作成されたサーバー、申込状況、契約状態を確認できます。
                         </p>
+                    </a>
+
+                    <a href="/dashboard/notifications/" class="dashboard-action-card dashboard-notification-card reveal">
+                        <span>Notifications</span>
+
+                        <div class="dashboard-card-title-line">
+                            <h3>通知</h3>
+
+                            <?php if ($totalUnreadNotificationCount > 0): ?>
+                                <strong class="dashboard-unread-count">
+                                    未読 <?php echo h((string)$totalUnreadNotificationCount); ?> 件
+                                </strong>
+                            <?php endif; ?>
+                        </div>
+
+                        <p>
+                            あなた宛の契約通知・個別通知と、運営からの全体宛通知を確認できます。
+                        </p>
+
+                        <?php if ($totalUnreadNotificationCount > 0): ?>
+                            <div class="dashboard-notification-breakdown">
+                                <small>あなた宛 <?php echo h((string)$personalUnreadCount); ?> 件</small>
+                                <small>全体宛 <?php echo h((string)$globalUnreadCount); ?> 件</small>
+                            </div>
+                        <?php endif; ?>
                     </a>
 
                     <a href="/account/" class="dashboard-action-card reveal">
@@ -105,14 +256,10 @@ require_once __DIR__ . "/../parts/head.php";
                             サービス利用中の相談、サーバー構成の相談、サポート依頼はこちらから送信できます。
                         </p>
                     </a>
-
                 </div>
-
             </div>
-
         </div>
     </section>
-
 </main>
 
 <?php include __DIR__ . "/../parts/footer/footer.php"; ?>

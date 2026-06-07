@@ -544,3 +544,92 @@ body.dark-theme .server-status {
         grid-template-columns: 1fr;
     }
 }
+.server-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.server-actions .create-button {
+    min-width: 140px;
+}
+
+.order-card .create-button {
+    flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+    .server-actions,
+    .server-actions .create-button,
+    .order-card .create-button {
+        width: 100%;
+    }
+}
+
+.server-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.server-actions .create-button,
+.server-actions .panel-button,
+.server-actions .disabled-panel-button {
+    min-width: 140px;
+}
+
+.panel-button {
+    min-height: 40px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 950;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.panel-button:hover {
+    transform: translateY(-2px);
+}
+
+.disabled-panel-button {
+    min-height: 40px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.order-card .create-button {
+    flex-shrink: 0;
+}
+
+body.dark-theme .disabled-panel-button {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #cbd5e1;
+}
+
+@media (max-width: 700px) {
+    .server-actions,
+    .server-actions .create-button,
+    .server-actions .panel-button,
+    .server-actions .disabled-panel-button,
+    .order-card .create-button {
+        width: 100%;
+    }
+}

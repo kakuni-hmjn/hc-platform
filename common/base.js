@@ -206,3 +206,156 @@ function initReveal() {
         revealTargets.forEach(showTarget);
     }
 }
+/* Header notification async read + outside close */
+(() => {
+    if (window.__hcHeaderNotificationAsyncReady) {
+        return;
+    }
+
+    window.__hcHeaderNotificationAsyncReady = true;
+
+    const notificationBox = document.querySelector(".header-notifications");
+
+    if (!notificationBox) {
+        return;
+    }
+
+    let shouldReloadOnClose = false;
+
+    const closeNotificationBox = () => {
+        if (!notificationBox.open) {
+            return;
+        }
+
+        notificationBox.open = false;
+
+        if (shouldReloadOnClose) {
+            window.location.reload();
+        }
+    };
+
+    const markOneAsReadInUi = (form) => {
+        const itemWrap = form.closest(".notification-mini-item-wrap");
+
+        if (itemWrap) {
+            itemWrap.classList.remove("is-unread");
+            itemWrap.classList.add("is-read");
+        }
+
+        form.remove();
+    };
+
+    const markPanelAsReadInUi = (form) => {
+        const panel = form.closest(".notification-tab-panel");
+
+        if (!panel) {
+            return;
+        }
+
+        panel.querySelectorAll(".notification-mini-item-wrap.is-unread").forEach((item) => {
+            item.classList.remove("is-unread");
+            item.classList.add("is-read");
+        });
+
+        panel.querySelectorAll(".mini-read-form").forEach((readForm) => {
+            readForm.remove();
+        });
+
+        const button = form.querySelector("button");
+        if (button) {
+            button.disabled = true;
+        }
+    };
+
+    const submitReadForm = async (form) => {
+        const actionInput = form.querySelector("input[name='action']");
+        const action = actionInput ? actionInput.value : "";
+
+        const submitButton = form.querySelector("button[type='submit'], button");
+
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+
+        try {
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: new FormData(form),
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json",
+                },
+                credentials: "same-origin",
+            });
+
+            const result = await response.json().catch(() => null);
+
+            if (!response.ok || !result || !result.ok) {
+                if (submitButton) {
+                    submitButton.disabled = false;
+                }
+
+                return;
+            }
+
+            shouldReloadOnClose = true;
+
+            if (action === "mark_one") {
+                markOneAsReadInUi(form);
+            }
+
+            if (
+                action === "mark_all_personal" ||
+                action === "mark_all_global" ||
+                action === "mark_all"
+            ) {
+                markPanelAsReadInUi(form);
+            }
+        } catch (error) {
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
+        }
+    };
+
+    notificationBox.addEventListener("submit", (event) => {
+        const form = event.target;
+
+        if (!(form instanceof HTMLFormElement)) {
+            return;
+        }
+
+        if (!form.action.includes("/dashboard/notifications/mark-read.php")) {
+            return;
+        }
+
+        event.preventDefault();
+        submitReadForm(form);
+    });
+
+    notificationBox.addEventListener("toggle", () => {
+        if (!notificationBox.open && shouldReloadOnClose) {
+            window.location.reload();
+        }
+    });
+
+    document.addEventListener("click", (event) => {
+        if (!notificationBox.open) {
+            return;
+        }
+
+        if (notificationBox.contains(event.target)) {
+            return;
+        }
+
+        closeNotificationBox();
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") {
+            return;
+        }
+
+        closeNotificationBox();
+    });
+})();

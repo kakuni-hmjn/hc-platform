@@ -1,8 +1,9 @@
 <?php
+
 session_start();
 
-require_once __DIR__ . "/../../lib/auth.php";
 require_once __DIR__ . "/../../lib/helpers.php";
+require_once __DIR__ . "/../../lib/auth.php";
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../lib/permissions.php";
 
@@ -15,16 +16,15 @@ $pageCss = "/admin/game-plans/game-plans.css";
 $errors = [];
 $plans = [];
 
-$statusLabels = [
-    "draft" => "下書き",
-    "published" => "公開",
-    "hidden" => "非公開",
-];
-
-function format_mb_to_gb(int $mb): string
+function gp_price(?int $amount): string
 {
-    if ($mb <= 0) {
-        return "0GB";
+    return "¥" . number_format((int)($amount ?? 0));
+}
+
+function gp_mb_to_gb(?int $mb): string
+{
+    if (!$mb || $mb <= 0) {
+        return "-";
     }
 
     $gb = $mb / 1024;
@@ -36,9 +36,9 @@ function format_mb_to_gb(int $mb): string
     return number_format($gb, 1) . "GB";
 }
 
-function format_cpu_to_vcpu(int $cpuLimit): string
+function gp_cpu(?int $cpuLimit): string
 {
-    if ($cpuLimit <= 0) {
+    if (!$cpuLimit || $cpuLimit <= 0) {
         return "無制限";
     }
 
@@ -51,15 +51,14 @@ function format_cpu_to_vcpu(int $cpuLimit): string
     return number_format($vcpu, 1) . "vCPU";
 }
 
-function plan_status_label(string $status): string
+function gp_status_label(string $status): string
 {
-    $labels = [
+    return match ($status) {
         "draft" => "下書き",
         "published" => "公開",
         "hidden" => "非公開",
-    ];
-
-    return $labels[$status] ?? "不明";
+        default => $status,
+    };
 }
 
 try {
@@ -87,6 +86,33 @@ try {
             gsp.sort_order,
             gsp.created_at,
             gsp.updated_at,
+
+            COALESCE((
+                SELECT COUNT(*)
+                FROM game_server_orders o
+                WHERE o.plan_id = gsp.id
+                  AND o.status NOT IN ('cancelled', 'expired')
+            ), 0) AS active_contract_count,
+
+            COALESCE((
+                SELECT COUNT(*)
+                FROM game_server_orders o
+                WHERE o.plan_id = gsp.id
+            ), 0) AS total_contract_count,
+
+            COALESCE((
+                SELECT COUNT(*)
+                FROM server_order_plan_change_requests r
+                WHERE r.current_plan_id = gsp.id
+                  AND r.status = 'pending'
+            ), 0) AS outgoing_pending_change_count,
+
+            COALESCE((
+                SELECT COUNT(*)
+                FROM server_order_plan_change_requests r
+                WHERE r.requested_plan_id = gsp.id
+                  AND r.status = 'pending'
+            ), 0) AS incoming_pending_change_count,
 
             COALESCE(
                 json_agg(
@@ -117,37 +143,41 @@ try {
 
 require_once __DIR__ . "/../../parts/head.php";
 ?>
+
 <body>
 <?php include __DIR__ . "/../../parts/header/header.php"; ?>
 
 <main class="game-plans-page">
-
     <section class="game-plans-hero">
         <div class="container game-plans-hero-grid">
-
             <div class="game-plans-copy reveal">
                 <p class="eyebrow">Admin / Game Plans</p>
                 <h1>ゲームサーバープラン管理</h1>
                 <p>
                     ゲームサーバーレンタルで表示・申込に使うプランを管理します。
-                    価格、メモリ、CPU、ディスク容量、Pterodactyl連携情報を確認できます。
+                    各プランの契約中件数とプラン変更申請の流れも確認できます。
                 </p>
             </div>
 
             <aside class="game-plans-status-card reveal">
                 <span>管理者アクセス</span>
-                <h2><?php echo h($user["username"]); ?></h2>
-                <p><?php echo h(role_label($user["role"])); ?></p>
+                <h2><?php echo h((string)$user["username"]); ?></h2>
+                <p><?php echo h(role_label((string)$user["role"])); ?></p>
             </aside>
-
         </div>
     </section>
 
     <section class="section game-plans-section">
         <div class="container">
+            <?php if ($errors): ?>
+                <div class="admin-alert">
+                    <?php foreach ($errors as $error): ?>
+                        <p><?php echo h($error); ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
 
             <div class="plans-panel reveal">
-
                 <div class="panel-head">
                     <div>
                         <p class="eyebrow">Plans</p>
@@ -155,161 +185,135 @@ require_once __DIR__ . "/../../parts/head.php";
                     </div>
 
                     <div class="panel-actions">
+                        <a href="/admin/server-orders/" class="sub-button">契約管理</a>
+                        <a href="/admin/plan-change-requests/" class="sub-button">プラン変更申請</a>
                         <a href="/admin/" class="back-button">管理者ページへ戻る</a>
-                        <a href="/admin/game-plans/edit/" class="create-button">新規追加</a>
                     </div>
                 </div>
 
-                <?php if ($errors): ?>
-                    <div class="plans-alert">
-                        <?php foreach ($errors as $error): ?>
-                            <p><?php echo h($error); ?></p>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (!$plans && !$errors): ?>
-                    <div class="empty-plans">
+                <?php if (!$plans): ?>
+                    <div class="empty-box">
                         <h3>プランがまだ登録されていません。</h3>
                         <p>新規追加からゲームサーバープランを作成してください。</p>
-                        <a href="/admin/game-plans/edit/" class="create-button">プランを追加する</a>
+                        <a href="/admin/game-plans/edit/" class="back-button">プランを追加する</a>
                     </div>
-                <?php endif; ?>
-
-                <?php if ($plans): ?>
-                    <div class="plans-grid">
+                <?php else: ?>
+                    <div class="plan-card-grid">
                         <?php foreach ($plans as $plan): ?>
                             <?php
-                                $planNodes = [];
+                            $nodes = [];
+                            if (!empty($plan["nodes"])) {
+                                $decoded = json_decode((string)$plan["nodes"], true);
+                                $nodes = is_array($decoded) ? $decoded : [];
+                            }
 
-                                if (!empty($plan["nodes"])) {
-                                    $decodedNodes = json_decode($plan["nodes"], true);
-                                    if (is_array($decodedNodes)) {
-                                        $planNodes = $decodedNodes;
-                                    }
-                                }
+                            $activeContractCount = (int)($plan["active_contract_count"] ?? 0);
+                            $totalContractCount = (int)($plan["total_contract_count"] ?? 0);
+                            $incomingChangeCount = (int)($plan["incoming_pending_change_count"] ?? 0);
+                            $outgoingChangeCount = (int)($plan["outgoing_pending_change_count"] ?? 0);
                             ?>
-
-                            <article class="plan-card status-<?php echo h($plan["status"]); ?>">
+                            <article class="plan-card status-<?php echo h((string)$plan["status"]); ?>">
                                 <div class="plan-card-head">
                                     <div>
                                         <span class="plan-status">
-                                            <?php echo h(plan_status_label($plan["status"])); ?>
+                                            <?php echo h(gp_status_label((string)$plan["status"])); ?>
                                         </span>
-                                        <h3><?php echo h($plan["name"]); ?></h3>
-                                        <p class="plan-slug">/<?php echo h($plan["slug"]); ?></p>
+                                        <h3><?php echo h((string)$plan["name"]); ?></h3>
+                                        <p><?php echo h((string)$plan["slug"]); ?></p>
                                     </div>
 
                                     <strong class="plan-price">
-                                        ¥<?php echo h(number_format((int)$plan["price_monthly"])); ?>
+                                        <?php echo h(gp_price((int)$plan["price_monthly"])); ?>
                                         <small>/月</small>
                                     </strong>
                                 </div>
 
-                                <p class="plan-description">
-                                    <?php echo h($plan["description"]); ?>
-                                </p>
+                                <?php if ($activeContractCount > 0): ?>
+                                    <div class="plan-contract-badge">
+                                        契約中 <?php echo h((string)$activeContractCount); ?> 件
+                                    </div>
+                                <?php endif; ?>
 
-                                <div class="spec-grid">
+                                <div class="plan-spec-grid">
                                     <div>
                                         <span>Memory</span>
-                                        <strong><?php echo h(format_mb_to_gb((int)$plan["memory_mb"])); ?></strong>
+                                        <strong><?php echo h(gp_mb_to_gb((int)$plan["memory_mb"])); ?></strong>
                                     </div>
-
                                     <div>
                                         <span>CPU</span>
-                                        <strong><?php echo h(format_cpu_to_vcpu((int)$plan["cpu_limit"])); ?></strong>
-                                        <small class="spec-sub">
-                                            <?php echo h((string)$plan["cpu_limit"]); ?>%
-                                        </small>
+                                        <strong><?php echo h(gp_cpu((int)$plan["cpu_limit"])); ?></strong>
                                     </div>
-
                                     <div>
                                         <span>Disk</span>
-                                        <strong><?php echo h(format_mb_to_gb((int)$plan["disk_mb"])); ?></strong>
+                                        <strong><?php echo h(gp_mb_to_gb((int)$plan["disk_mb"])); ?></strong>
                                     </div>
-
                                     <div>
                                         <span>Backup</span>
                                         <strong><?php echo h((string)$plan["backup_limit"]); ?></strong>
                                     </div>
-
                                     <div>
                                         <span>Database</span>
                                         <strong><?php echo h((string)$plan["database_limit"]); ?></strong>
                                     </div>
-
                                     <div>
                                         <span>Allocation</span>
                                         <strong><?php echo h((string)$plan["allocation_limit"]); ?></strong>
                                     </div>
                                 </div>
 
-                                <?php if (!empty($plan["server_software_note"])): ?>
-                                    <div class="note-box">
-                                        <span>Software</span>
-                                        <p><?php echo h($plan["server_software_note"]); ?></p>
-                                    </div>
-                                <?php endif; ?>
+                                <div class="plan-flow-grid">
+                                    <a href="/admin/server-orders/?q=<?php echo h((string)$plan["name"]); ?>">
+                                        <span>契約</span>
+                                        <strong><?php echo h((string)$activeContractCount); ?> 件</strong>
+                                        <small>全体 <?php echo h((string)$totalContractCount); ?> 件</small>
+                                    </a>
 
-                                <div class="nodes-box">
+                                    <a href="/admin/plan-change-requests/?q=<?php echo h((string)$plan["name"]); ?>">
+                                        <span>変更申請</span>
+                                        <strong>IN <?php echo h((string)$incomingChangeCount); ?> / OUT <?php echo h((string)$outgoingChangeCount); ?></strong>
+                                        <small>申請一覧へ</small>
+                                    </a>
+                                </div>
+
+                                <div class="plan-node-list">
                                     <span>対応Node</span>
 
-                                    <?php if ($planNodes): ?>
-                                        <div class="node-list">
-                                            <?php foreach ($planNodes as $node): ?>
-                                                <div class="node-chip <?php echo !empty($node["is_high_performance"]) ? "high-performance" : ""; ?>">
-                                                    <strong>
-                                                        <?php echo h((string)$node["name"]); ?>
-                                                        <?php if (!empty($node["is_primary"])): ?>
-                                                            <small>優先</small>
-                                                        <?php endif; ?>
-                                                    </strong>
-
-                                                    <p>
-                                                        <?php echo h((string)$node["label"]); ?>
-                                                        <?php if (!empty($node["cpu_type"])): ?>
-                                                            / <?php echo h((string)$node["cpu_type"]); ?>
-                                                        <?php endif; ?>
-                                                    </p>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        </div>
+                                    <?php if (!$nodes): ?>
+                                        <p>対応Nodeが未設定です。</p>
                                     <?php else: ?>
-                                        <p class="node-empty">対応Nodeが未設定です。</p>
+                                        <?php foreach ($nodes as $node): ?>
+                                            <div class="plan-node-item">
+                                                <strong>
+                                                    <?php echo h((string)($node["label"] ?: $node["name"] ?: "Node")); ?>
+                                                </strong>
+                                                <small>
+                                                    Node #<?php echo h((string)($node["ptero_node_id"] ?? "-")); ?>
+                                                    /
+                                                    <?php echo h((string)($node["cpu_type"] ?? "-")); ?>
+                                                    <?php if (!empty($node["is_primary"])): ?>
+                                                        / 優先
+                                                    <?php endif; ?>
+                                                </small>
+                                            </div>
+                                        <?php endforeach; ?>
                                     <?php endif; ?>
                                 </div>
 
-                                <div class="ptero-box">
-                                    <div>
-                                        <span>Nest ID</span>
-                                        <strong><?php echo h($plan["ptero_nest_id"] !== null ? (string)$plan["ptero_nest_id"] : "未設定"); ?></strong>
-                                    </div>
-
-                                    <div>
-                                        <span>Egg ID</span>
-                                        <strong><?php echo h($plan["ptero_egg_id"] !== null ? (string)$plan["ptero_egg_id"] : "未設定"); ?></strong>
-                                    </div>
-                                </div>
-
-                                <div class="plan-card-footer">
-                                    <span>表示順: <?php echo h((string)$plan["sort_order"]); ?></span>
-
-                                    <a href="/admin/game-plans/edit/?id=<?php echo h((string)$plan["id"]); ?>">
+                                <div class="plan-card-actions">
+                                    <a href="/admin/game-plans/edit/?id=<?php echo h((string)$plan["id"]); ?>" class="detail-button">
                                         編集する
-                                        <span>→</span>
+                                    </a>
+                                    <a href="/admin/server-orders/?q=<?php echo h((string)$plan["name"]); ?>" class="secondary-detail-button">
+                                        契約を見る
                                     </a>
                                 </div>
                             </article>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-
             </div>
-
         </div>
     </section>
-
 </main>
 
 <?php include __DIR__ . "/../../parts/footer/footer.php"; ?>

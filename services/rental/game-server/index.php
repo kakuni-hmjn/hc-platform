@@ -188,7 +188,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                 </div>
 
                 <div class="game-actions">
-                    <a href="/contact/" class="button primary">相談する</a>
+                    <a href="/order/game-server/" class="button primary">今すぐサーバーを入手</a>
                     <a href="/services/rental/" class="button ghost">レンタル事業へ戻る</a>
                 </div>
             </div>

@@ -30,4 +30,5 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     <?php endif; ?>
 
     <link rel="stylesheet" href="/common/theme.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
