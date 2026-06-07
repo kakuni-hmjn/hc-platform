@@ -12,4 +12,6 @@ return [
     "default_node_id" => (int)env_value("PTERO_DEFAULT_NODE_ID", 0),
     "default_nest_id" => (int)env_value("PTERO_DEFAULT_NEST_ID", 0),
     "default_egg_id" => (int)env_value("PTERO_DEFAULT_EGG_ID", 0),
+    "default_user_id" => (int)env_value("PTERO_DEFAULT_USER_ID", 1),
+    "default_location_id" => (int)env_value("PTERO_DEFAULT_LOCATION_ID", 1),
 ];

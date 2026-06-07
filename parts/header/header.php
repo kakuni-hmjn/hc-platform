@@ -47,6 +47,7 @@ $isDeveloper = in_array($headerRole, ["developer", "admin", "owner"], true);
                 <?php if ($headerUser): ?>
                     <a href="/logout/" class="header-link">ログアウト</a>
                     <a href="/dashboard/" class="header-button">マイページ</a>
+                    <a href="/dashboard/servers/">契約中サーバー</a>
                 <?php else: ?>
                     <a href="/login/" class="header-link">ログイン</a>
                     <a href="/register/" class="header-button">新規登録</a>
@@ -145,6 +146,7 @@ $isDeveloper = in_array($headerRole, ["developer", "admin", "owner"], true);
                     <a href="/admin/">管理者ページ</a>
                     <a href="/admin/services/">事業管理</a>
                     <a href="/admin/news/">お知らせ管理</a>
+                    <a href="/admin/game-plans/">ゲームサーバープラン管理</a>
                     <a href="/admin/ptero/">Pterodactyl連携</a>
                 <?php endif; ?>
 

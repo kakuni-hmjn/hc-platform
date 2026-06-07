@@ -3,6 +3,7 @@ session_start();
 
 require_once __DIR__ . "/../../../lib/helpers.php";
 require_once __DIR__ . "/../../../lib/auth.php";
+require_once __DIR__ . "/../../../lib/db.php";
 
 $currentUser = current_user();
 
@@ -37,33 +38,6 @@ $softwares = [
     "NeoForge",
     "Vanilla",
     "Geyser",
-];
-
-$plans = [
-    [
-        "name" => "Entry",
-        "price" => "¥300〜",
-        "spec" => "2GB / 1vCPU",
-        "text" => "少人数プレイや検証用に使いやすい最小構成です。",
-    ],
-    [
-        "name" => "Standard",
-        "price" => "¥500〜",
-        "spec" => "4GB / 2vCPU",
-        "text" => "友達同士のマルチプレイや軽めのプラグイン構成に向いた標準プランです。",
-    ],
-    [
-        "name" => "Advanced",
-        "price" => "¥800〜",
-        "spec" => "8GB / 4vCPU",
-        "text" => "プラグインや中規模ワールドを使うサーバー向けの構成です。",
-    ],
-    [
-        "name" => "High Clock",
-        "price" => "¥1,500〜",
-        "spec" => "16GB / 6vCPU",
-        "text" => "大きめのワールドや長期運用向けの高性能プランです。",
-    ],
 ];
 
 $features = [
@@ -103,6 +77,83 @@ $flow = [
         "text" => "管理者確認後、Pterodactyl上にゲームサーバーを作成します。",
     ],
 ];
+
+$plans = [];
+
+try {
+    $pdo = db();
+
+    $stmt = $pdo->query("
+        SELECT
+            gsp.id,
+            gsp.name,
+            gsp.slug,
+            gsp.description,
+            gsp.price_monthly,
+            gsp.memory_mb,
+            gsp.cpu_limit,
+            gsp.disk_mb,
+            gsp.backup_limit,
+            gsp.database_limit,
+            gsp.allocation_limit,
+            gsp.server_software_note,
+            gsp.status,
+            gsp.sort_order,
+
+            COALESCE(
+                json_agg(
+                    json_build_object(
+                        'name', pn.name,
+                        'label', pn.label,
+                        'cpu_type', pn.cpu_type,
+                        'is_high_performance', pn.is_high_performance
+                    )
+                    ORDER BY pn.sort_order ASC, pn.id ASC
+                ) FILTER (WHERE pn.id IS NOT NULL),
+                '[]'
+            ) AS nodes
+        FROM game_server_plans gsp
+        LEFT JOIN game_server_plan_nodes gspn ON gspn.plan_id = gsp.id
+        LEFT JOIN ptero_nodes pn ON pn.id = gspn.node_id
+        WHERE gsp.status = 'published'
+        GROUP BY gsp.id
+        ORDER BY gsp.sort_order ASC, gsp.id ASC
+    ");
+
+    $plans = $stmt->fetchAll();
+} catch (Throwable $e) {
+    $plans = [];
+}
+
+function format_mb_to_gb(int $mb): string
+{
+    if ($mb <= 0) {
+        return "0GB";
+    }
+
+    $gb = $mb / 1024;
+
+    if (floor($gb) == $gb) {
+        return (string)(int)$gb . "GB";
+    }
+
+    return number_format($gb, 1) . "GB";
+}
+
+function format_cpu_to_vcpu(int $cpuLimit): string
+{
+    if ($cpuLimit <= 0) {
+        return "無制限";
+    }
+
+    $vcpu = $cpuLimit / 100;
+
+    if (floor($vcpu) == $vcpu) {
+        return (string)(int)$vcpu . "vCPU";
+    }
+
+    return number_format($vcpu, 1) . "vCPU";
+}
 
 require_once __DIR__ . "/../../../parts/head.php";
 ?>
@@ -233,22 +284,84 @@ require_once __DIR__ . "/../../../parts/head.php";
 
             <div class="section-heading reveal">
                 <p class="eyebrow">Plans</p>
-                <h2>プラン例</h2>
+                <h2>プラン</h2>
                 <p>
-                    正式な価格やスペックは調整中です。まずは小規模から使いやすい価格帯を想定しています。
+                    用途に合わせて、低価格な通常プランから高クロックCPUを使った高性能プランまで整備していきます。
                 </p>
             </div>
 
-            <div class="plan-grid">
-                <?php foreach ($plans as $plan): ?>
-                    <article class="plan-card reveal">
-                        <span><?php echo h($plan["name"]); ?></span>
-                        <h3><?php echo h($plan["price"]); ?></h3>
-                        <strong><?php echo h($plan["spec"]); ?></strong>
-                        <p><?php echo h($plan["text"]); ?></p>
-                    </article>
-                <?php endforeach; ?>
-            </div>
+            <?php if ($plans): ?>
+                <div class="plan-grid">
+                    <?php foreach ($plans as $plan): ?>
+                        <?php
+                            $planNodes = [];
+
+                            if (!empty($plan["nodes"])) {
+                                $decodedNodes = json_decode($plan["nodes"], true);
+                                if (is_array($decodedNodes)) {
+                                    $planNodes = $decodedNodes;
+                                }
+                            }
+                        ?>
+
+                        <article class="plan-card reveal">
+                            <span><?php echo h($plan["name"]); ?></span>
+
+                            <h3>
+                                ¥<?php echo h(number_format((int)$plan["price_monthly"])); ?>〜
+                            </h3>
+
+                            <strong>
+                                <?php echo h(format_mb_to_gb((int)$plan["memory_mb"])); ?>
+                                /
+                                <?php echo h(format_cpu_to_vcpu((int)$plan["cpu_limit"])); ?>
+                            </strong>
+
+                            <p><?php echo h($plan["description"]); ?></p>
+
+                            <div class="public-plan-specs">
+                                <div>
+                                    <small>Disk</small>
+                                    <b><?php echo h(format_mb_to_gb((int)$plan["disk_mb"])); ?></b>
+                                </div>
+
+                                <div>
+                                    <small>Backup</small>
+                                    <b><?php echo h((string)$plan["backup_limit"]); ?></b>
+                                </div>
+
+                                <div>
+                                    <small>DB</small>
+                                    <b><?php echo h((string)$plan["database_limit"]); ?></b>
+                                </div>
+                            </div>
+
+                            <?php if (!empty($plan["server_software_note"])): ?>
+                                <div class="public-plan-note">
+                                    <?php echo h($plan["server_software_note"]); ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ($planNodes): ?>
+                                <div class="public-plan-nodes">
+                                    <?php foreach ($planNodes as $node): ?>
+                                        <span class="<?php echo !empty($node["is_high_performance"]) ? "high-performance" : ""; ?>">
+                                            <?php echo h((string)$node["label"]); ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="plans-empty reveal">
+                    <h3>現在表示できるプランは準備中です。</h3>
+                    <p>
+                        ゲームサーバーレンタルのプランは、公開準備が整い次第掲載します。
+                    </p>
+                </div>
+            <?php endif; ?>
 
         </div>
     </section>

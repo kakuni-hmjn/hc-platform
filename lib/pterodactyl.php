@@ -278,3 +278,42 @@ function ptero_get_eggs(int $nestId): array
 
     return ptero_request("GET", "nests/" . $nestId . "/eggs");
 }
+
+function ptero_mock_create_server(array $payload = []): array
+{
+    return [
+        "ok" => true,
+        "status" => 201,
+        "mock" => true,
+        "data" => [
+            "object" => "server",
+            "attributes" => [
+                "id" => random_int(1000, 9999),
+                "external_id" => $payload["external_id"] ?? null,
+                "uuid" => "mock-server-uuid-" . bin2hex(random_bytes(4)),
+                "identifier" => "mock" . random_int(1000, 9999),
+                "name" => $payload["name"] ?? "Mock Game Server",
+                "description" => $payload["description"] ?? "Mock server created by HC Platform.",
+                "status" => "installing",
+                "suspended" => false,
+                "limits" => [
+                    "memory" => $payload["limits"]["memory"] ?? 2048,
+                    "swap" => 0,
+                    "disk" => $payload["limits"]["disk"] ?? 10240,
+                    "io" => 500,
+                    "cpu" => $payload["limits"]["cpu"] ?? 100,
+                ],
+            ],
+        ],
+        "error" => null,
+    ];
+}
+
+function ptero_create_server(array $payload): array
+{
+    if (ptero_is_mock()) {
+        return ptero_mock_create_server($payload);
+    }
+
+    return ptero_request("POST", "servers", $payload);
+}

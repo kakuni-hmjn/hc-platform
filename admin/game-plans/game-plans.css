@@ -1,0 +1,785 @@
+.game-plans-page {
+    padding-top: 0;
+}
+
+.game-plans-hero {
+    min-height: 54vh;
+    display: flex;
+    align-items: center;
+    padding: 150px 0 70px;
+}
+
+.game-plans-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.36fr);
+    gap: 34px;
+    align-items: center;
+}
+
+.game-plans-copy,
+.game-plans-status-card,
+.plans-panel,
+.plan-card {
+    min-width: 0;
+}
+
+.game-plans-copy h1 {
+    margin-bottom: 22px;
+    font-size: clamp(42px, 6vw, 76px);
+    line-height: 1.12;
+    letter-spacing: -0.055em;
+    font-weight: 950;
+    overflow-wrap: anywhere;
+}
+
+.game-plans-copy p:not(.eyebrow) {
+    max-width: 760px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 2;
+}
+
+.game-plans-status-card,
+.plans-panel,
+.plan-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.game-plans-status-card {
+    padding: 30px;
+    border-radius: 30px;
+}
+
+.game-plans-status-card span {
+    display: inline-flex;
+    margin-bottom: 18px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.game-plans-status-card h2 {
+    margin-bottom: 8px;
+    font-size: 28px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+    overflow-wrap: anywhere;
+}
+
+.game-plans-status-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.game-plans-section {
+    padding-top: 30px;
+}
+
+.plans-panel {
+    padding: 32px;
+    border-radius: 34px;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 26px;
+}
+
+.panel-head h2 {
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 1.25;
+    letter-spacing: -0.045em;
+    overflow-wrap: anywhere;
+}
+
+.panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.back-button,
+.create-button {
+    min-height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.back-button {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    color: var(--text);
+}
+
+.create-button {
+    background: var(--navy);
+    border: 1px solid var(--navy);
+    color: #ffffff;
+}
+
+.back-button:hover,
+.create-button:hover {
+    transform: translateY(-2px);
+}
+
+.plans-alert {
+    margin-bottom: 18px;
+    padding: 16px 18px;
+    border-radius: 20px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.empty-plans {
+    padding: 30px;
+    border-radius: 28px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.empty-plans h3 {
+    margin-bottom: 10px;
+    font-size: 26px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+}
+
+.empty-plans p {
+    margin-bottom: 18px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.plan-card {
+    padding: 26px;
+    border-radius: 30px;
+    transition: 0.2s ease;
+}
+
+.plan-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 26px 70px rgba(15, 23, 42, 0.10);
+}
+
+.plan-card-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.plan-status {
+    width: fit-content;
+    min-height: 30px;
+    margin-bottom: 12px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.status-published .plan-status {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.status-draft .plan-status {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-hidden .plan-status {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.plan-card h3 {
+    margin-bottom: 4px;
+    font-size: 28px;
+    line-height: 1.25;
+    letter-spacing: -0.045em;
+    overflow-wrap: anywhere;
+}
+
+.plan-slug {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.plan-price {
+    color: var(--navy);
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+}
+
+.plan-price small {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0;
+}
+
+.plan-description {
+    margin-bottom: 18px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.spec-grid div,
+.ptero-box div {
+    padding: 14px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.spec-grid span,
+.ptero-box span,
+.note-box span {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.spec-grid strong,
+.ptero-box strong {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 950;
+}
+
+.note-box {
+    margin-bottom: 14px;
+    padding: 16px;
+    border-radius: 18px;
+    background: #eff6ff;
+    border: 1px solid #dbeafe;
+}
+
+.nodes-box {
+    margin-bottom: 14px;
+    padding: 16px;
+    border-radius: 18px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.nodes-box > span {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.node-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.node-chip {
+    min-width: 180px;
+    padding: 13px 14px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid var(--line);
+}
+
+.node-chip strong {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 6px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 950;
+}
+
+.node-chip small {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.node-chip p {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.6;
+}
+
+.node-chip.high-performance {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.node-chip.high-performance strong {
+    color: #c2410c;
+}
+
+.node-empty {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.note-box p {
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.8;
+}
+
+.ptero-box {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.plan-card-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+}
+
+.plan-card-footer > span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.plan-card-footer a {
+    min-height: 40px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.plan-card-footer a:hover {
+    transform: translateY(-2px);
+}
+
+.spec-sub {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    opacity: 0.72;
+}
+
+.edit-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.form-field {
+    min-width: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.form-field.full {
+    grid-column: 1 / -1;
+}
+
+.form-field label {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 950;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: #f8fafc;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 800;
+    outline: none;
+}
+
+.form-field textarea {
+    resize: vertical;
+    line-height: 1.8;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+}
+
+.form-field small {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.6;
+}
+
+.form-section {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+}
+
+.form-section-head {
+    margin-bottom: 18px;
+}
+
+.form-section-head h3 {
+    margin-bottom: 8px;
+    font-size: 26px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+}
+
+.form-section-head p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.node-check-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.node-check-card {
+    position: relative;
+    min-width: 0;
+    padding: 18px;
+    display: grid;
+    gap: 10px;
+    border-radius: 22px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.node-check-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.30);
+}
+
+.node-check-card input {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 20px;
+    height: 20px;
+    accent-color: var(--navy);
+}
+
+.node-check-main {
+    display: grid;
+    gap: 4px;
+    padding-right: 34px;
+}
+
+.node-check-main strong {
+    color: var(--text);
+    font-size: 18px;
+    font-weight: 950;
+    line-height: 1.35;
+}
+
+.node-check-main small {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.node-check-meta {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.7;
+}
+
+.node-check-card.high-performance {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.node-check-card.high-performance .node-check-main strong {
+    color: #c2410c;
+}
+
+.node-check-card:has(input:checked) {
+    background: #eff6ff;
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 16px 38px rgba(37, 99, 235, 0.10);
+}
+
+.node-check-card.high-performance:has(input:checked) {
+    background: #ffedd5;
+    border-color: #fb923c;
+}
+
+.form-submit-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+}
+
+.form-submit-row button {
+    border: none;
+    cursor: pointer;
+}
+
+body.dark-theme .form-field input,
+body.dark-theme .form-field textarea,
+body.dark-theme .form-field select,
+body.dark-theme .node-check-card {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #f8fafc;
+}
+
+body.dark-theme .node-check-card.high-performance {
+    background: rgba(249, 115, 22, 0.14);
+    border-color: rgba(249, 115, 22, 0.24);
+}
+
+body.dark-theme .node-check-card.high-performance .node-check-main strong {
+    color: #fdba74;
+}
+
+body.dark-theme .node-check-card:has(input:checked) {
+    background: rgba(59, 130, 246, 0.16);
+    border-color: rgba(59, 130, 246, 0.34);
+}
+
+body.dark-theme .node-check-card.high-performance:has(input:checked) {
+    background: rgba(249, 115, 22, 0.22);
+    border-color: rgba(249, 115, 22, 0.38);
+}
+
+
+
+body.dark-theme .game-plans-status-card,
+body.dark-theme .plans-panel,
+body.dark-theme .plan-card {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .game-plans-status-card span {
+    background: rgba(96, 165, 250, 0.14);
+    color: #bfdbfe;
+}
+
+body.dark-theme .back-button,
+body.dark-theme .empty-plans,
+body.dark-theme .spec-grid div,
+body.dark-theme .ptero-box div {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #f8fafc;
+}
+
+body.dark-theme .note-box {
+    background: rgba(59, 130, 246, 0.16);
+    border-color: rgba(59, 130, 246, 0.24);
+}
+
+body.dark-theme .note-box p {
+    color: #93c5fd;
+}
+
+body.dark-theme .plan-price {
+    color: #93c5fd;
+}
+
+body.dark-theme .status-published .plan-status {
+    background: rgba(34, 197, 94, 0.14);
+    color: #86efac;
+}
+
+body.dark-theme .status-draft .plan-status {
+    background: rgba(245, 158, 11, 0.16);
+    color: #fcd34d;
+}
+
+body.dark-theme .status-hidden .plan-status {
+    background: rgba(148, 163, 184, 0.18);
+    color: #cbd5e1;
+}
+
+body.dark-theme .nodes-box {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .node-chip {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .node-chip.high-performance {
+    background: rgba(249, 115, 22, 0.14);
+    border-color: rgba(249, 115, 22, 0.24);
+}
+
+body.dark-theme .node-chip.high-performance strong {
+    color: #fdba74;
+}
+
+body.dark-theme .node-chip small {
+    background: rgba(34, 197, 94, 0.14);
+    color: #86efac;
+}
+
+@media (max-width: 850px) {
+    .edit-form-grid,
+    .node-check-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-submit-row {
+        flex-direction: column;
+    }
+
+    .form-submit-row .back-button,
+    .form-submit-row .create-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1050px) {
+    .game-plans-hero-grid,
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-head {
+        flex-direction: column;
+    }
+
+    .panel-actions,
+    .back-button,
+    .create-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 700px) {
+    .game-plans-hero {
+        min-height: auto;
+        padding: 120px 0 60px;
+    }
+
+    .game-plans-copy h1 {
+        font-size: 38px;
+    }
+
+    .game-plans-status-card,
+    .plans-panel,
+    .plan-card {
+        padding: 24px;
+        border-radius: 24px;
+    }
+
+    .plan-card-head,
+    .plan-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .spec-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ptero-box {
+        grid-template-columns: 1fr;
+    }
+
+    .plan-card-footer a {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .spec-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .plan-price {
+        font-size: 28px;
+    }
+}

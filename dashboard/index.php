@@ -1,33 +1,19 @@
 <?php
 session_start();
 
-require_once __DIR__ . "/../lib/auth.php";
 require_once __DIR__ . "/../lib/helpers.php";
-require_once __DIR__ . "/../lib/db.php";
-require_once __DIR__ . "/../lib/permissions.php";
+require_once __DIR__ . "/../lib/auth.php";
 
-$user = require_login();
+$currentUser = current_user();
 
-$pageTitle = "ダッシュボード | HC Platform";
-$pageDescription = "HC Accountのダッシュボードです。";
-$pageCss = "/dashboard/dashboard.css";
-
-$stats = [
-    "subscriptions" => 0,
-    "orders" => 0,
-    "servers" => 0,
-];
-
-try {
-    $pdo = db();
-
-    /*
-     * 契約・注文・サーバー系テーブルは後で作る予定。
-     * 今は存在しない可能性があるため、固定値0で表示します。
-     */
-} catch (Throwable $e) {
-    // ダッシュボード表示自体は止めない
+if (!$currentUser) {
+    header("Location: /login/?redirect=/dashboard/");
+    exit;
 }
+
+$pageTitle = "マイページ | HC Platform";
+$pageDescription = "HC Platformのマイページです。アカウント情報、契約中サーバー、注文、請求情報などを確認できます。";
+$pageCss = "/dashboard/dashboard.css";
 
 require_once __DIR__ . "/../parts/head.php";
 ?>
@@ -37,74 +23,22 @@ require_once __DIR__ . "/../parts/head.php";
 <main class="dashboard-page">
 
     <section class="dashboard-hero">
-        <div class="container dashboard-grid">
+        <div class="container dashboard-hero-grid">
 
             <div class="dashboard-copy reveal">
-                <p class="eyebrow">HC Account</p>
-                    <h1 class="title-stack">
-                        <span>アカウント</span>
-                        <span>ダッシュボード</span>
-                    </h1>
+                <p class="eyebrow">Dashboard</p>
+                <h1>マイページ</h1>
                 <p>
-                    ようこそ、<?php echo h($user["username"]); ?> さん。
-                    ここではプロフィール情報、アカウント状態、契約状況へのリンクを確認できます。
+                    HC Platformで利用中のサービス、契約中サーバー、注文状況、アカウント情報を確認できます。
                 </p>
             </div>
 
-            <aside class="account-summary-card reveal">
-                <div class="summary-head">
-                    <div>
-                        <span>Account Status</span>
-                        <h2>アカウント状態</h2>
-                    </div>
-
-                    <?php if ($user["status"] === "active"): ?>
-                        <strong class="status-badge active">有効</strong>
-                    <?php else: ?>
-                        <strong class="status-badge inactive">停止中</strong>
-                    <?php endif; ?>
-                </div>
-
-                <div class="summary-user">
-                    <div class="avatar">
-                        <?php echo h(mb_substr($user["username"], 0, 1)); ?>
-                    </div>
-
-                    <div>
-                        <h3><?php echo h($user["username"]); ?></h3>
-                        <p><?php echo h($user["email"]); ?></p>
-                    </div>
-                </div>
-
-                <div class="summary-list">
-                    <div>
-                        <span>メール認証</span>
-                        <strong>
-                            <?php echo !empty($user["email_verified"]) ? "認証済み" : "未認証"; ?>
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>権限</span>
-                        <strong><?php echo h($user["role"]); ?></strong>
-                    </div>
-
-                    <div>
-                        <span>登録日</span>
-                        <strong>
-                            <?php echo h(date("Y/m/d", strtotime($user["created_at"]))); ?>
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>最終ログイン</span>
-                        <strong>
-                            <?php echo !empty($user["last_login"]) ? h(date("Y/m/d H:i", strtotime($user["last_login"]))) : "未記録"; ?>
-                        </strong>
-                    </div>
-                </div>
-
-                <a href="/account/" class="summary-button">プロフィール設定へ</a>
+            <aside class="dashboard-status-card reveal">
+                <span>HC Account</span>
+                <h2><?php echo h($currentUser["username"] ?? "User"); ?></h2>
+                <p>
+                    ログイン中のアカウントで利用中のサービス情報を表示しています。
+                </p>
             </aside>
 
         </div>
@@ -113,82 +47,67 @@ require_once __DIR__ . "/../parts/head.php";
     <section class="section dashboard-section">
         <div class="container">
 
-            <div class="section-heading reveal">
-                <p class="eyebrow">Overview</p>
-                <h2>アカウント関連メニュー</h2>
-                <p>
-                    サーバー契約や購入履歴は専用ページで管理します。
-                    ダッシュボードでは、各ページへの入口と現在の状態を確認できます。
-                </p>
-            </div>
+            <div class="dashboard-panel reveal">
 
-            <div class="dashboard-stats">
-                <article class="stat-card reveal">
-                    <span>契約中サービス</span>
-                    <strong><?php echo h((string)$stats["subscriptions"]); ?></strong>
-                    <p>現在契約中のサービス数</p>
-                </article>
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Menu</p>
+                        <h2>管理メニュー</h2>
+                    </div>
+                </div>
 
-                <article class="stat-card reveal">
-                    <span>購入履歴</span>
-                    <strong><?php echo h((string)$stats["orders"]); ?></strong>
-                    <p>注文・購入履歴の件数</p>
-                </article>
+                <div class="dashboard-action-grid">
 
-                <article class="stat-card reveal">
-                    <span>サーバー</span>
-                    <strong><?php echo h((string)$stats["servers"]); ?></strong>
-                    <p>作成済みサーバー数</p>
-                </article>
-            </div>
-
-            <div class="dashboard-menu">
-                <a href="/account/" class="menu-card reveal">
-                    <span>01</span>
-                    <h3>プロフィール設定</h3>
-                    <p>ユーザー名、メールアドレス、パスワードなどのアカウント情報を管理します。</p>
-                </a>
-
-                <a href="/billing/" class="menu-card reveal">
-                    <span>02</span>
-                    <h3>契約・購入履歴</h3>
-                    <p>契約中のサービス、注文履歴、支払い履歴を確認できるページです。</p>
-                </a>
-
-                <a href="/order/" class="menu-card reveal">
-                    <span>03</span>
-                    <h3>新規プラン契約</h3>
-                    <p>ゲームサーバーレンタルのプラン選択・申し込みを行うページです。</p>
-                </a>
-
-                <a href="#" class="menu-card reveal">
-                    <span>04</span>
-                    <h3>ゲームサーバー管理パネル</h3>
-                    <p>契約後のサーバー操作、コンソール、ファイル管理は専用管理パネルで行えます。</p>
-                </a>
-                <?php if (has_role($user, "staff")): ?>
-                    <a href="/staff/" class="menu-card reveal">
-                        <span>05</span>
-                        <h3>スタッフページ</h3>
-                        <p>運営スタッフ向けの確認・対応ページです。</p>
+                    <a href="/dashboard/servers/" class="dashboard-action-card reveal">
+                        <span>Game Servers</span>
+                        <h3>契約中サーバー</h3>
+                        <p>
+                            ゲームサーバーレンタルで作成されたサーバー、申込状況、契約状態を確認できます。
+                        </p>
                     </a>
-                <?php endif; ?>
 
-                <?php if (has_role($user, "developer")): ?>
-                    <a href="/dev/" class="menu-card reveal">
-                        <span>06</span>
-                        <h3>開発者ページ</h3>
-                        <p>開発・保守向けのシステム確認ページです。</p>
+                    <a href="/account/" class="dashboard-action-card reveal">
+                        <span>Account</span>
+                        <h3>アカウント情報</h3>
+                        <p>
+                            ユーザー名、メールアドレス、ログイン情報など、HC Accountの情報を確認します。
+                        </p>
                     </a>
-                <?php endif; ?>
 
-                <?php if (has_role($user, "admin")): ?>
-                    <a href="/admin/" class="menu-card reveal">
-                        <span>07</span>
-                        <h3>管理者ページ</h3>
-                        <p>ユーザー管理、契約管理、サービス設定を行う管理者向けページです。</p>
+                    <a href="/billing/" class="dashboard-action-card reveal">
+                        <span>Billing</span>
+                        <h3>請求・支払い</h3>
+                        <p>
+                            支払い状況、請求情報、契約の更新状況などを確認します。
+                        </p>
                     </a>
-                <?php endif; ?>
+
+                    <a href="/order/" class="dashboard-action-card reveal">
+                        <span>Order</span>
+                        <h3>サービス申込</h3>
+                        <p>
+                            ゲームサーバーや各種レンタルサービスの申し込みページへ移動します。
+                        </p>
+                    </a>
+
+                    <a href="/services/" class="dashboard-action-card reveal">
+                        <span>Services</span>
+                        <h3>サービス一覧</h3>
+                        <p>
+                            HC Platformで提供予定・開発中のサービス一覧を確認できます。
+                        </p>
+                    </a>
+
+                    <a href="/contact/" class="dashboard-action-card reveal">
+                        <span>Support</span>
+                        <h3>お問い合わせ</h3>
+                        <p>
+                            サービス利用中の相談、サーバー構成の相談、サポート依頼はこちらから送信できます。
+                        </p>
+                    </a>
+
+                </div>
+
             </div>
 
         </div>
@@ -199,6 +118,5 @@ require_once __DIR__ . "/../parts/head.php";
 <?php include __DIR__ . "/../parts/footer/footer.php"; ?>
 
 <script src="/common/base.js"></script>
-<script src="/dashboard/dashboard.js"></script>
 </body>
 </html>

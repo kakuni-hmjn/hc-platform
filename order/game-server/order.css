@@ -1,0 +1,521 @@
+.order-page {
+    padding-top: 0;
+}
+
+.order-hero {
+    min-height: 54vh;
+    display: flex;
+    align-items: center;
+    padding: 150px 0 70px;
+}
+
+.order-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.36fr);
+    gap: 34px;
+    align-items: center;
+}
+
+.order-copy,
+.order-status-card,
+.order-panel {
+    min-width: 0;
+}
+
+.order-copy h1 {
+    margin-bottom: 22px;
+    font-size: clamp(42px, 6vw, 76px);
+    line-height: 1.12;
+    letter-spacing: -0.055em;
+    font-weight: 950;
+    overflow-wrap: anywhere;
+}
+
+.order-copy p:not(.eyebrow) {
+    max-width: 780px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 2;
+}
+
+.order-status-card,
+.order-panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.order-status-card {
+    padding: 30px;
+    border-radius: 30px;
+}
+
+.order-status-card span {
+    display: inline-flex;
+    margin-bottom: 18px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.order-status-card h2 {
+    margin-bottom: 8px;
+    font-size: 28px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+    overflow-wrap: anywhere;
+}
+
+.order-status-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.order-section {
+    padding-top: 30px;
+}
+
+.order-panel {
+    padding: 32px;
+    border-radius: 34px;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 26px;
+}
+
+.panel-head h2 {
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 1.25;
+    letter-spacing: -0.045em;
+    overflow-wrap: anywhere;
+}
+
+.back-button,
+.submit-button {
+    min-height: 44px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.back-button {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    color: var(--text);
+}
+
+.submit-button {
+    border: none;
+    background: var(--navy);
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.back-button:hover,
+.submit-button:hover {
+    transform: translateY(-2px);
+}
+
+.order-alert {
+    margin-bottom: 18px;
+    padding: 16px 18px;
+    border-radius: 20px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.8;
+}
+
+.order-alert p {
+    margin: 0;
+}
+
+.form-section {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+}
+
+.form-section-head {
+    margin-bottom: 18px;
+}
+
+.form-section-head h3 {
+    margin-bottom: 8px;
+    font-size: 26px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+    overflow-wrap: anywhere;
+}
+
+.form-section-head p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.plan-select-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.plan-select-card {
+    position: relative;
+    min-width: 0;
+    padding: 20px;
+    display: grid;
+    gap: 10px;
+    border-radius: 24px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.plan-select-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.30);
+}
+
+.plan-select-card input {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+    accent-color: var(--navy);
+}
+
+.plan-select-card:has(input:checked) {
+    background: #eff6ff;
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 16px 38px rgba(37, 99, 235, 0.10);
+}
+
+.plan-name {
+    padding-right: 34px;
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 950;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.plan-select-card strong {
+    color: var(--navy);
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -0.04em;
+}
+
+.plan-select-card small {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.7;
+}
+
+.node-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.node-labels b {
+    min-height: 28px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.node-labels b.high-performance {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+
+.order-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.form-field {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+}
+
+.form-field.full {
+    grid-column: 1 / -1;
+}
+
+.form-field label {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 950;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: #f8fafc;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 800;
+    outline: none;
+}
+
+.form-field textarea {
+    resize: vertical;
+    line-height: 1.8;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+}
+
+.billing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.billing-card {
+    position: relative;
+    min-width: 0;
+    padding: 20px;
+    display: grid;
+    gap: 10px;
+    border-radius: 24px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.billing-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.30);
+}
+
+.billing-card input {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+    accent-color: var(--navy);
+}
+
+.billing-card:has(input:checked) {
+    background: #eff6ff;
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 16px 38px rgba(37, 99, 235, 0.10);
+}
+
+.billing-card > span {
+    width: fit-content;
+    min-height: 28px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.billing-card:not(.recommended) > span {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.billing-card strong {
+    padding-right: 32px;
+    color: var(--text);
+    font-size: 22px;
+    line-height: 1.35;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+}
+
+.billing-card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    font-weight: 800;
+}
+
+.submit-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+}
+
+.success-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 24px;
+}
+
+.success-summary div {
+    padding: 16px;
+    border-radius: 18px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.success-summary span {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.success-summary strong {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 950;
+    overflow-wrap: anywhere;
+}
+
+body.dark-theme .success-summary div {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+}
+
+
+
+body.dark-theme .order-status-card,
+body.dark-theme .order-panel {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .order-status-card span {
+    background: rgba(96, 165, 250, 0.14);
+    color: #bfdbfe;
+}
+
+body.dark-theme .back-button,
+body.dark-theme .plan-select-card,
+body.dark-theme .billing-card,
+body.dark-theme .form-field input,
+body.dark-theme .form-field textarea,
+body.dark-theme .form-field select {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #f8fafc;
+}
+
+body.dark-theme .plan-select-card:has(input:checked),
+body.dark-theme .billing-card:has(input:checked) {
+    background: rgba(59, 130, 246, 0.16);
+    border-color: rgba(59, 130, 246, 0.34);
+}
+
+body.dark-theme .plan-select-card strong {
+    color: #93c5fd;
+}
+
+body.dark-theme .node-labels b {
+    background: rgba(148, 163, 184, 0.18);
+    color: #cbd5e1;
+}
+
+body.dark-theme .node-labels b.high-performance,
+body.dark-theme .billing-card:not(.recommended) > span {
+    background: rgba(249, 115, 22, 0.14);
+    border-color: rgba(249, 115, 22, 0.24);
+    color: #fdba74;
+}
+
+@media (max-width: 1000px) {
+    .order-hero-grid,
+    .plan-select-grid,
+    .billing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-head {
+        flex-direction: column;
+    }
+
+    .panel-head .back-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+    .success-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .order-hero {
+        min-height: auto;
+        padding: 120px 0 60px;
+    }
+
+    .order-copy h1 {
+        font-size: 38px;
+    }
+
+    .order-status-card,
+    .order-panel {
+        padding: 24px;
+        border-radius: 24px;
+    }
+
+    .order-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .submit-row {
+        flex-direction: column;
+    }
+
+    .submit-row .back-button,
+    .submit-row .submit-button {
+        width: 100%;
+    }
+}
