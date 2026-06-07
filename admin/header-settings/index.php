@@ -34,7 +34,7 @@ $csrfToken = (string)$_SESSION["header_settings_token"];
 function header_settings_default_links(): array
 {
     return [
-        ["staff", "スタッフページ", "/admin/staff/", "staff", true, 10],
+        ["staff", "スタッフページ", "/staff/", "staff", true, 10],
         ["admin", "管理者ページ", "/admin/", "admin", true, 20],
         ["server_orders", "ゲームサーバー申込管理", "/admin/server-orders/", "admin", true, 30],
         ["plan_change_requests", "プラン変更申請管理", "/admin/plan-change-requests/", "admin", true, 40],

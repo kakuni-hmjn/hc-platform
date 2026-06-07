@@ -30,7 +30,7 @@ $headerMenuToken = (string)$_SESSION["admin_header_menu_token"];
 function admin_default_header_operation_links(): array
 {
     return [
-        ["staff", "スタッフページ", "/admin/staff/", "staff", true, 10],
+        ["staff", "スタッフページ", "/staff/", "staff", true, 10],
         ["admin", "管理者ページ", "/admin/", "admin", true, 20],
         ["users", "ユーザー管理", "/admin/users/", "admin", true, 25],
         ["server_orders", "ゲームサーバー申込管理", "/admin/server-orders/", "admin", true, 30],
@@ -265,7 +265,7 @@ require_once __DIR__ . "/../parts/head.php";
                             <p>登録ユーザー、権限、アカウント状態を確認・管理します。</p>
                         </a>
 
-                        <a href="/admin/staff/" class="admin-menu-card">
+                        <a href="/staff/" class="admin-menu-card">
                             <span class="admin-card-mark" data-icon="support_agent"></span>
                             <h3>スタッフページ</h3>
                             <p>運営・サポート向けの作業ページへ移動します。</p>

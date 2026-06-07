@@ -19,7 +19,7 @@ $notificationReadToken = (string)$_SESSION["notification_read_token"];
 function header_default_operation_links(): array
 {
     return [
-        ["label" => "スタッフページ", "url" => "/admin/staff/", "required_role" => "staff", "sort_order" => 10],
+        ["label" => "スタッフページ", "url" => "/staff/", "required_role" => "staff", "sort_order" => 10],
         ["label" => "管理者ページ", "url" => "/admin/", "required_role" => "admin", "sort_order" => 20],
         ["label" => "ゲームサーバー申込管理", "url" => "/admin/server-orders/", "required_role" => "admin", "sort_order" => 30],
         ["label" => "プラン変更申請管理", "url" => "/admin/plan-change-requests/", "required_role" => "admin", "sort_order" => 40],
