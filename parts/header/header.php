@@ -28,7 +28,7 @@ function header_default_operation_links(): array
         ["label" => "お知らせ管理", "url" => "/admin/news/", "required_role" => "admin", "sort_order" => 70],
         ["label" => "全体通知管理", "url" => "/admin/site-notifications/", "required_role" => "admin", "sort_order" => 75],
         ["label" => "個別通知管理", "url" => "/admin/user-notifications/", "required_role" => "admin", "sort_order" => 76],
-        ["label" => "Pterodactyl連携", "url" => "/admin/ptero/", "required_role" => "admin", "sort_order" => 80],
+        ["label" => "ゲームサーバーパネル連携", "url" => "/admin/ptero/", "required_role" => "admin", "sort_order" => 80],
         ["label" => "開発者ページ", "url" => "/admin/dev/", "required_role" => "developer", "sort_order" => 90],
         ["label" => "ヘッダー表示設定", "url" => "/admin/header-settings/", "required_role" => "admin", "sort_order" => 100],
     ];

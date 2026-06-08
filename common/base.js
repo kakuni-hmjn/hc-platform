@@ -359,3 +359,35 @@ function initReveal() {
         closeNotificationBox();
     });
 })();
+
+/* Billing invoice item link */
+(() => {
+    if (window.__hcBillingInvoiceItemLinkReady) {
+        return;
+    }
+
+    window.__hcBillingInvoiceItemLinkReady = true;
+
+    document.addEventListener("click", (event) => {
+        const target = event.target;
+
+        if (!(target instanceof Element)) {
+            return;
+        }
+
+        const invoiceItem = target.closest(".invoice-item");
+
+        if (!invoiceItem) {
+            return;
+        }
+
+        const text = invoiceItem.textContent || "";
+        const match = text.match(/契約\s*#(\d+)/);
+
+        if (!match || !match[1]) {
+            return;
+        }
+
+        window.location.href = `/billing/invoice/?order_id=${encodeURIComponent(match[1])}`;
+    });
+})();

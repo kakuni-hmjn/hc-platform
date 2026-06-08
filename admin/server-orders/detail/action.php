@@ -224,7 +224,7 @@ try {
                 $nodeId = $node ? (int)$node["id"] : null;
             }
 
-            $mockPteroServerId = 100000 + $orderId;
+            $mockパネルServerId = 100000 + $orderId;
             $mockIdentifier = "mock" . str_pad((string)$orderId, 4, "0", STR_PAD_LEFT);
             $mockUuid = "mock-order-" . $orderId . "-" . bin2hex(random_bytes(6));
 
@@ -277,7 +277,7 @@ try {
                 "plan_id" => (int)$order["plan_id"],
                 "node_id" => $nodeId,
                 "ptero_user_id" => 1,
-                "ptero_server_id" => $mockPteroServerId,
+                "ptero_server_id" => $mockパネルServerId,
                 "ptero_identifier" => $mockIdentifier,
                 "ptero_uuid" => $mockUuid,
                 "name" => (string)$order["server_name"],
@@ -307,7 +307,7 @@ try {
             ]);
 
             $eventTitle = "Mockサーバー作成完了";
-            $eventMessage = $eventMessage ?: "開発環境用のMock Pterodactylサーバーを作成しました。";
+            $eventMessage = $eventMessage ?: "開発環境用のMock ゲームサーバーを作成しました。";
             set_flash("success", "Mockサーバーを作成して稼働中にしました。");
             break;
 

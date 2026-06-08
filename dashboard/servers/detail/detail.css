@@ -1065,3 +1065,329 @@ body.dark-theme .event-timeline-content {
         padding: 0 20px 20px;
     }
 }
+
+/* Payment action on server detail */
+.pay-button {
+    min-height: 40px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f59e0b, #b45309);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    box-shadow: 0 12px 28px rgba(245, 158, 11, 0.22);
+    transition: 0.2s ease;
+}
+
+.pay-button:hover {
+    transform: translateY(-2px);
+}
+
+.payment-required-box {
+    margin-bottom: 16px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-radius: 24px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    box-shadow: var(--shadow);
+}
+
+.payment-required-box strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #92400e;
+    font-size: 16px;
+    line-height: 1.45;
+    font-weight: 950;
+}
+
+.payment-required-box p {
+    margin: 0;
+    color: #92400e;
+    font-size: 13px;
+    line-height: 1.8;
+    font-weight: 850;
+}
+
+.payment-required-box a,
+.payment-action-link {
+    min-height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f59e0b, #b45309);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    box-shadow: 0 12px 28px rgba(245, 158, 11, 0.22);
+    transition: 0.2s ease;
+}
+
+.payment-required-box a:hover,
+.payment-action-link:hover {
+    transform: translateY(-2px);
+}
+
+body.dark-theme .payment-required-box {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.28);
+}
+
+body.dark-theme .payment-required-box strong,
+body.dark-theme .payment-required-box p {
+    color: #fcd34d;
+}
+
+@media (max-width: 680px) {
+    .pay-button,
+    .payment-required-box a,
+    .payment-action-link {
+        width: 100%;
+    }
+
+    .payment-required-box {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* Payment action on server detail */
+.pay-button {
+    min-height: 40px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f59e0b, #b45309);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    box-shadow: 0 12px 28px rgba(245, 158, 11, 0.22);
+    transition: 0.2s ease;
+}
+
+.pay-button:hover {
+    transform: translateY(-2px);
+}
+
+.payment-required-box {
+    margin-bottom: 16px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-radius: 24px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    box-shadow: var(--shadow);
+}
+
+.payment-required-box strong,
+.billing-pay-box strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #92400e;
+    font-size: 16px;
+    line-height: 1.45;
+    font-weight: 950;
+}
+
+.payment-required-box p,
+.billing-pay-box p {
+    margin: 0;
+    color: #92400e;
+    font-size: 13px;
+    line-height: 1.8;
+    font-weight: 850;
+}
+
+.payment-required-box a,
+.payment-action-link {
+    min-height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f59e0b, #b45309);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    box-shadow: 0 12px 28px rgba(245, 158, 11, 0.22);
+    transition: 0.2s ease;
+}
+
+.payment-required-box a:hover,
+.payment-action-link:hover {
+    transform: translateY(-2px);
+}
+
+.billing-pay-box {
+    margin-bottom: 12px;
+    padding: 14px;
+    border-radius: 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+body.dark-theme .payment-required-box,
+body.dark-theme .billing-pay-box {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.28);
+}
+
+body.dark-theme .payment-required-box strong,
+body.dark-theme .payment-required-box p,
+body.dark-theme .billing-pay-box strong,
+body.dark-theme .billing-pay-box p {
+    color: #fcd34d;
+}
+
+@media (max-width: 760px) {
+    .pay-button,
+    .payment-required-box a,
+    .payment-action-link {
+        width: 100%;
+    }
+
+    .payment-required-box {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* ゲームサーバーパネル server info */
+.ptero-server-box {
+    margin-bottom: 16px;
+    padding: 18px;
+    border-radius: 24px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    box-shadow: var(--shadow);
+}
+
+.ptero-server-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.ptero-server-main span {
+    display: inline-flex;
+    margin-bottom: 6px;
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 950;
+}
+
+.ptero-server-main strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text);
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 950;
+}
+
+.ptero-server-main p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+    font-weight: 850;
+}
+
+.ptero-panel-button {
+    min-height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.ptero-panel-button:hover {
+    transform: translateY(-2px);
+}
+
+body.dark-theme .ptero-server-box {
+    background: rgba(59, 130, 246, 0.16);
+    border-color: rgba(147, 197, 253, 0.28);
+}
+
+body.dark-theme .ptero-server-main span {
+    color: #93c5fd;
+}
+
+@media (max-width: 760px) {
+    .ptero-server-main {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ptero-panel-button {
+        width: 100%;
+    }
+}
+
+.ptero-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ptero-account-button {
+    min-height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.ptero-account-button:hover {
+    transform: translateY(-2px);
+}
+
+body.dark-theme .ptero-account-button {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #f8fafc;
+}
+
+@media (max-width: 760px) {
+    .ptero-card-actions,
+    .ptero-account-button,
+    .ptero-panel-button {
+        width: 100%;
+    }
+}

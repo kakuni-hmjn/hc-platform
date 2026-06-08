@@ -363,7 +363,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                 <p class="eyebrow">Admin / Game Plans</p>
                 <h1><?php echo $isEdit ? "プラン編集" : "プラン新規追加"; ?></h1>
                 <p>
-                    ゲームサーバーレンタルのプラン内容、価格、スペック、対応Node、Pterodactyl連携情報を設定します。
+                    ゲームサーバーレンタルのプラン内容、価格、スペック、対応Node、ゲームサーバーパネル連携情報を設定します。
                 </p>
             </div>
 
@@ -479,7 +479,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                 <section class="form-section">
                     <div class="form-section-head">
                         <h3>利用可能Node</h3>
-                        <p>このプランで作成できるPterodactyl Nodeを選択します。複数選択できます。</p>
+                        <p>このプランで作成できるゲームサーバーパネル Nodeを選択します。複数選択できます。</p>
                     </div>
 
                     <?php if (!$nodes): ?>
@@ -505,7 +505,7 @@ require_once __DIR__ . "/../../../parts/head.php";
 
                                     <span class="node-check-meta">
                                         <?php echo h((string)$node["cpu_type"]); ?>
-                                        / Ptero Node ID: <?php echo h((string)$node["ptero_node_id"]); ?>
+                                        / パネルNode ID: <?php echo h((string)$node["ptero_node_id"]); ?>
                                     </span>
                                 </label>
                             <?php endforeach; ?>
@@ -515,7 +515,7 @@ require_once __DIR__ . "/../../../parts/head.php";
 
                 <section class="form-section">
                     <div class="form-section-head">
-                        <h3>Pterodactyl設定</h3>
+                        <h3>ゲームサーバーパネル設定</h3>
                         <p>サーバー作成時に使うNest / Egg / Docker Image / Startup Commandです。未確定なら空欄でOKです。</p>
                     </div>
 

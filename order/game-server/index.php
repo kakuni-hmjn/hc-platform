@@ -4,6 +4,7 @@ session_start();
 require_once __DIR__ . "/../../lib/helpers.php";
 require_once __DIR__ . "/../../lib/auth.php";
 require_once __DIR__ . "/../../lib/db.php";
+require_once __DIR__ . "/../../lib/order_access.php";
 require_once __DIR__ . "/../../lib/stripe.php";
 
 $currentUser = current_user();
@@ -18,6 +19,13 @@ $pageDescription = "HC Platformのゲームサーバーレンタル申込ペー�
 $pageCss = "/order/game-server/order.css";
 
 $pdo = db();
+
+
+if (!hc_order_can_create($pdo, "game_server", $currentUser)) {
+    header("Location: /order/unavailable/?service=game_server");
+    exit;
+}
+
 
 $errors = [];
 $plans = [];
@@ -241,36 +249,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $orderId = (int)$pdo->lastInsertId();
 
-            $order = [
-                "id" => $orderId,
-                "user_id" => get_current_user_id($currentUser),
-                "plan_id" => (int)$form["plan_id"],
-            ];
-
-            $checkout = stripe_create_checkout_session($order, $selectedPlan, $form["billing_type"]);
-
-            if (empty($checkout["ok"])) {
-                throw new RuntimeException($checkout["error"] ?? "Stripe Checkoutの作成に失敗しました。");
-            }
-
-            $updateStmt = $pdo->prepare("
-                UPDATE game_server_orders
-                SET
-                    stripe_checkout_session_id = :stripe_checkout_session_id,
-                    payment_status = 'checkout_created',
-                    updated_at = NOW()
-                WHERE id = :id
-            ");
-
-            $updateStmt->execute([
-                "id" => $orderId,
-                "stripe_checkout_session_id" => $checkout["checkout_session_id"],
-            ]);
-
             $pdo->commit();
 
-            header("Location: " . $checkout["url"]);
-            exit;
+header("Location: /billing/checkout/?order_id=" . rawurlencode((string)$orderId) . "&auto=1");
+exit;
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();

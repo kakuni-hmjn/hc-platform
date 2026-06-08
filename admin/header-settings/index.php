@@ -41,7 +41,7 @@ function header_settings_default_links(): array
         ["game_plans", "ゲームサーバープラン管理", "/admin/game-plans/", "admin", true, 50],
         ["services", "事業管理", "/admin/services/", "admin", true, 60],
         ["news", "お知らせ管理", "/admin/news/", "admin", true, 70],
-        ["ptero", "Pterodactyl連携", "/admin/ptero/", "admin", true, 80],
+        ["ptero", "ゲームサーバーパネル連携", "/admin/ptero/", "admin", true, 80],
         ["dev", "開発者ページ", "/admin/dev/", "developer", true, 90],
         ["header_settings", "ヘッダー表示設定", "/admin/header-settings/", "admin", true, 100],
     ];

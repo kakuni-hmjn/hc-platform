@@ -28,3 +28,8 @@ vendor/
 # Editor
 .vscode/*
 !.vscode/settings.json
+
+# Secrets
+.env
+.env.*
+!.env.example

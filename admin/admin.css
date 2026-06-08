@@ -2049,3 +2049,12 @@ body.dark-theme .admin-menu-card-header-settings .admin-card-mark {
 body.dark-theme .admin-menu-card-users {
     border-left-color: #60a5fa;
 }
+
+/* Admin billing card */
+.admin-menu-card-billing {
+    border-left: 7px solid #10b981;
+}
+
+body.dark-theme .admin-menu-card-billing {
+    border-left-color: #86efac;
+}

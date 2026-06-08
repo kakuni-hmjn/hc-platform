@@ -1,0 +1,419 @@
+.admin-ptero-users-page {
+    padding-top: 0;
+}
+
+.admin-ptero-users-hero {
+    min-height: 42vh;
+    display: flex;
+    align-items: center;
+    padding: 130px 0 48px;
+}
+
+.admin-ptero-users-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.36fr);
+    gap: 24px;
+    align-items: center;
+}
+
+.admin-ptero-users-copy h1 {
+    margin-bottom: 16px;
+    font-size: clamp(36px, 5vw, 62px);
+    line-height: 1.12;
+    letter-spacing: -0.055em;
+    font-weight: 950;
+}
+
+.admin-ptero-users-copy p:not(.eyebrow) {
+    max-width: 780px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.admin-ptero-users-status-card,
+.admin-ptero-users-panel,
+.ptero-user-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.admin-ptero-users-status-card {
+    padding: 24px;
+    border-radius: 26px;
+}
+
+.admin-ptero-users-status-card span {
+    display: inline-flex;
+    margin-bottom: 14px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.admin-ptero-users-status-card h2 {
+    margin-bottom: 6px;
+    font-size: 32px;
+    line-height: 1.25;
+    letter-spacing: -0.04em;
+}
+
+.admin-ptero-users-status-card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.admin-ptero-users-section {
+    padding-top: 20px;
+}
+
+.toolbar {
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.back-button,
+.sub-button,
+.primary-action,
+.secondary-action,
+.danger-action {
+    min-height: 40px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.back-button,
+.primary-action {
+    border: none;
+    background: var(--navy);
+    color: #ffffff;
+}
+
+.sub-button,
+.secondary-action {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    color: var(--text);
+}
+
+.danger-action {
+    border: none;
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.back-button:hover,
+.sub-button:hover,
+.primary-action:hover,
+.secondary-action:hover,
+.danger-action:hover {
+    transform: translateY(-2px);
+}
+
+.flash-message {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.flash-success {
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+    color: #047857;
+}
+
+.flash-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+.admin-ptero-users-panel {
+    padding: 24px;
+    border-radius: 30px;
+}
+
+.panel-head {
+    margin-bottom: 18px;
+}
+
+.panel-head h2 {
+    margin: 0;
+    font-size: clamp(26px, 3.4vw, 40px);
+    line-height: 1.25;
+    letter-spacing: -0.045em;
+}
+
+.empty-box {
+    padding: 18px;
+    border-radius: 20px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.empty-box h3 {
+    margin-bottom: 8px;
+    font-size: 22px;
+    letter-spacing: -0.04em;
+}
+
+.empty-box p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    font-weight: 800;
+}
+
+.ptero-user-card-list {
+    display: grid;
+    gap: 14px;
+}
+
+.ptero-user-card {
+    position: relative;
+    padding: 16px;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.ptero-user-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 7px;
+    background: #64748b;
+}
+
+.ptero-user-card.is-linked::before {
+    background: #10b981;
+}
+
+.ptero-user-card-head {
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+}
+
+.ptero-user-card-head > div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.user-id,
+.link-badge,
+.password-badge {
+    min-height: 30px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 950;
+}
+
+.user-id {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.link-badge {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.password-badge {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.ptero-user-card-head small {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.ptero-user-main {
+    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(220px, 0.8fr) minmax(220px, 0.8fr);
+    gap: 14px;
+    align-items: center;
+}
+
+.hc-user-info h3 {
+    margin-bottom: 5px;
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+    font-weight: 950;
+}
+
+.hc-user-info p,
+.ptero-link-info p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 800;
+}
+
+.ptero-link-info span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 950;
+}
+
+.ptero-link-info strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 950;
+    overflow-wrap: anywhere;
+}
+
+.ptero-link-form {
+    margin: 0;
+    padding: 14px;
+    display: grid;
+    gap: 12px;
+    border-radius: 20px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.ptero-link-form label {
+    display: grid;
+    gap: 6px;
+}
+
+.ptero-link-form label span {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 950;
+}
+
+.ptero-link-form input {
+    min-height: 42px;
+    width: 100%;
+    padding: 0 12px;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: #ffffff;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 850;
+    outline: none;
+}
+
+.ptero-user-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+body.dark-theme .admin-ptero-users-status-card,
+body.dark-theme .admin-ptero-users-panel,
+body.dark-theme .ptero-user-card {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .admin-ptero-users-status-card span {
+    background: rgba(59, 130, 246, 0.16);
+    color: #93c5fd;
+}
+
+body.dark-theme .sub-button,
+body.dark-theme .secondary-action,
+body.dark-theme .empty-box,
+body.dark-theme .user-id,
+body.dark-theme .ptero-link-form,
+body.dark-theme .ptero-link-form input {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #f8fafc;
+}
+
+body.dark-theme .link-badge {
+    background: rgba(34, 197, 94, 0.14);
+    color: #86efac;
+}
+
+body.dark-theme .password-badge {
+    background: rgba(245, 158, 11, 0.14);
+    color: #fcd34d;
+}
+
+@media (max-width: 1080px) {
+    .admin-ptero-users-hero-grid,
+    .ptero-user-main,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 680px) {
+    .admin-ptero-users-hero {
+        min-height: auto;
+        padding: 120px 0 44px;
+    }
+
+    .admin-ptero-users-copy h1 {
+        font-size: 38px;
+    }
+
+    .admin-ptero-users-status-card,
+    .admin-ptero-users-panel {
+        padding: 20px;
+        border-radius: 24px;
+    }
+
+    .toolbar,
+    .back-button,
+    .sub-button,
+    .primary-action,
+    .secondary-action,
+    .danger-action {
+        width: 100%;
+    }
+
+    .ptero-user-card-head,
+    .ptero-user-actions {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

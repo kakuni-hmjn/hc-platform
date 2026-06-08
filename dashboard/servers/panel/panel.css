@@ -1,0 +1,108 @@
+.panel-redirect-page {
+    padding-top: 0;
+}
+
+.panel-redirect-hero {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    padding: 140px 0 80px;
+}
+
+.panel-redirect-card {
+    max-width: 760px;
+    padding: 30px;
+    border-radius: 30px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.panel-redirect-card h1 {
+    margin-bottom: 16px;
+    color: var(--text);
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.12;
+    letter-spacing: -0.055em;
+    font-weight: 950;
+}
+
+.panel-error {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.panel-error p {
+    margin: 0;
+}
+
+.panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.primary-action,
+.secondary-action {
+    min-height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 950;
+    transition: 0.2s ease;
+}
+
+.primary-action {
+    background: var(--navy);
+    color: #ffffff;
+}
+
+.secondary-action {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    color: var(--text);
+}
+
+.primary-action:hover,
+.secondary-action:hover {
+    transform: translateY(-2px);
+}
+
+body.dark-theme .panel-redirect-card {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .secondary-action {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #f8fafc;
+}
+
+body.dark-theme .panel-error {
+    background: rgba(239, 68, 68, 0.14);
+    border-color: rgba(248, 113, 113, 0.26);
+    color: #fecaca;
+}
+
+@media (max-width: 680px) {
+    .panel-redirect-card {
+        padding: 22px;
+        border-radius: 24px;
+    }
+
+    .panel-actions,
+    .primary-action,
+    .secondary-action {
+        width: 100%;
+    }
+}

@@ -5,6 +5,7 @@ session_start();
 require_once __DIR__ . "/../lib/helpers.php";
 require_once __DIR__ . "/../lib/auth.php";
 require_once __DIR__ . "/../lib/db.php";
+require_once __DIR__ . "/../lib/pterodactyl.php";
 
 $currentUser = current_user();
 
@@ -260,6 +261,7 @@ require_once __DIR__ . "/../parts/head.php";
             </div>
         </div>
     </section>
+    <?php include __DIR__ . "/../parts/dashboard/ptero-account-card.php"; ?>
 </main>
 
 <?php include __DIR__ . "/../parts/footer/footer.php"; ?>

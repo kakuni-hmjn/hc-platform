@@ -1,0 +1,498 @@
+.ptero-account-page {
+    padding-top: 0;
+}
+
+.ptero-account-hero {
+    min-height: 42vh;
+    display: flex;
+    align-items: center;
+    padding: 130px 0 48px;
+}
+
+.ptero-account-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.36fr);
+    gap: 24px;
+    align-items: center;
+}
+
+.ptero-account-copy h1 {
+    margin-bottom: 16px;
+    font-size: clamp(36px, 5vw, 62px);
+    line-height: 1.12;
+    letter-spacing: -0.055em;
+    font-weight: 950;
+}
+
+.ptero-account-copy p:not(.eyebrow) {
+    max-width: 780px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.ptero-account-status-card,
+.ptero-panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.ptero-account-status-card {
+    padding: 24px;
+    border-radius: 26px;
+}
+
+.ptero-account-status-card span {
+    display: inline-flex;
+    margin-bottom: 14px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: var(--navy);
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.ptero-account-status-card h2 {
+    margin-bottom: 6px;
+    font-size: 32px;
+    line-height: 1.25;
+    letter-spacing: -0.04em;
+}
+
+.ptero-account-status-card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.ptero-account-section {
+    padding-top: 20px;
+}
+
+.toolbar {
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.back-button,
+.sub-button,
+.primary-action,
+.secondary-action {
+    min-height: 40px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.back-button,
+.primary-action {
+    border: none;
+    background: var(--navy);
+    color: #ffffff;
+}
+
+.sub-button,
+.secondary-action {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    color: var(--text);
+}
+
+.back-button:hover,
+.sub-button:hover,
+.primary-action:hover,
+.secondary-action:hover {
+    transform: translateY(-2px);
+}
+
+.ptero-account-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 16px;
+}
+
+.ptero-panel {
+    padding: 24px;
+    border-radius: 30px;
+}
+
+.panel-head {
+    margin-bottom: 18px;
+}
+
+.panel-head h2 {
+    margin: 0;
+    font-size: clamp(26px, 3.4vw, 40px);
+    line-height: 1.25;
+    letter-spacing: -0.045em;
+}
+
+.empty-box {
+    padding: 18px;
+    border-radius: 20px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.empty-box h3 {
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 22px;
+    letter-spacing: -0.04em;
+}
+
+.empty-box p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    font-weight: 800;
+}
+
+.account-detail-list {
+    margin: 0;
+    display: grid;
+    gap: 10px;
+}
+
+.account-detail-list div {
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 12px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.account-detail-list dt {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 950;
+}
+
+.account-detail-list dd {
+    margin: 0;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 850;
+    overflow-wrap: anywhere;
+}
+
+.account-detail-list a {
+    color: var(--navy);
+    font-weight: 950;
+}
+
+.password-notice {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+.password-notice strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #92400e;
+    font-size: 13px;
+    font-weight: 950;
+}
+
+.password-notice p {
+    margin: 0;
+    color: #92400e;
+    font-size: 12px;
+    line-height: 1.8;
+    font-weight: 850;
+}
+
+.server-link-list {
+    display: grid;
+    gap: 12px;
+}
+
+.server-link-card {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    border-radius: 20px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.server-link-card span {
+    display: inline-flex;
+    margin-bottom: 7px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 950;
+}
+
+.server-link-card h3 {
+    margin-bottom: 5px;
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+    font-weight: 950;
+}
+
+.server-link-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+    font-weight: 800;
+}
+
+.server-link-actions {
+    display: grid;
+    gap: 8px;
+}
+
+body.dark-theme .ptero-account-status-card,
+body.dark-theme .ptero-panel {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .ptero-account-status-card span {
+    background: rgba(59, 130, 246, 0.16);
+    color: #93c5fd;
+}
+
+body.dark-theme .sub-button,
+body.dark-theme .secondary-action,
+body.dark-theme .empty-box,
+body.dark-theme .account-detail-list div,
+body.dark-theme .server-link-card {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #f8fafc;
+}
+
+body.dark-theme .password-notice {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.28);
+}
+
+body.dark-theme .password-notice strong,
+body.dark-theme .password-notice p {
+    color: #fcd34d;
+}
+
+@media (max-width: 980px) {
+    .ptero-account-hero-grid,
+    .ptero-account-grid,
+    .server-link-card {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 680px) {
+    .ptero-account-hero {
+        min-height: auto;
+        padding: 120px 0 44px;
+    }
+
+    .ptero-account-copy h1 {
+        font-size: 38px;
+    }
+
+    .ptero-account-status-card,
+    .ptero-panel {
+        padding: 20px;
+        border-radius: 24px;
+    }
+
+    .toolbar,
+    .back-button,
+    .sub-button,
+    .primary-action,
+    .secondary-action {
+        width: 100%;
+    }
+
+    .account-detail-list div {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ptero-flash {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 950;
+}
+
+.ptero-flash-success {
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+    color: #047857;
+}
+
+.ptero-flash-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+.initial-password-box {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 22px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+.initial-password-head {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.initial-password-head strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #92400e;
+    font-size: 16px;
+    font-weight: 950;
+}
+
+.initial-password-head p {
+    margin: 0;
+    color: #92400e;
+    font-size: 12px;
+    line-height: 1.8;
+    font-weight: 850;
+}
+
+.initial-password-head span {
+    min-height: 28px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #b45309;
+    font-size: 11px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.initial-password-field {
+    display: grid;
+    gap: 7px;
+}
+
+.initial-password-field > span {
+    color: #92400e;
+    font-size: 11px;
+    font-weight: 950;
+}
+
+.initial-password-field > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 8px;
+}
+
+.initial-password-field input {
+    min-height: 42px;
+    width: 100%;
+    padding: 0 12px;
+    border-radius: 14px;
+    border: 1px solid #fde68a;
+    background: #ffffff;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 950;
+    letter-spacing: 0.04em;
+}
+
+.initial-password-field button,
+.password-complete-form button {
+    min-height: 42px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: none;
+    background: #92400e;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 950;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.initial-password-field button:hover,
+.password-complete-form button:hover {
+    transform: translateY(-2px);
+}
+
+.initial-password-steps {
+    margin: 14px 0;
+    padding-left: 20px;
+    color: #92400e;
+    font-size: 12px;
+    line-height: 1.9;
+    font-weight: 850;
+}
+
+.password-complete-form {
+    margin: 0;
+}
+
+body.dark-theme .ptero-flash-success {
+    background: rgba(34, 197, 94, 0.14);
+    border-color: rgba(34, 197, 94, 0.24);
+    color: #86efac;
+}
+
+body.dark-theme .ptero-flash-error {
+    background: rgba(239, 68, 68, 0.14);
+    border-color: rgba(248, 113, 113, 0.26);
+    color: #fecaca;
+}
+
+body.dark-theme .initial-password-box {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.28);
+}
+
+body.dark-theme .initial-password-head strong,
+body.dark-theme .initial-password-head p,
+body.dark-theme .initial-password-field > span,
+body.dark-theme .initial-password-steps {
+    color: #fcd34d;
+}
+
+@media (max-width: 680px) {
+    .initial-password-head,
+    .initial-password-field > div {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+
+    .initial-password-field button,
+    .password-complete-form button {
+        width: 100%;
+    }
+}

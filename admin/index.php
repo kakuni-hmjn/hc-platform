@@ -17,6 +17,7 @@ $pdo = db();
 
 $pendingPlanChangeCount = 0;
 $pendingServerOrderCount = 0;
+$billingNeedsPaymentCount = 0;
 $headerLinks = [];
 
 $headerMenuFlash = $_SESSION["admin_header_menu_flash"] ?? null;
@@ -36,11 +37,12 @@ function admin_default_header_operation_links(): array
         ["server_orders", "ゲームサーバー申込管理", "/admin/server-orders/", "admin", true, 30],
         ["plan_change_requests", "プラン変更申請管理", "/admin/plan-change-requests/", "admin", true, 40],
         ["game_plans", "ゲームサーバープラン管理", "/admin/game-plans/", "admin", true, 50],
+        ["admin_billing", "請求・支払い管理", "/admin/billing/", "admin", true, 55],
         ["services", "事業管理", "/admin/services/", "admin", true, 60],
         ["news", "お知らせ管理", "/admin/news/", "admin", true, 70],
         ["site_notifications", "全体通知管理", "/admin/site-notifications/", "admin", true, 75],
         ["user_notifications", "個別通知管理", "/admin/user-notifications/", "admin", true, 76],
-        ["ptero", "Pterodactyl連携", "/admin/ptero/", "admin", true, 80],
+        ["ptero", "ゲームサーバーパネル連携", "/admin/ptero/", "admin", true, 80],
         ["dev", "開発者ページ", "/admin/dev/", "developer", true, 90],
         ["header_settings", "ヘッダー表示設定", "/admin/header-settings/", "admin", true, 100],
     ];
@@ -120,6 +122,18 @@ try {
 }
 
 try {
+    $stmt = $pdo->query("
+        SELECT COUNT(*) AS count
+        FROM game_server_orders
+        WHERE payment_status IN ('unpaid', 'checkout_created', 'failed')
+    ");
+    $row = $stmt->fetch();
+    $billingNeedsPaymentCount = (int)($row["count"] ?? 0);
+} catch (Throwable $e) {
+    $billingNeedsPaymentCount = 0;
+}
+
+try {
     admin_ensure_header_operation_links($pdo);
 
     $stmt = $pdo->query("
@@ -153,13 +167,14 @@ require_once __DIR__ . "/../parts/head.php";
                 <p class="eyebrow">Admin Console</p>
                 <h1>管理者ページ</h1>
                 <p>
-                    ユーザー、契約、プラン変更、通知、サイト情報、Pterodactyl連携を管理します。
+                    ユーザー、契約、請求、プラン変更、通知、サイト情報、ゲームサーバーパネル連携を管理します。
                     よく使う管理機能をカテゴリごとに整理しています。
                 </p>
 
                 <div class="admin-quick-links">
                     <a href="/admin/users/">ユーザー管理</a>
                     <a href="/admin/server-orders/">申込確認</a>
+                    <a href="/admin/billing/">請求・支払い</a>
                     <a href="/admin/plan-change-requests/">プラン変更申請</a>
                     <a href="/admin/site-notifications/">全体通知作成</a>
                     <a href="/admin/user-notifications/">個別通知送信</a>
@@ -180,6 +195,11 @@ require_once __DIR__ . "/../parts/head.php";
                     <div class="<?php echo $pendingPlanChangeCount > 0 ? 'has-alert' : ''; ?>">
                         <strong><?php echo h((string)$pendingPlanChangeCount); ?></strong>
                         <small>プラン変更申請</small>
+                    </div>
+
+                    <div class="<?php echo $billingNeedsPaymentCount > 0 ? 'has-alert' : ''; ?>">
+                        <strong><?php echo h((string)$billingNeedsPaymentCount); ?></strong>
+                        <small>支払い確認</small>
                     </div>
                 </div>
 
@@ -277,8 +297,8 @@ require_once __DIR__ . "/../parts/head.php";
                     <div class="admin-group-head">
                         <span class="admin-group-icon" data-icon="assignment"></span>
                         <div>
-                            <h3>契約管理</h3>
-                            <p>申込、契約、プラン変更、ゲームサーバープランを管理します。</p>
+                            <h3>契約・請求管理</h3>
+                            <p>申込、契約、請求、プラン変更、ゲームサーバープランを管理します。</p>
                         </div>
                     </div>
 
@@ -293,6 +313,19 @@ require_once __DIR__ . "/../parts/head.php";
                                     処理中 <?php echo h((string)$pendingServerOrderCount); ?> 件
                                 </strong>
                             <?php endif; ?>
+                        </a>
+
+                        <a href="/admin/billing/" class="admin-menu-card admin-menu-card-billing <?php echo $billingNeedsPaymentCount > 0 ? 'admin-menu-card-alert' : ''; ?>">
+                            <span class="admin-card-mark" data-icon="payments"></span>
+
+                            <?php if ($billingNeedsPaymentCount > 0): ?>
+                                <strong class="admin-alert-corner-badge">
+                                    支払い確認 <?php echo h((string)$billingNeedsPaymentCount); ?> 件
+                                </strong>
+                            <?php endif; ?>
+
+                            <h3>請求・支払い管理</h3>
+                            <p>契約ごとの支払い状態、金額、請求詳細を確認します。</p>
                         </a>
 
                         <a href="/admin/plan-change-requests/" class="admin-menu-card admin-menu-card-important <?php echo $pendingPlanChangeCount > 0 ? 'admin-menu-card-alert' : ''; ?>">
@@ -311,7 +344,7 @@ require_once __DIR__ . "/../parts/head.php";
                         <a href="/admin/game-plans/" class="admin-menu-card">
                             <span class="admin-card-mark" data-icon="view_list"></span>
                             <h3>ゲームサーバープラン管理</h3>
-                            <p>料金、スペック、Pterodactyl連携情報を管理します。</p>
+                            <p>料金、スペック、ゲームサーバーパネル連携情報を管理します。</p>
                         </a>
                     </div>
                 </section>
@@ -382,7 +415,7 @@ require_once __DIR__ . "/../parts/head.php";
                     <div class="admin-menu-grid admin-menu-grid-compact">
                         <a href="/admin/ptero/" class="admin-menu-card">
                             <span class="admin-card-mark" data-icon="device_hub"></span>
-                            <h3>Pterodactyl連携</h3>
+                            <h3>ゲームサーバーパネル連携</h3>
                             <p>API接続確認、Node / Nest / Eggの取得テストを行います。</p>
                         </a>
 

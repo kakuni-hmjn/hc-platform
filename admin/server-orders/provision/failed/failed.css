@@ -1,0 +1,390 @@
+.failed-provision-page {
+    padding-top: 0;
+}
+
+.failed-hero {
+    min-height: 42vh;
+    display: flex;
+    align-items: center;
+    padding: 130px 0 48px;
+}
+
+.failed-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.36fr);
+    gap: 24px;
+    align-items: center;
+}
+
+.failed-copy h1 {
+    margin-bottom: 16px;
+    font-size: clamp(36px, 5vw, 62px);
+    line-height: 1.12;
+    letter-spacing: -0.055em;
+    font-weight: 950;
+}
+
+.failed-copy p:not(.eyebrow) {
+    max-width: 780px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.failed-status-card,
+.failed-panel,
+.failed-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.failed-status-card {
+    padding: 24px;
+    border-radius: 26px;
+}
+
+.failed-status-card span {
+    display: inline-flex;
+    margin-bottom: 14px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.failed-status-card h2 {
+    margin-bottom: 6px;
+    font-size: 32px;
+    line-height: 1.25;
+    letter-spacing: -0.04em;
+}
+
+.failed-status-card p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.failed-section {
+    padding-top: 20px;
+}
+
+.toolbar {
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.back-button,
+.sub-button,
+.primary-action,
+.secondary-action {
+    min-height: 40px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.back-button,
+.primary-action {
+    border: none;
+    background: var(--navy);
+    color: #ffffff;
+}
+
+.sub-button,
+.secondary-action {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    color: var(--text);
+}
+
+.back-button:hover,
+.sub-button:hover,
+.primary-action:hover,
+.secondary-action:hover {
+    transform: translateY(-2px);
+}
+
+.flash-message {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.flash-success {
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+    color: #047857;
+}
+
+.flash-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+
+.failed-panel {
+    padding: 24px;
+    border-radius: 30px;
+}
+
+.panel-head {
+    margin-bottom: 18px;
+}
+
+.panel-head h2 {
+    margin: 0;
+    font-size: clamp(26px, 3.4vw, 40px);
+    line-height: 1.25;
+    letter-spacing: -0.045em;
+}
+
+.empty-box {
+    padding: 18px;
+    border-radius: 20px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+}
+
+.empty-box h3 {
+    margin-bottom: 8px;
+    font-size: 22px;
+    letter-spacing: -0.04em;
+}
+
+.empty-box p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+    font-weight: 800;
+}
+
+.failed-card-list {
+    display: grid;
+    gap: 14px;
+}
+
+.failed-card {
+    position: relative;
+    padding: 16px;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.failed-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 7px;
+    background: #ef4444;
+}
+
+.failed-card-head {
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+}
+
+.failed-card-head > div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.order-id,
+.status-badge {
+    min-height: 30px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 950;
+}
+
+.order-id {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.status-badge {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.failed-card-head small {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.failed-card-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.6fr) minmax(220px, 0.7fr);
+    gap: 14px;
+    align-items: center;
+}
+
+.main-info h3 {
+    margin-bottom: 5px;
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+    font-weight: 950;
+}
+
+.main-info p,
+.plan-info p,
+.ptero-info p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 800;
+}
+
+.plan-info span,
+.ptero-info span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 950;
+}
+
+.plan-info strong,
+.ptero-info strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 950;
+}
+
+.error-box {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.error-box strong {
+    display: block;
+    margin-bottom: 7px;
+    color: #991b1b;
+    font-size: 13px;
+    font-weight: 950;
+}
+
+.error-box p {
+    margin: 0;
+    color: #991b1b;
+    font-size: 12px;
+    line-height: 1.8;
+    font-weight: 850;
+    overflow-wrap: anywhere;
+}
+
+.failed-actions {
+    margin-top: 14px;
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.failed-actions form {
+    margin: 0;
+}
+
+body.dark-theme .failed-status-card,
+body.dark-theme .failed-panel,
+body.dark-theme .failed-card {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+
+body.dark-theme .failed-status-card span,
+body.dark-theme .status-badge,
+body.dark-theme .error-box {
+    background: rgba(239, 68, 68, 0.14);
+    border-color: rgba(248, 113, 113, 0.26);
+    color: #fecaca;
+}
+
+body.dark-theme .error-box strong,
+body.dark-theme .error-box p {
+    color: #fecaca;
+}
+
+body.dark-theme .sub-button,
+body.dark-theme .secondary-action,
+body.dark-theme .empty-box,
+body.dark-theme .order-id {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #cbd5e1;
+}
+
+@media (max-width: 1080px) {
+    .failed-hero-grid,
+    .failed-card-main {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 680px) {
+    .failed-hero {
+        min-height: auto;
+        padding: 120px 0 44px;
+    }
+
+    .failed-copy h1 {
+        font-size: 38px;
+    }
+
+    .failed-status-card,
+    .failed-panel {
+        padding: 20px;
+        border-radius: 24px;
+    }
+
+    .toolbar,
+    .back-button,
+    .sub-button,
+    .primary-action,
+    .secondary-action {
+        width: 100%;
+    }
+
+    .failed-card-head,
+    .failed-actions {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .failed-actions form,
+    .failed-actions button {
+        width: 100%;
+    }
+}

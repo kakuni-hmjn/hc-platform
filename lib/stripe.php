@@ -1,172 +1,237 @@
 <?php
 
-require_once __DIR__ . "/../config/stripe.php";
-
-function stripe_config(): array
+function hc_stripe_env(string $key, ?string $default = null): ?string
 {
-    return require __DIR__ . "/../config/stripe.php";
-}
+    $value = getenv($key);
 
-function stripe_is_enabled(): bool
-{
-    $config = stripe_config();
-
-    return !empty($config["enabled"]);
-}
-
-function stripe_is_mock(): bool
-{
-    $config = stripe_config();
-
-    return !empty($config["mock"]);
-}
-
-function stripe_mask_secret_key(string $key): string
-{
-    if ($key === "") {
-        return "未設定";
+    if ($value !== false && $value !== "") {
+        return $value;
     }
 
-    if (strlen($key) <= 12) {
-        return "設定済み";
-    }
-
-    return substr($key, 0, 8) . "..." . substr($key, -4);
-}
-
-function stripe_load_sdk(): bool
-{
-    $autoloadPath = __DIR__ . "/../vendor/autoload.php";
-
-    if (!file_exists($autoloadPath)) {
-        return false;
-    }
-
-    require_once $autoloadPath;
-
-    return class_exists("\\Stripe\\Stripe");
-}
-
-function stripe_init(): array
-{
-    $config = stripe_config();
-
-    if (!empty($config["mock"])) {
-        return [
-            "ok" => true,
-            "mock" => true,
-            "error" => null,
-        ];
-    }
-
-    if (empty($config["enabled"])) {
-        return [
-            "ok" => false,
-            "mock" => false,
-            "error" => "Stripe連携が無効です。",
-        ];
-    }
-
-    if (($config["secret_key"] ?? "") === "") {
-        return [
-            "ok" => false,
-            "mock" => false,
-            "error" => "Stripe Secret Key が設定されていません。",
-        ];
-    }
-
-    if (!stripe_load_sdk()) {
-        return [
-            "ok" => false,
-            "mock" => false,
-            "error" => "Stripe PHP SDK が読み込めません。vendor/autoload.php を確認してください。",
-        ];
-    }
-
-    \Stripe\Stripe::setApiKey($config["secret_key"]);
-
-    return [
-        "ok" => true,
-        "mock" => false,
-        "error" => null,
-    ];
-}
-
-function stripe_create_checkout_session(array $order, array $plan, string $billingType): array
-{
-    $config = stripe_config();
-
-    if (!empty($config["mock"])) {
-        return [
-            "ok" => true,
-            "mock" => true,
-            "checkout_session_id" => "cs_test_mock_" . bin2hex(random_bytes(6)),
-            "url" => "/order/game-server/success/?mock=1&order_id=" . urlencode((string)$order["id"]),
-            "error" => null,
-        ];
-    }
-
-    $init = stripe_init();
-
-    if (empty($init["ok"])) {
-        return [
-            "ok" => false,
-            "mock" => false,
-            "checkout_session_id" => null,
-            "url" => null,
-            "error" => $init["error"] ?? "Stripe初期化に失敗しました。",
-        ];
-    }
-
-    $mode = $billingType === "auto_subscription" ? "subscription" : "payment";
-
-    $lineItem = [
-        "price_data" => [
-            "currency" => $config["currency"],
-            "product_data" => [
-                "name" => "ゲームサーバーレンタル - " . $plan["name"],
-                "description" => $plan["description"],
-            ],
-            "unit_amount" => (int)$plan["price_monthly"],
-        ],
-        "quantity" => 1,
+    $paths = [
+        __DIR__ . "/../.env",
+        __DIR__ . "/../docker/.env",
     ];
 
-    if ($mode === "subscription") {
-        $lineItem["price_data"]["recurring"] = [
-            "interval" => "month",
-        ];
+    foreach ($paths as $path) {
+        if (!is_file($path)) {
+            continue;
+        }
+
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            if ($line === "" || str_starts_with($line, "#") || !str_contains($line, "=")) {
+                continue;
+            }
+
+            [$envKey, $envValue] = explode("=", $line, 2);
+
+            if (trim($envKey) === $key) {
+                return trim($envValue, " \t\n\r\0\x0B\"'");
+            }
+        }
     }
 
-    try {
-        $session = \Stripe\Checkout\Session::create([
-            "mode" => $mode,
-            "payment_method_types" => ["card"],
-            "line_items" => [$lineItem],
-            "success_url" => $config["success_url"] . "?session_id={CHECKOUT_SESSION_ID}",
-            "cancel_url" => $config["cancel_url"] . "?order_id=" . urlencode((string)$order["id"]),
-            "metadata" => [
-                "order_id" => (string)$order["id"],
-                "user_id" => (string)$order["user_id"],
-                "plan_id" => (string)$order["plan_id"],
-                "billing_type" => $billingType,
+    return $default;
+}
+
+function hc_stripe_secret_key(): string
+{
+    $secretKey = hc_stripe_env("STRIPE_SECRET_KEY");
+
+    if (!$secretKey) {
+        throw new RuntimeException("STRIPE_SECRET_KEY が設定されていません。");
+    }
+
+    if (!str_starts_with($secretKey, "sk_test_") && !str_starts_with($secretKey, "sk_live_")) {
+        throw new RuntimeException("STRIPE_SECRET_KEY の形式が不正です。");
+    }
+
+    return $secretKey;
+}
+
+function hc_stripe_currency(): string
+{
+    return strtolower((string)hc_stripe_env("STRIPE_CURRENCY", "jpy"));
+}
+
+function hc_stripe_webhook_secret(): string
+{
+    $secret = hc_stripe_env("STRIPE_WEBHOOK_SECRET");
+
+    if (!$secret) {
+        throw new RuntimeException("STRIPE_WEBHOOK_SECRET が設定されていません。");
+    }
+
+    if (!str_starts_with($secret, "whsec_")) {
+        throw new RuntimeException("STRIPE_WEBHOOK_SECRET の形式が不正です。");
+    }
+
+    return $secret;
+}
+
+function hc_stripe_request(string $method, string $path, array $params = [], ?string $idempotencyKey = null): array
+{
+    $secretKey = hc_stripe_secret_key();
+    $method = strtoupper($method);
+    $url = "https://api.stripe.com" . $path;
+    $body = http_build_query($params, "", "&");
+
+    $headers = [
+        "Authorization: Basic " . base64_encode($secretKey . ":"),
+        "Content-Type: application/x-www-form-urlencoded",
+    ];
+
+    if ($idempotencyKey) {
+        $headers[] = "Idempotency-Key: " . $idempotencyKey;
+    }
+
+    if (function_exists("curl_init")) {
+        $ch = curl_init($url);
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_TIMEOUT => 30,
+        ]);
+
+        if ($method !== "GET") {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        }
+
+        $responseBody = curl_exec($ch);
+        $statusCode = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($responseBody === false) {
+            throw new RuntimeException("Stripe API通信に失敗しました: " . $curlError);
+        }
+    } else {
+        $context = stream_context_create([
+            "http" => [
+                "method" => $method,
+                "header" => implode("\r\n", $headers),
+                "content" => $method === "GET" ? "" : $body,
+                "timeout" => 30,
+                "ignore_errors" => true,
             ],
         ]);
 
-        return [
-            "ok" => true,
-            "mock" => false,
-            "checkout_session_id" => $session->id,
-            "url" => $session->url,
-            "error" => null,
-        ];
-    } catch (Throwable $e) {
-        return [
-            "ok" => false,
-            "mock" => false,
-            "checkout_session_id" => null,
-            "url" => null,
-            "error" => $e->getMessage(),
-        ];
+        $responseBody = file_get_contents($url, false, $context);
+        $statusCode = 0;
+
+        if (isset($http_response_header[0]) && preg_match('/\s(\d{3})\s/', $http_response_header[0], $matches)) {
+            $statusCode = (int)$matches[1];
+        }
+
+        if ($responseBody === false) {
+            throw new RuntimeException("Stripe API通信に失敗しました。");
+        }
     }
+
+    $decoded = json_decode($responseBody, true);
+
+    if (!is_array($decoded)) {
+        throw new RuntimeException("Stripe APIレスポンスを解析できませんでした。");
+    }
+
+    if ($statusCode < 200 || $statusCode >= 300) {
+        $message = $decoded["error"]["message"] ?? "Stripe APIエラーが発生しました。";
+        throw new RuntimeException($message);
+    }
+
+    return $decoded;
+}
+
+function hc_stripe_create_product(array $params, string $idempotencyKey): array
+{
+    return hc_stripe_request("POST", "/v1/products", $params, $idempotencyKey);
+}
+
+function hc_stripe_create_price(array $params, string $idempotencyKey): array
+{
+    return hc_stripe_request("POST", "/v1/prices", $params, $idempotencyKey);
+}
+
+function hc_stripe_create_checkout_session(array $params, string $idempotencyKey): array
+{
+    return hc_stripe_request("POST", "/v1/checkout/sessions", $params, $idempotencyKey);
+}
+
+function hc_stripe_verify_webhook_signature(string $payload, string $signatureHeader, string $secret, int $tolerance = 300): bool
+{
+    if ($signatureHeader === "") {
+        return false;
+    }
+
+    $timestamp = null;
+    $signatures = [];
+
+    foreach (explode(",", $signatureHeader) as $part) {
+        $pieces = explode("=", trim($part), 2);
+
+        if (count($pieces) !== 2) {
+            continue;
+        }
+
+        [$key, $value] = $pieces;
+
+        if ($key === "t") {
+            $timestamp = (int)$value;
+        }
+
+        if ($key === "v1") {
+            $signatures[] = $value;
+        }
+    }
+
+    if (!$timestamp || !$signatures) {
+        return false;
+    }
+
+    if (abs(time() - $timestamp) > $tolerance) {
+        return false;
+    }
+
+    $signedPayload = $timestamp . "." . $payload;
+    $expected = hash_hmac("sha256", $signedPayload, $secret);
+
+    foreach ($signatures as $signature) {
+        if (hash_equals($expected, $signature)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function hc_stripe_public_url(): string
+{
+    $url = hc_stripe_env("HC_PUBLIC_URL");
+
+    if ($url) {
+        return rtrim($url, "/");
+    }
+
+    $appUrl = hc_stripe_env("APP_URL");
+
+    if ($appUrl) {
+        return rtrim($appUrl, "/");
+    }
+
+    return "";
+}
+
+function hc_stripe_retrieve_checkout_session(string $sessionId): array
+{
+    if ($sessionId === "" || !str_starts_with($sessionId, "cs_")) {
+        throw new RuntimeException("Checkout Session IDが不正です。");
+    }
+
+    return hc_stripe_request("GET", "/v1/checkout/sessions/" . rawurlencode($sessionId));
 }

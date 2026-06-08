@@ -375,11 +375,11 @@ require_once __DIR__ . "/../../parts/head.php";
                                         <strong><?php echo h((string)($server["node_label"] ?: $server["node_name"] ?: "-")); ?></strong>
                                     </div>
                                     <div>
-                                        <span>Ptero Identifier</span>
+                                        <span>パネル Identifier</span>
                                         <strong><?php echo h((string)($server["ptero_identifier"] ?: "-")); ?></strong>
                                     </div>
                                     <div>
-                                        <span>Ptero Server ID</span>
+                                        <span>パネルサーバーID</span>
                                         <strong><?php echo h((string)($server["ptero_server_id"] ?: "-")); ?></strong>
                                     </div>
                                     <div>

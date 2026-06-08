@@ -334,7 +334,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                 <p class="eyebrow">Admin / Server Order Detail</p>
                 <h1>契約詳細</h1>
                 <p>
-                    ゲームサーバー契約のユーザー、プラン、決済、Pterodactyl、
+                    ゲームサーバー契約のユーザー、プラン、決済、ゲームサーバーパネル、
                     Node、作成状態、解約情報を確認・操作します。
                 </p>
             </div>
@@ -465,7 +465,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                             <input type="hidden" name="action" value="mark_failed">
 
                             <label>作成失敗理由</label>
-                            <textarea name="note" rows="3" placeholder="例: Nodeの空き容量不足、Pterodactyl APIエラーなど"></textarea>
+                            <textarea name="note" rows="3" placeholder="例: Nodeの空き容量不足、ゲームサーバーパネル APIエラーなど"></textarea>
                             <button type="submit" class="action-button action-danger">作成失敗にする</button>
                         </form>
 
@@ -690,8 +690,8 @@ require_once __DIR__ . "/../../../parts/head.php";
                     <section class="detail-panel">
                         <div class="panel-head">
                             <div>
-                                <p class="eyebrow">Pterodactyl</p>
-                                <h2>Pterodactyl情報</h2>
+                                <p class="eyebrow">ゲームサーバーパネル</p>
+                                <h2>ゲームサーバーパネル情報</h2>
                             </div>
                         </div>
 
@@ -701,11 +701,11 @@ require_once __DIR__ . "/../../../parts/head.php";
                                 <strong><?php echo h(detail_text($order["ptero_server_local_id"])); ?></strong>
                             </div>
                             <div>
-                                <span>Ptero User ID</span>
+                                <span>パネルユーザーID</span>
                                 <strong><?php echo h(detail_text($order["ptero_user_id"])); ?></strong>
                             </div>
                             <div>
-                                <span>Ptero Server ID</span>
+                                <span>パネルサーバーID</span>
                                 <strong><?php echo h(detail_text($order["ptero_server_id"])); ?></strong>
                             </div>
                             <div>
@@ -737,7 +737,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                                 <strong><?php echo h(detail_text($order["node_local_id"])); ?></strong>
                             </div>
                             <div>
-                                <span>Ptero Node ID</span>
+                                <span>パネルNode ID</span>
                                 <strong><?php echo h(detail_text($order["ptero_node_id"])); ?></strong>
                             </div>
                             <div>

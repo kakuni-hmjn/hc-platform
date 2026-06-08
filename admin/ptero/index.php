@@ -8,8 +8,8 @@ require_once __DIR__ . "/../../lib/pterodactyl.php";
 
 $user = require_role("admin");
 
-$pageTitle = "Pterodactyl連携確認 | HC Platform";
-$pageDescription = "HC Platformの管理者向けPterodactyl API接続確認ページです。";
+$pageTitle = "ゲームサーバーパネル連携確認 | HC Platform";
+$pageDescription = "HC Platformの管理者向けゲームサーバーパネル API接続確認ページです。";
 $pageCss = "/admin/ptero/ptero.css";
 
 $config = ptero_config();
@@ -67,10 +67,10 @@ require_once __DIR__ . "/../../parts/head.php";
         <div class="container ptero-hero-grid">
 
             <div class="ptero-copy reveal">
-                <p class="eyebrow">Admin / Pterodactyl</p>
-                <h1>Pterodactyl連携確認</h1>
+                <p class="eyebrow">Admin / ゲームサーバーパネル</p>
+                <h1>ゲームサーバーパネル連携確認</h1>
                 <p>
-                    HC PlatformからPterodactyl PanelのApplication APIへ接続できるか確認します。
+                    HC Platformからゲームサーバーパネル PanelのApplication APIへ接続できるか確認します。
                     開発環境ではMock Modeでダミーデータを表示します。
                 </p>
             </div>
@@ -97,11 +97,12 @@ require_once __DIR__ . "/../../parts/head.php";
                         </div>
 
                         <a href="/admin/" class="back-button">管理者ページへ戻る</a>
+                <a href="/admin/ptero/allocations/" class="sub-button">Allocation確認へ</a>
                     </div>
 
                     <div class="config-grid">
                         <article>
-                            <span>Ptero Enabled</span>
+                            <span>パネル Enabled</span>
                             <strong><?php echo !empty($config["enabled"]) ? "有効" : "無効"; ?></strong>
                         </article>
 
@@ -111,7 +112,7 @@ require_once __DIR__ . "/../../parts/head.php";
                         </article>
 
                         <article>
-                            <span>Panel URL</span>
+                            <span>パネルURL</span>
                             <strong><?php echo h($panelUrl !== "" ? $panelUrl : "未設定"); ?></strong>
                         </article>
 
@@ -140,7 +141,7 @@ require_once __DIR__ . "/../../parts/head.php";
                         <div class="mock-notice">
                             <h3>Mock Mode</h3>
                             <p>
-                                現在はモックモードです。Pterodactyl Panelには接続せず、
+                                現在はモックモードです。ゲームサーバーパネル Panelには接続せず、
                                 開発用のダミーNode / Nest / Eggを表示します。
                             </p>
                         </div>
@@ -178,7 +179,7 @@ require_once __DIR__ . "/../../parts/head.php";
                     <div class="side-list">
                         <div>
                             <span>Application API Key</span>
-                            <p>PterodactylのClient APIキーではなく、Application APIキーが必要です。</p>
+                            <p>ゲームサーバーパネルのClient APIキーではなく、Application APIキーが必要です。</p>
                         </div>
 
                         <div>

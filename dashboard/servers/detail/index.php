@@ -291,6 +291,44 @@ if ($order) {
 $status = $order ? (string)$order["status"] : "";
 $paymentStatus = $order ? (string)$order["payment_status"] : "";
 
+$canPayOrder = $order
+    && (
+        $status === "pending_payment"
+        || in_array($paymentStatus, ["unpaid", "checkout_created", "failed"], true)
+    )
+    && !in_array($status, ["paid", "creating", "active", "cancelled", "expired", "suspended"], true);
+
+$pteroServer = null;
+
+if ($order) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT
+                id,
+                ptero_user_id,
+                ptero_server_id,
+                ptero_identifier,
+                ptero_uuid,
+                ptero_allocation_id,
+                name,
+                status,
+                created_at
+            FROM ptero_servers
+            WHERE order_id = :order_id
+              AND deleted_at IS NULL
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            "order_id" => (int)$order["id"],
+        ]);
+
+        $pteroServer = $stmt->fetch() ?: null;
+    } catch (Throwable $e) {
+        $pteroServer = null;
+    }
+}
+
 $hasCancel = $order && (
     !empty($order["auto_renew_cancelled"])
     || !empty($order["cancel_requested_at"])
@@ -344,6 +382,12 @@ require_once __DIR__ . "/../../../parts/head.php";
             <div class="server-detail-toolbar">
                 <a href="/dashboard/servers/" class="back-button">サーバー一覧へ戻る</a>
                 <a href="/dashboard/" class="sub-button">ダッシュボードへ戻る</a>
+
+                <?php if ($canPayOrder): ?>
+                    <a href="/billing/checkout/?order_id=<?php echo h((string)$order["id"]); ?>&auto=1" class="pay-button">
+                        決済へ進む
+                    </a>
+                <?php endif; ?>
             </div>
 
             <?php if ($flash): ?>
@@ -393,7 +437,50 @@ require_once __DIR__ . "/../../../parts/head.php";
                     </div>
                 </article>
 
-                <div class="server-detail-grid">
+                <?php if ($canPayOrder): ?>
+            <div class="payment-required-box">
+                <div>
+                    <strong>この契約は決済待ちです。</strong>
+                    <p>
+                        決済が完了すると、契約状態が更新され、サーバー作成処理へ進めるようになります。
+                    </p>
+                </div>
+
+                <a href="/billing/checkout/?order_id=<?php echo h((string)$order["id"]); ?>&auto=1">
+                    決済へ進む
+                </a>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($pteroServer): ?>
+            <div class="ptero-server-box">
+                <div class="ptero-server-main">
+                    <div>
+                        <span>ゲームサーバーパネル Server</span>
+                        <strong><?php echo h((string)($pteroServer["name"] ?: $order["server_name"] ?: "名称未設定")); ?></strong>
+                        <p>
+                            Identifier:
+                            <?php echo h((string)($pteroServer["ptero_identifier"] ?: "-")); ?>
+                            /
+                            Allocation ID:
+                            <?php echo h((string)($pteroServer["ptero_allocation_id"] ?: "-")); ?>
+                        </p>
+                    </div>
+
+                    <div class="ptero-card-actions">
+                        <a href="/dashboard/ptero-account/" class="ptero-account-button">
+                            ログイン情報
+                        </a>
+
+                        <a href="/dashboard/servers/panel/?id=<?php echo h((string)$order["id"]); ?>" class="ptero-panel-button">
+                            サーバーパネルへ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div class="server-detail-grid">
                     <section class="detail-panel">
                         <div class="panel-head">
                             <div>
@@ -492,7 +579,7 @@ require_once __DIR__ . "/../../../parts/head.php";
 
                         <div class="detail-list">
                             <div>
-                                <span>Pterodactyl ID</span>
+                                <span>ゲームサーバーパネル ID</span>
                                 <strong><?php echo h(user_text($order["ptero_identifier"])); ?></strong>
                             </div>
                             <div>
@@ -524,7 +611,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                         <?php else: ?>
                             <div class="info-box">
                                 <strong>サーバー管理画面リンクはまだ利用できません。</strong>
-                                <p>サーバー作成完了後、またはPterodactyl連携設定後に表示されます。</p>
+                                <p>サーバー作成完了後、またはゲームサーバーパネル連携設定後に表示されます。</p>
                             </div>
                         <?php endif; ?>
                     </section>
@@ -538,6 +625,20 @@ require_once __DIR__ . "/../../../parts/head.php";
                         </div>
 
                         <div class="billing-box">
+
+                        <?php if ($canPayOrder): ?>
+                            <div class="billing-pay-box">
+                                <strong>決済待ちです</strong>
+                                <p>
+                                    この契約はまだ決済が完了していません。
+                                    Stripe Checkoutで支払いを完了してください。
+                                </p>
+
+                                <a href="/billing/checkout/?order_id=<?php echo h((string)$order["id"]); ?>&auto=1" class="main-action-link payment-action-link">
+                                    決済へ進む
+                                </a>
+                            </div>
+                        <?php else: ?>
                             <p>
                                 支払い方法の変更は、Stripeの請求管理ページから行います。
                                 開発環境ではMock処理として完了メッセージのみ表示します。
@@ -551,6 +652,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                                 </button>
                             </form>
                         </div>
+                        <?php endif; ?>
                     </section>
 
                     <section class="detail-panel wide-panel">

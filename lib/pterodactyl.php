@@ -1,319 +1,324 @@
-
 <?php
 
-require_once __DIR__ . "/../config/pterodactyl.php";
-
-function ptero_config(): array
+function hc_ptero_env(string $key, ?string $default = null): ?string
 {
-    return require __DIR__ . "/../config/pterodactyl.php";
-}
+    $value = getenv($key);
 
-function ptero_is_mock(): bool
-{
-    $config = ptero_config();
-    return !empty($config["mock"]);
-}
-
-function ptero_is_enabled(): bool
-{
-    $config = ptero_config();
-    return !empty($config["enabled"]);
-}
-
-function ptero_mask_api_key(string $key): string
-{
-    if ($key === "") {
-        return "未設定";
+    if ($value !== false && $value !== "") {
+        return $value;
     }
 
-    if (strlen($key) <= 12) {
-        return "設定済み";
-    }
-
-    return substr($key, 0, 8) . "..." . substr($key, -4);
-}
-
-function ptero_mock_nodes(): array
-{
-    return [
-        "ok" => true,
-        "status" => 200,
-        "mock" => true,
-        "data" => [
-            "object" => "list",
-            "data" => [
-                [
-                    "object" => "node",
-                    "attributes" => [
-                        "id" => 1,
-                        "name" => "mock-node-01",
-                        "description" => "開発環境用のダミーNodeです。",
-                        "fqdn" => "mock-node-01.local",
-                        "memory" => 32768,
-                        "disk" => 200000,
-                        "maintenance_mode" => false,
-                    ],
-                ],
-                [
-                    "object" => "node",
-                    "attributes" => [
-                        "id" => 2,
-                        "name" => "mock-node-02",
-                        "description" => "将来拡張用のダミーNodeです。",
-                        "fqdn" => "mock-node-02.local",
-                        "memory" => 65536,
-                        "disk" => 500000,
-                        "maintenance_mode" => false,
-                    ],
-                ],
-            ],
-        ],
-        "error" => null,
+    $paths = [
+        __DIR__ . "/../.env",
+        __DIR__ . "/../docker/.env",
     ];
+
+    foreach ($paths as $path) {
+        if (!is_file($path)) {
+            continue;
+        }
+
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            if ($line === "" || str_starts_with($line, "#") || !str_contains($line, "=")) {
+                continue;
+            }
+
+            [$envKey, $envValue] = explode("=", $line, 2);
+
+            if (trim($envKey) === $key) {
+                return trim($envValue, " \t\n\r\0\x0B\"'");
+            }
+        }
+    }
+
+    return $default;
 }
 
-function ptero_mock_nests(): array
+function hc_ptero_bool(string $key, bool $default = false): bool
 {
-    return [
-        "ok" => true,
-        "status" => 200,
-        "mock" => true,
-        "data" => [
-            "object" => "list",
-            "data" => [
-                [
-                    "object" => "nest",
-                    "attributes" => [
-                        "id" => 1,
-                        "name" => "Minecraft",
-                        "description" => "Minecraft Java / Bedrock / Forge / Fabric などのテスト用Nestです。",
+    $value = hc_ptero_env($key);
+
+    if ($value === null) {
+        return $default;
+    }
+
+    return in_array(strtolower($value), ["1", "true", "yes", "on"], true);
+}
+
+function hc_ptero_enabled(): bool
+{
+    return hc_ptero_bool("PTERO_ENABLED", false);
+}
+
+function hc_ptero_mock(): bool
+{
+    return hc_ptero_bool("PTERO_MOCK", true);
+}
+
+function hc_ptero_panel_url(): string
+{
+    $url = hc_ptero_env("PTERO_PANEL_URL");
+
+    if (!$url) {
+        throw new RuntimeException("PTERO_PANEL_URL が設定されていません。");
+    }
+
+    return rtrim($url, "/");
+}
+
+function hc_ptero_api_key(): string
+{
+    $key = hc_ptero_env("PTERO_API_KEY");
+
+    if (!$key) {
+        throw new RuntimeException("PTERO_API_KEY が設定されていません。");
+    }
+
+    if (!str_starts_with($key, "ptla_")) {
+        throw new RuntimeException("PTERO_API_KEY は Application API キー ptla_... を指定してください。");
+    }
+
+    return $key;
+}
+
+function hc_ptero_request(string $method, string $path, array $payload = []): array
+{
+    if (!hc_ptero_enabled()) {
+        throw new RuntimeException("Pterodactyl連携が無効です。PTERO_ENABLED=true にしてください。");
+    }
+
+    if (hc_ptero_mock()) {
+        if (str_contains($path, "/allocations")) {
+            return [
+                "object" => "list",
+                "data" => [
+                    [
+                        "object" => "allocation",
+                        "attributes" => [
+                            "id" => random_int(1000, 9999),
+                            "ip" => "127.0.0.1",
+                            "alias" => null,
+                            "port" => random_int(20000, 30000),
+                            "assigned" => false,
+                        ],
                     ],
                 ],
-                [
-                    "object" => "nest",
-                    "attributes" => [
-                        "id" => 2,
-                        "name" => "Source Engine",
-                        "description" => "将来対応確認用のダミーNestです。",
+                "meta" => [
+                    "pagination" => [
+                        "total_pages" => 1,
+                        "current_page" => 1,
                     ],
                 ],
+            ];
+        }
+
+        if ($method === "POST" && $path === "/api/application/users") {
+            return [
+                "object" => "user",
+                "attributes" => [
+                    "id" => random_int(1000, 9999),
+                    "uuid" => bin2hex(random_bytes(16)),
+                    "username" => $payload["username"] ?? "mock_user",
+                    "email" => $payload["email"] ?? "mock@example.com",
+                ],
+            ];
+        }
+
+        if (str_contains($path, "/api/application/users/external/")) {
+            throw new RuntimeException("Mock external user not found.");
+        }
+
+        return [
+            "object" => "server",
+            "attributes" => [
+                "id" => random_int(10000, 99999),
+                "uuid" => bin2hex(random_bytes(16)),
+                "identifier" => substr(bin2hex(random_bytes(8)), 0, 8),
+                "name" => $payload["name"] ?? "Mock Server",
             ],
-        ],
-        "error" => null,
-    ];
-}
-
-function ptero_mock_eggs(int $nestId): array
-{
-    return [
-        "ok" => true,
-        "status" => 200,
-        "mock" => true,
-        "data" => [
-            "object" => "list",
-            "data" => [
-                [
-                    "object" => "egg",
-                    "attributes" => [
-                        "id" => 1,
-                        "nest" => $nestId,
-                        "name" => "Paper",
-                        "description" => "Paper Minecraft server mock egg.",
-                    ],
-                ],
-                [
-                    "object" => "egg",
-                    "attributes" => [
-                        "id" => 2,
-                        "nest" => $nestId,
-                        "name" => "Fabric",
-                        "description" => "Fabric Minecraft server mock egg.",
-                    ],
-                ],
-                [
-                    "object" => "egg",
-                    "attributes" => [
-                        "id" => 3,
-                        "nest" => $nestId,
-                        "name" => "Forge",
-                        "description" => "Forge Minecraft server mock egg.",
-                    ],
-                ],
-            ],
-        ],
-        "error" => null,
-    ];
-}
-
-function ptero_request(string $method, string $endpoint, array $data = []): array
-{
-    $config = ptero_config();
-
-    if (!empty($config["mock"])) {
-        return [
-            "ok" => false,
-            "status" => 0,
-            "mock" => true,
-            "data" => null,
-            "error" => "モックモードではこのエンドポイントは未実装です: " . $endpoint,
         ];
     }
 
-    if (empty($config["enabled"])) {
-        return [
-            "ok" => false,
-            "status" => 0,
-            "mock" => false,
-            "data" => null,
-            "error" => "Pterodactyl連携が無効です。PTERO_ENABLED=true にしてください。",
-        ];
+    $method = strtoupper($method);
+    $url = hc_ptero_panel_url() . $path;
+    $body = json_encode($payload, JSON_UNESCAPED_UNICODE);
+
+    if ($body === false) {
+        throw new RuntimeException("Pterodactyl API送信用JSONを作成できませんでした。");
     }
-
-    $panelUrl = $config["panel_url"] ?? "";
-    $apiKey = $config["api_key"] ?? "";
-
-    if ($panelUrl === "" || $apiKey === "") {
-        return [
-            "ok" => false,
-            "status" => 0,
-            "mock" => false,
-            "data" => null,
-            "error" => "Pterodactyl Panel URL または APIキーが設定されていません。",
-        ];
-    }
-
-    if (!function_exists("curl_init")) {
-        return [
-            "ok" => false,
-            "status" => 0,
-            "mock" => false,
-            "data" => null,
-            "error" => "PHP cURL拡張が有効ではありません。",
-        ];
-    }
-
-    $url = rtrim($panelUrl, "/") . "/api/application/" . ltrim($endpoint, "/");
 
     $headers = [
-        "Authorization: Bearer " . $apiKey,
+        "Authorization: Bearer " . hc_ptero_api_key(),
         "Accept: Application/vnd.pterodactyl.v1+json",
         "Content-Type: application/json",
     ];
 
-    $ch = curl_init($url);
+    if (function_exists("curl_init")) {
+        $ch = curl_init($url);
 
-    $options = [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CUSTOMREQUEST => strtoupper($method),
-        CURLOPT_HTTPHEADER => $headers,
-        CURLOPT_TIMEOUT => 15,
-    ];
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_TIMEOUT => 45,
+        ]);
 
-    if (!empty($data)) {
-        $options[CURLOPT_POSTFIELDS] = json_encode($data, JSON_UNESCAPED_UNICODE);
+        if ($method !== "GET") {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        }
+
+        $responseBody = curl_exec($ch);
+        $statusCode = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $curlError = curl_error($ch);
+
+        curl_close($ch);
+
+        if ($responseBody === false) {
+            throw new RuntimeException("Pterodactyl API通信に失敗しました: " . $curlError);
+        }
+    } else {
+        $context = stream_context_create([
+            "http" => [
+                "method" => $method,
+                "header" => implode("\r\n", $headers),
+                "content" => $method === "GET" ? "" : $body,
+                "timeout" => 45,
+                "ignore_errors" => true,
+            ],
+        ]);
+
+        $responseBody = file_get_contents($url, false, $context);
+        $statusCode = 0;
+
+        if (isset($http_response_header[0]) && preg_match('/\s(\d{3})\s/', $http_response_header[0], $matches)) {
+            $statusCode = (int)$matches[1];
+        }
+
+        if ($responseBody === false) {
+            throw new RuntimeException("Pterodactyl API通信に失敗しました。");
+        }
     }
 
-    curl_setopt_array($ch, $options);
+    $decoded = json_decode($responseBody, true);
 
-    $response = curl_exec($ch);
-    $curlError = curl_error($ch);
-    $statusCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    curl_close($ch);
-
-    if ($response === false) {
-        return [
-            "ok" => false,
-            "status" => $statusCode,
-            "mock" => false,
-            "data" => null,
-            "error" => $curlError ?: "Pterodactyl APIへの接続に失敗しました。",
-        ];
+    if (!is_array($decoded)) {
+        throw new RuntimeException("Pterodactyl APIレスポンスを解析できませんでした。HTTP {$statusCode}");
     }
-
-    $decoded = json_decode($response, true);
 
     if ($statusCode < 200 || $statusCode >= 300) {
+        $message = $decoded["errors"][0]["detail"]
+            ?? $decoded["errors"][0]["title"]
+            ?? $decoded["message"]
+            ?? "Pterodactyl APIエラーが発生しました。HTTP {$statusCode}";
+
+        throw new RuntimeException($message);
+    }
+
+    return $decoded;
+}
+
+function hc_ptero_create_server(array $payload): array
+{
+    return hc_ptero_request("POST", "/api/application/servers", $payload);
+}
+
+function hc_ptero_get_user_by_external_id(string $externalId): array
+{
+    return hc_ptero_request("GET", "/api/application/users/external/" . rawurlencode($externalId));
+}
+
+function hc_ptero_create_user(array $payload): array
+{
+    return hc_ptero_request("POST", "/api/application/users", $payload);
+}
+
+function hc_ptero_list_node_allocations(int $pteroNodeId, int $page = 1): array
+{
+    if ($pteroNodeId <= 0) {
+        throw new RuntimeException("Pterodactyl Node ID が不正です。");
+    }
+
+    return hc_ptero_request("GET", "/api/application/nodes/" . rawurlencode((string)$pteroNodeId) . "/allocations?page=" . rawurlencode((string)$page));
+}
+
+function hc_ptero_allocation_is_free(array $allocation): bool
+{
+    $attributes = $allocation["attributes"] ?? $allocation;
+
+    if (!array_key_exists("assigned", $attributes)) {
+        return false;
+    }
+
+    $assigned = $attributes["assigned"];
+
+    return $assigned === false
+        || $assigned === null
+        || $assigned === 0
+        || $assigned === "0"
+        || $assigned === "";
+}
+
+function hc_ptero_find_free_allocation(int $pteroNodeId): array
+{
+    if (hc_ptero_mock()) {
+        $response = hc_ptero_list_node_allocations($pteroNodeId, 1);
+        $allocation = $response["data"][0] ?? null;
+
+        if (!$allocation) {
+            throw new RuntimeException("Mock Allocationを取得できませんでした。");
+        }
+
+        $attributes = $allocation["attributes"] ?? $allocation;
+
         return [
-            "ok" => false,
-            "status" => $statusCode,
-            "mock" => false,
-            "data" => $decoded,
-            "error" => "Pterodactyl APIがエラーを返しました。",
+            "id" => (int)$attributes["id"],
+            "ip" => (string)($attributes["ip"] ?? ""),
+            "alias" => $attributes["alias"] ?? null,
+            "port" => (int)($attributes["port"] ?? 0),
         ];
     }
 
-    return [
-        "ok" => true,
-        "status" => $statusCode,
-        "mock" => false,
-        "data" => $decoded,
-        "error" => null,
-    ];
-}
+    $page = 1;
+    $maxPages = 20;
 
-function ptero_get_nodes(): array
-{
-    if (ptero_is_mock()) {
-        return ptero_mock_nodes();
+    while ($page <= $maxPages) {
+        $response = hc_ptero_list_node_allocations($pteroNodeId, $page);
+        $allocations = $response["data"] ?? [];
+
+        foreach ($allocations as $allocation) {
+            $attributes = $allocation["attributes"] ?? $allocation;
+
+            if (!hc_ptero_allocation_is_free($allocation)) {
+                continue;
+            }
+
+            $allocationId = (int)($attributes["id"] ?? 0);
+
+            if ($allocationId <= 0) {
+                continue;
+            }
+
+            return [
+                "id" => $allocationId,
+                "ip" => (string)($attributes["ip"] ?? ""),
+                "alias" => $attributes["alias"] ?? null,
+                "port" => (int)($attributes["port"] ?? 0),
+            ];
+        }
+
+        $pagination = $response["meta"]["pagination"] ?? [];
+        $totalPages = (int)($pagination["total_pages"] ?? $page);
+
+        if ($page >= $totalPages) {
+            break;
+        }
+
+        $page++;
     }
 
-    return ptero_request("GET", "nodes");
-}
-
-function ptero_get_nests(): array
-{
-    if (ptero_is_mock()) {
-        return ptero_mock_nests();
-    }
-
-    return ptero_request("GET", "nests");
-}
-
-function ptero_get_eggs(int $nestId): array
-{
-    if (ptero_is_mock()) {
-        return ptero_mock_eggs($nestId);
-    }
-
-    return ptero_request("GET", "nests/" . $nestId . "/eggs");
-}
-
-function ptero_mock_create_server(array $payload = []): array
-{
-    return [
-        "ok" => true,
-        "status" => 201,
-        "mock" => true,
-        "data" => [
-            "object" => "server",
-            "attributes" => [
-                "id" => random_int(1000, 9999),
-                "external_id" => $payload["external_id"] ?? null,
-                "uuid" => "mock-server-uuid-" . bin2hex(random_bytes(4)),
-                "identifier" => "mock" . random_int(1000, 9999),
-                "name" => $payload["name"] ?? "Mock Game Server",
-                "description" => $payload["description"] ?? "Mock server created by HC Platform.",
-                "status" => "installing",
-                "suspended" => false,
-                "limits" => [
-                    "memory" => $payload["limits"]["memory"] ?? 2048,
-                    "swap" => 0,
-                    "disk" => $payload["limits"]["disk"] ?? 10240,
-                    "io" => 500,
-                    "cpu" => $payload["limits"]["cpu"] ?? 100,
-                ],
-            ],
-        ],
-        "error" => null,
-    ];
-}
-
-function ptero_create_server(array $payload): array
-{
-    if (ptero_is_mock()) {
-        return ptero_mock_create_server($payload);
-    }
-
-    return ptero_request("POST", "servers", $payload);
+    throw new RuntimeException("Node #" . $pteroNodeId . " に空きAllocationがありません。Pterodactyl側でポート枠を追加してください。");
 }
