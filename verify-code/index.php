@@ -12,6 +12,11 @@ $pageTitle = "認証コード入力 | HC Platform";
 $pageDescription = "HC Accountのメール認証ページです。";
 $pageCss = "/verify-code/verify-code.css";
 
+
+$redirect = $_GET["redirect"] ?? $_POST["redirect"] ?? ($_SESSION["pending_redirect"] ?? "/dashboard/");
+$redirect = safe_redirect_path($redirect);
+$_SESSION["pending_redirect"] = $redirect;
+
 $errors = [];
 $messages = [];
 
@@ -199,7 +204,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     session_regenerate_id(true);
                     $_SESSION["user_id"] = $user["id"];
 
-                    redirect("/dashboard/");
+                    redirect($redirect);
                 }
             } catch (Throwable $e) {
                 if (isset($pdo) && $pdo->inTransaction()) {
@@ -256,6 +261,7 @@ require_once __DIR__ . "/../parts/head.php";
             <?php endif; ?>
 
             <form action="/verify-code/" method="post" class="auth-form">
+        <input type="hidden" name="redirect" value="<?= h($redirect) ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo h(csrf_token()); ?>">
                 <input type="hidden" name="action" value="verify">
 
@@ -286,7 +292,7 @@ require_once __DIR__ . "/../parts/head.php";
             </form>
 
             <p class="auth-switch">
-                メールアドレスを変更する場合は <a href="/register/">新規登録に戻る</a>
+                メールアドレスを変更する場合は <a href="/register/?redirect=<?= rawurlencode($redirect) ?>">新規登録に戻る</a>
             </p>
         </section>
     </div>

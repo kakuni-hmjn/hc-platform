@@ -7,7 +7,7 @@ require_once __DIR__ . "/../lib/helpers.php";
 require_once __DIR__ . "/../lib/auth.php";
 
 if (current_user()) {
-    redirect("/dashboard/");
+    redirect($redirect);
 }
 
 $security = require __DIR__ . "/../config/security.php";
@@ -15,6 +15,10 @@ $security = require __DIR__ . "/../config/security.php";
 $pageTitle = "ログイン | HC Platform";
 $pageDescription = "HC Accountのログインページです。";
 $pageCss = "/login/login.css";
+
+
+$redirect = $_GET["redirect"] ?? $_POST["redirect"] ?? "/dashboard/";
+$redirect = safe_redirect_path($redirect);
 
 $errors = [];
 $old = [
@@ -209,7 +213,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         ":message" => "login success",
                     ]);
 
-                    redirect("/dashboard/");
+                    redirect($redirect);
                 }
             }
         } catch (Throwable $e) {
@@ -247,6 +251,7 @@ require_once __DIR__ . "/../parts/head.php";
             <?php endif; ?>
 
             <form action="/login/" method="post" class="auth-form">
+        <input type="hidden" name="redirect" value="<?= h($redirect) ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo h(csrf_token()); ?>">
 
                 <div class="form-group">
@@ -287,7 +292,7 @@ require_once __DIR__ . "/../parts/head.php";
             </form>
 
             <p class="auth-switch">
-                アカウントをお持ちでない場合は <a href="/register/">新規登録</a>
+                アカウントをお持ちでない場合は <a href="/register/?redirect=<?= rawurlencode($redirect) ?>">新規登録</a>
             </p>
 
             <p class="auth-switch auth-reset-link">

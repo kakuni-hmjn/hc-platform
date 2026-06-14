@@ -19,6 +19,10 @@ $pageTitle = "新規登録 | HC Platform";
 $pageDescription = "HC Platformの新規登録ページです。";
 $pageCss = "/register/register.css";
 
+
+$redirect = $_GET["redirect"] ?? $_POST["redirect"] ?? "/dashboard/";
+$redirect = safe_redirect_path($redirect);
+
 $errors = [];
 $old = [
     "username" => "",
@@ -190,7 +194,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 }
             } else {
                 $_SESSION["pending_email"] = $email;
-                redirect("/verify-code/");
+                $_SESSION["pending_redirect"] = $redirect; redirect("/verify-code/?redirect=" . rawurlencode($redirect));
             }
         } catch (Throwable $e) {
             if (isset($pdo) && $pdo->inTransaction()) {
@@ -245,6 +249,7 @@ require_once __DIR__ . "/../parts/head.php";
             <?php endif; ?>
 
             <form action="/register/" method="post" class="auth-form">
+        <input type="hidden" name="redirect" value="<?= h($redirect) ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo h(csrf_token()); ?>">
 
                 <div class="form-group">
@@ -350,7 +355,7 @@ require_once __DIR__ . "/../parts/head.php";
             </form>
 
             <p class="auth-switch">
-                すでにアカウントをお持ちの場合は <a href="/login/">ログイン</a>
+                すでにアカウントをお持ちの場合は <a href="/login/?redirect=<?= rawurlencode($redirect) ?>">ログイン</a>
             </p>
         </section>
     </div>

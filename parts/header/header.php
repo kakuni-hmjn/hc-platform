@@ -283,12 +283,20 @@ $headerGlobalNotificationItems = $headerGlobalNotifications["items"];
 $headerGlobalUnreadCount = (int)$headerGlobalNotifications["unread_count"];
 
 $headerUnreadCount = $headerPersonalUnreadCount + $headerGlobalUnreadCount;
+
+$headerRedirectPath = $_SERVER["REQUEST_URI"] ?? "/";
+$headerRedirectPath = header_safe_internal_link($headerRedirectPath, "/");
+$headerLoginUrl = "/login/?redirect=" . rawurlencode($headerRedirectPath);
+$headerRegisterUrl = "/register/?redirect=" . rawurlencode($headerRedirectPath);
+
 ?>
 
 <header class="site-header">
     <div class="header-inner">
         <a href="/" class="header-brand" aria-label="HC Platform トップページ">
-            <span class="brand-logo">HC</span>
+            <span class="brand-logo">
+  <img src="/assets/logo.png" alt="HC Platform" class="brand-logo-image" draggable="false">
+</span>
             <span class="brand-text">
                 <strong>HC Platform</strong>
                 <small>HCと共にある生活</small>
@@ -455,8 +463,8 @@ $headerUnreadCount = $headerPersonalUnreadCount + $headerGlobalUnreadCount;
                     <a href="/logout/" class="header-link header-logout-outline">ログアウト</a>
                     <a href="/dashboard/" class="header-button header-mypage-button">マイページ</a>
                 <?php else: ?>
-                    <a href="/login/" class="header-link">ログイン</a>
-                    <a href="/register/" class="header-button">新規登録</a>
+                    <a href="<?= h($headerLoginUrl) ?>" class="header-link">ログイン</a>
+                    <a href="<?= h($headerRegisterUrl) ?>" class="header-button">新規登録</a>
                 <?php endif; ?>
             </div>
 
@@ -500,8 +508,8 @@ $headerUnreadCount = $headerPersonalUnreadCount + $headerGlobalUnreadCount;
             <a href="/dashboard/notifications/" class="drawer-account-button ghost">通知一覧</a>
             <a href="/logout/" class="drawer-account-button ghost">ログアウト</a>
         <?php else: ?>
-            <a href="/login/" class="drawer-account-button primary">ログイン</a>
-            <a href="/register/" class="drawer-account-button ghost">新規登録</a>
+            <a href="<?= h($headerLoginUrl) ?>" class="drawer-account-button primary">ログイン</a>
+            <a href="<?= h($headerRegisterUrl) ?>" class="drawer-account-button ghost">新規登録</a>
         <?php endif; ?>
     </div>
 

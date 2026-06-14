@@ -40,25 +40,6 @@ $softwares = [
     "Geyser",
 ];
 
-$features = [
-    [
-        "title" => "Pterodactyl連携",
-        "text" => "Pterodactyl Panelと連携し、サーバー作成・管理をHC Platform側から扱えるようにします。",
-    ],
-    [
-        "title" => "管理者承認式",
-        "text" => "初期段階では申し込み後に管理者が内容を確認し、安全にサーバーを作成します。",
-    ],
-    [
-        "title" => "プラン選択式",
-        "text" => "メモリ、CPU、ディスク容量などに応じたプランを選べる形にします。",
-    ],
-    [
-        "title" => "段階的な自動化",
-        "text" => "決済確認後の自動作成、ノード自動選択、ダッシュボード表示を順次追加していきます。",
-    ],
-];
-
 $flow = [
     [
         "title" => "アカウント作成",
@@ -174,7 +155,13 @@ require_once __DIR__ . "/../../../parts/head.php";
 
             <div class="game-copy reveal">
                 <p class="eyebrow">Game Server Rental</p>
-                <h1>ゲームサーバーレンタル</h1>
+                <div class="game-title-row">
+  <h1 class="game-hero-title">
+    <span>ゲームサーバー</span>
+    <span>レンタル</span>
+  </h1>
+  <img src="/assets/game-server-minecraft.png" alt="" class="game-title-mobile-image" aria-hidden="true" draggable="false">
+</div>
                 <p>
                     Minecraft Java / Bedrock Editionに対応したゲームサーバーレンタルを整備中です。
                     Paper、Purpur、Fabric、Forge、NeoForgeなど、用途に合わせたサーバー構成を選べる形を目指します。
@@ -202,7 +189,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                     <span>Preparing</span>
                     <h2>Minecraft向けサーバーから開始予定</h2>
                     <p>
-                        まずはMinecraft Javaを中心に、Pterodactyl連携による申し込み・承認・サーバー作成の流れを整備していきます。
+                        まずはMinecraft Javaを中心に、管理パネルから申し込み・承認・サーバー作成までスムーズに進められる仕組みを整備していきます。
                     </p>
                 </aside>
             </div>
@@ -255,31 +242,7 @@ require_once __DIR__ . "/../../../parts/head.php";
         </div>
     </section>
 
-    <section class="section feature-section">
-        <div class="container">
-
-            <div class="section-heading reveal">
-                <p class="eyebrow">Features</p>
-                <h2>実装予定の機能</h2>
-                <p>
-                    最初は手動承認式で安全に運用し、その後に決済・自動作成・ダッシュボード連携を追加していきます。
-                </p>
-            </div>
-
-            <div class="feature-grid">
-                <?php foreach ($features as $index => $feature): ?>
-                    <article class="feature-card reveal">
-                        <span><?php echo h(str_pad((string)($index + 1), 2, "0", STR_PAD_LEFT)); ?></span>
-                        <h3><?php echo h($feature["title"]); ?></h3>
-                        <p><?php echo h($feature["text"]); ?></p>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-
-        </div>
-    </section>
-
-    <section class="section plan-section">
+<section class="section plan-section">
         <div class="container">
 
             <div class="section-heading reveal">
@@ -305,53 +268,169 @@ require_once __DIR__ . "/../../../parts/head.php";
                         ?>
 
                         <article class="plan-card reveal">
-                            <span><?php echo h($plan["name"]); ?></span>
 
-                            <h3>
-                                ¥<?php echo h(number_format((int)$plan["price_monthly"])); ?>〜
-                            </h3>
+ <span><?php echo h($plan["name"]); ?></span>
 
-                            <strong>
-                                <?php echo h(format_mb_to_gb((int)$plan["memory_mb"])); ?>
-                                /
-                                <?php echo h(format_cpu_to_vcpu((int)$plan["cpu_limit"])); ?>
-                            </strong>
+ <h3>
 
-                            <p><?php echo h($plan["description"]); ?></p>
+ ¥<?php echo h(number_format((int)$plan["price_monthly"])); ?>〜
 
-                            <div class="public-plan-specs">
-                                <div>
-                                    <small>Disk</small>
-                                    <b><?php echo h(format_mb_to_gb((int)$plan["disk_mb"])); ?></b>
-                                </div>
+ </h3>
 
-                                <div>
-                                    <small>Backup</small>
-                                    <b><?php echo h((string)$plan["backup_limit"]); ?></b>
-                                </div>
+ <strong>
 
-                                <div>
-                                    <small>DB</small>
-                                    <b><?php echo h((string)$plan["database_limit"]); ?></b>
-                                </div>
-                            </div>
+ <?php echo h(format_mb_to_gb((int)$plan["memory_mb"])); ?>
+ /
 
-                            <?php if (!empty($plan["server_software_note"])): ?>
-                                <div class="public-plan-note">
-                                    <?php echo h($plan["server_software_note"]); ?>
-                                </div>
-                            <?php endif; ?>
+ <?php echo h(format_cpu_to_vcpu((int)$plan["cpu_limit"])); ?>
 
-                            <?php if ($planNodes): ?>
-                                <div class="public-plan-nodes">
-                                    <?php foreach ($planNodes as $node): ?>
-                                        <span class="<?php echo !empty($node["is_high_performance"]) ? "high-performance" : ""; ?>">
-                                            <?php echo h((string)$node["label"]); ?>
-                                        </span>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        </article>
+ </strong>
+
+ <?php if (!empty($plan["description"])): ?>
+ <p class="public-plan-description"><?php echo h($plan["description"]); ?></p>
+ <?php endif; ?>
+
+ <div class="public-plan-specs">
+
+ <div>
+
+ <small>Memory</small>
+
+ <b><?php echo h(format_mb_to_gb((int)$plan["memory_mb"])); ?></b>
+
+ </div>
+
+ <div>
+
+ <small>CPU</small>
+
+ <b><?php echo h(format_cpu_to_vcpu((int)$plan["cpu_limit"])); ?></b>
+
+ </div>
+
+ <div>
+
+ <small>Disk</small>
+
+ <b><?php echo h(format_mb_to_gb((int)$plan["disk_mb"])); ?></b>
+
+ </div>
+
+ <div>
+
+ <small>Backup</small>
+
+ <b><?php echo h((string)$plan["backup_limit"]); ?></b>
+
+ </div>
+
+ <div>
+
+ <small>DB</small>
+
+ <b><?php echo h((string)$plan["database_limit"]); ?></b>
+
+ </div>
+
+ <div>
+
+ <small>Port</small>
+
+ <b><?php echo h((string)$plan["allocation_limit"]); ?></b>
+
+ </div>
+
+ </div>
+
+ <?php if (!empty($plan["server_software_note"])): ?>
+
+ <div class="public-plan-note">
+
+ <?php echo h($plan["server_software_note"]); ?>
+
+ </div>
+
+ <?php endif; ?>
+
+ <?php if ($planNodes): ?>
+
+ <div class="public-plan-nodes">
+
+ <?php foreach ($planNodes as $node): ?>
+
+ <span class="<?php echo !empty($node["is_high_performance"]) ? "high-performance" : ""; ?>">
+
+ <?php echo h((string)$node["label"]); ?>
+
+ </span>
+
+ <?php endforeach; ?>
+
+ </div>
+
+ <?php endif; ?>
+
+ <?php if (!empty($plan["description"]) || !empty($plan["server_software_note"]) || $planNodes): ?>
+ <details class="public-plan-mobile-details">
+  <summary>詳細</summary>
+
+  <div class="public-plan-mobile-details-body">
+   <div class="public-plan-specs public-plan-mobile-specs">
+    <div>
+     <small>Memory</small>
+     <b><?php echo h(format_mb_to_gb((int)$plan["memory_mb"])); ?></b>
+    </div>
+
+    <div>
+     <small>CPU</small>
+     <b><?php echo h(format_cpu_to_vcpu((int)$plan["cpu_limit"])); ?></b>
+    </div>
+
+    <div>
+     <small>Disk</small>
+     <b><?php echo h(format_mb_to_gb((int)$plan["disk_mb"])); ?></b>
+    </div>
+
+    <div>
+     <small>Backup</small>
+     <b><?php echo h((string)$plan["backup_limit"]); ?></b>
+    </div>
+
+    <div>
+     <small>DB</small>
+     <b><?php echo h((string)$plan["database_limit"]); ?></b>
+    </div>
+
+    <div>
+     <small>Port</small>
+     <b><?php echo h((string)$plan["allocation_limit"]); ?></b>
+    </div>
+   </div>
+
+   <?php if (!empty($plan["description"])): ?>
+   <p><?php echo h($plan["description"]); ?></p>
+   <?php endif; ?>
+
+   <?php if (!empty($plan["server_software_note"])): ?>
+   <div class="public-plan-note mobile-only-note">
+    <?php echo h($plan["server_software_note"]); ?>
+   </div>
+   <?php endif; ?>
+
+   <?php if ($planNodes): ?>
+   <div class="public-plan-nodes mobile-only-nodes">
+    <?php foreach ($planNodes as $node): ?>
+    <span class="<?php echo !empty($node["is_high_performance"]) ? "high-performance" : ""; ?>">
+     <?php echo h((string)$node["label"]); ?>
+    </span>
+    <?php endforeach; ?>
+   </div>
+   <?php endif; ?>
+  </div>
+ </details>
+ <?php endif; ?>
+
+ </article>
                     <?php endforeach; ?>
                 </div>
             <?php else: ?>
@@ -456,5 +535,60 @@ require_once __DIR__ . "/../../../parts/head.php";
 <?php include __DIR__ . "/../../../parts/footer/footer.php"; ?>
 
 <script src="/common/base.js"></script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const mobileQuery = window.matchMedia("(max-width: 760px)");
+  const detailsList = document.querySelectorAll(".public-plan-mobile-details");
+
+  detailsList.forEach((details) => {
+    const summary = details.querySelector("summary");
+
+    if (!summary) {
+      return;
+    }
+
+    let isAnimating = false;
+
+    summary.addEventListener("click", (event) => {
+      if (!mobileQuery.matches) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (isAnimating) {
+        return;
+      }
+
+      isAnimating = true;
+      details.classList.remove("is-opening", "is-closing");
+      void details.offsetHeight;
+
+      if (details.open) {
+        details.classList.add("is-closing");
+
+        window.setTimeout(() => {
+          details.open = false;
+          details.classList.remove("is-closing");
+          isAnimating = false;
+        }, 240);
+
+        return;
+      }
+
+      details.open = true;
+      details.classList.add("is-opening");
+
+      window.setTimeout(() => {
+        details.classList.remove("is-opening");
+        isAnimating = false;
+      }, 280);
+    });
+  });
+});
+</script>
+
 </body>
 </html>

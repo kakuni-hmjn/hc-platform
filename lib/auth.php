@@ -2,6 +2,32 @@
 
 require_once __DIR__ . "/db.php";
 
+
+function safe_redirect_path(?string $redirect, string $fallback = "/dashboard/"): string {
+    if (!$redirect) {
+        return $fallback;
+    }
+
+    $redirect = trim($redirect);
+
+    if (
+        $redirect === "" ||
+        $redirect[0] !== "/" ||
+        str_starts_with($redirect, "//") ||
+        str_contains($redirect, "\n") ||
+        str_contains($redirect, "\r")
+    ) {
+        return $fallback;
+    }
+
+    return $redirect;
+}
+
+function login_redirect_url(): string {
+    $current = $_SERVER["REQUEST_URI"] ?? "/dashboard/";
+    return "/login/?redirect=" . rawurlencode($current);
+}
+
 function current_user(): ?array
 {
     if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -27,7 +53,7 @@ function require_login(): array
     $user = current_user();
 
     if (!$user) {
-        header("Location: /login/");
+        header("Location: " . login_redirect_url());
         exit;
     }
 

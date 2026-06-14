@@ -849,3 +849,883 @@ body.dark-theme .public-plan-nodes span.high-performance {
         grid-template-columns: 1fr;
     }
 }
+/* Hero title: fixed 2-line Japanese layout */
+.game-hero-title {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+.game-hero-title span {
+  display: block;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .game-copy .game-hero-title {
+    font-size: clamp(38px, 11vw, 48px);
+    line-height: 1.16;
+    letter-spacing: -0.055em;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-copy .game-hero-title {
+    font-size: clamp(32px, 10.2vw, 40px);
+    line-height: 1.18;
+    letter-spacing: -0.045em;
+  }
+}
+
+/* ===== Mobile hero cards readability fix ===== */
+@media (max-width: 760px) {
+  .game-hero-grid {
+    gap: 24px;
+  }
+
+  .game-hero-side {
+    width: 100%;
+    max-width: none;
+    gap: 14px;
+  }
+
+  .game-hero-visual {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .game-hero-visual img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    transform: scale(1);
+  }
+
+  .game-status-card {
+    padding: 22px;
+    border-radius: 24px;
+  }
+
+  .game-status-card span {
+    margin-bottom: 14px;
+    padding: 7px 12px;
+    font-size: 11px;
+  }
+
+  .game-status-card h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    line-height: 1.45;
+    letter-spacing: -0.03em;
+    word-break: keep-all;
+    overflow-wrap: normal;
+  }
+
+  .game-status-card p {
+    font-size: 14px;
+    line-height: 1.85;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-hero-side {
+    gap: 12px;
+  }
+
+  .game-hero-visual {
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .game-hero-visual img {
+    max-height: 180px;
+  }
+
+  .game-status-card {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .game-status-card h2 {
+    font-size: 22px;
+    line-height: 1.45;
+  }
+
+  .game-status-card p {
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+}
+
+/* ===== Mobile status card image/title layout ===== */
+.game-status-heading {
+  display: block;
+}
+
+.game-status-mobile-image {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .game-hero-visual {
+    display: none;
+  }
+
+  .game-status-card {
+    padding: 22px;
+  }
+
+  .game-status-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 104px;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .game-status-heading h2,
+  .game-status-card h2 {
+    margin-bottom: 0;
+    font-size: clamp(22px, 6vw, 26px);
+    line-height: 1.42;
+    letter-spacing: -0.04em;
+    word-break: keep-all;
+    overflow-wrap: normal;
+  }
+
+  .game-status-mobile-image {
+    display: block;
+    width: 104px;
+    max-width: 30vw;
+    height: auto;
+    object-fit: contain;
+    justify-self: end;
+    filter: drop-shadow(0 14px 20px rgba(15, 23, 42, 0.20));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .game-status-card p {
+    margin-top: 0;
+    font-size: 14px;
+    line-height: 1.85;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-status-card {
+    padding: 20px;
+  }
+
+  .game-status-heading {
+    grid-template-columns: minmax(0, 1fr) 86px;
+    gap: 10px;
+  }
+
+  .game-status-heading h2,
+  .game-status-card h2 {
+    font-size: clamp(20px, 5.7vw, 23px);
+    line-height: 1.45;
+  }
+
+  .game-status-mobile-image {
+    width: 86px;
+    max-width: 28vw;
+  }
+
+  .game-status-card p {
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+}
+
+/* ===== Mobile hero title image layout ===== */
+.game-title-row {
+  display: block;
+  position: relative;
+}
+
+.game-title-mobile-image {
+  display: none;
+}
+
+.game-hero-title {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+.game-hero-title span {
+  display: block;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .game-title-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 126px;
+    gap: 0;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .game-title-row .game-hero-title {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    font-size: clamp(40px, 10.8vw, 54px);
+    line-height: 1.08;
+    letter-spacing: -0.075em;
+  }
+
+  .game-title-mobile-image {
+    display: block;
+    position: relative;
+    z-index: 1;
+    width: 132px;
+    max-width: 34vw;
+    height: auto;
+    object-fit: contain;
+    justify-self: end;
+    margin-left: -26px;
+    transform: translateX(-10px) rotate(-2deg);
+    filter: drop-shadow(0 18px 24px rgba(15, 23, 42, 0.24));
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+
+  .game-hero-side .game-hero-visual {
+    display: none;
+  }
+
+  .game-status-heading {
+    display: block;
+  }
+
+  .game-status-mobile-image {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-title-row {
+    grid-template-columns: minmax(0, 1fr) 104px;
+    margin-bottom: 18px;
+  }
+
+  .game-title-row .game-hero-title {
+    font-size: clamp(34px, 10vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -0.07em;
+  }
+
+  .game-title-mobile-image {
+    width: 112px;
+    max-width: 32vw;
+    margin-left: -24px;
+    transform: translateX(-8px) rotate(-2deg);
+  }
+}
+
+@media (max-width: 380px) {
+  .game-title-row {
+    grid-template-columns: minmax(0, 1fr) 92px;
+  }
+
+  .game-title-row .game-hero-title {
+    font-size: clamp(31px, 9.6vw, 39px);
+    letter-spacing: -0.065em;
+  }
+
+  .game-title-mobile-image {
+    width: 100px;
+    max-width: 31vw;
+    margin-left: -22px;
+    transform: translateX(-6px) rotate(-2deg);
+  }
+}
+
+/* ===== Mobile plan cards compact dropdown ===== */
+.public-plan-mobile-details {
+  display: none;
+}
+
+.public-plan-description {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+@media (max-width: 760px) {
+  .plan-grid {
+    gap: 14px;
+  }
+
+  .plan-card {
+    min-height: 0;
+    padding: 22px;
+    border-radius: 24px;
+  }
+
+  .plan-card > span {
+    margin-bottom: 14px;
+    padding: 7px 12px;
+    font-size: 11px;
+  }
+
+  .plan-card h3 {
+    margin-bottom: 6px;
+    font-size: 36px;
+    line-height: 1.05;
+  }
+
+  .plan-card strong {
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  .plan-card > .public-plan-description,
+  .plan-card > .public-plan-note,
+  .plan-card > .public-plan-nodes {
+    display: none;
+  }
+
+  .public-plan-specs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  .public-plan-specs div {
+    padding: 11px 12px;
+    border-radius: 14px;
+  }
+
+  .public-plan-specs small {
+    margin-bottom: 5px;
+    font-size: 10px;
+  }
+
+  .public-plan-specs b {
+    font-size: 14px;
+  }
+
+  .public-plan-mobile-details {
+    display: block;
+    margin-top: 14px;
+  }
+
+  .public-plan-mobile-details summary {
+    min-height: 42px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: var(--navy);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 950;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .public-plan-mobile-details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .public-plan-mobile-details summary::after {
+    content: "＋";
+    margin-left: 8px;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .public-plan-mobile-details[open] summary::after {
+    content: "−";
+  }
+
+  .public-plan-mobile-details-body {
+    padding-top: 14px;
+  }
+
+  .public-plan-mobile-details-body p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.85;
+  }
+
+  .public-plan-mobile-details-body .public-plan-note {
+    display: block;
+    margin-top: 12px;
+  }
+
+  .public-plan-mobile-details-body .public-plan-nodes {
+    display: flex;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .plan-card {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .plan-card h3 {
+    font-size: 34px;
+  }
+
+  .public-plan-specs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .public-plan-mobile-details summary {
+    min-height: 40px;
+    font-size: 12.5px;
+  }
+}
+
+/* ===== Mobile plan cards only summary first ===== */
+@media (max-width: 760px) {
+  .plan-card {
+    padding: 22px;
+  }
+
+  .plan-card > span,
+  .plan-card h3,
+  .plan-card strong {
+    display: block;
+  }
+
+  .plan-card > span {
+    margin-bottom: 14px;
+  }
+
+  .plan-card h3 {
+    margin-bottom: 8px;
+    font-size: 36px;
+    line-height: 1.05;
+  }
+
+  .plan-card strong {
+    margin-bottom: 0;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .plan-card > .public-plan-description,
+  .plan-card > .public-plan-specs,
+  .plan-card > .public-plan-note,
+  .plan-card > .public-plan-nodes {
+    display: none !important;
+  }
+
+  .public-plan-mobile-details {
+    display: block;
+    margin-top: 18px;
+  }
+
+  .public-plan-mobile-details-body .public-plan-mobile-specs {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 0;
+    margin-bottom: 14px;
+  }
+
+  .public-plan-mobile-details-body .public-plan-mobile-specs div {
+    padding: 11px 12px;
+    border-radius: 14px;
+  }
+
+  .public-plan-mobile-details-body .public-plan-mobile-specs small {
+    margin-bottom: 5px;
+    font-size: 10px;
+  }
+
+  .public-plan-mobile-details-body .public-plan-mobile-specs b {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .plan-card h3 {
+    font-size: 34px;
+  }
+
+  .plan-card strong {
+    font-size: 14px;
+  }
+}
+
+/* ===== Mobile plan details small edge button ===== */
+@media (max-width: 760px) {
+  .public-plan-mobile-details {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 14px;
+  }
+
+  .public-plan-mobile-details[open] {
+    display: block;
+  }
+
+  .public-plan-mobile-details summary {
+    width: fit-content;
+    min-height: 0;
+    margin-left: auto;
+    padding: 6px 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(15, 23, 42, 0.18);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .public-plan-mobile-details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .public-plan-mobile-details summary::after {
+    content: "▼";
+    margin-left: 5px;
+    font-size: 9px;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+
+  .public-plan-mobile-details[open] summary::after {
+    content: "▲";
+  }
+
+  .public-plan-mobile-details-body {
+    padding-top: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .public-plan-mobile-details summary {
+    padding: 6px 10px;
+    font-size: 11.5px;
+  }
+}
+
+/* ===== Mobile plan details open animation ===== */
+@media (max-width: 760px) {
+  .public-plan-mobile-details-body {
+    overflow: hidden;
+  }
+
+  .public-plan-mobile-details[open] .public-plan-mobile-details-body {
+    animation: publicPlanDetailsOpen 0.26s ease both;
+  }
+
+  .public-plan-mobile-details[open] summary {
+    animation: publicPlanSummaryTap 0.18s ease both;
+  }
+
+  .public-plan-mobile-details summary::after {
+    transition: transform 0.22s ease;
+  }
+
+  .public-plan-mobile-details[open] summary::after {
+    transform: translateY(-1px) rotate(180deg);
+  }
+}
+
+@keyframes publicPlanDetailsOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 720px;
+  }
+}
+
+@keyframes publicPlanSummaryTap {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.96);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===== Mobile plan details button fixed edge position ===== */
+@media (max-width: 760px) {
+  .public-plan-mobile-details {
+    display: block;
+    margin-top: 14px;
+    width: 100%;
+  }
+
+  .public-plan-mobile-details[open] {
+    display: block;
+  }
+
+  .public-plan-mobile-details summary {
+    width: fit-content;
+    min-height: 0;
+    margin-left: auto;
+    padding: 6px 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(15, 23, 42, 0.18);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .public-plan-mobile-details-body {
+    width: 100%;
+    padding-top: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .public-plan-mobile-details summary {
+    padding: 6px 10px;
+    font-size: 11.5px;
+  }
+}
+
+/* ===== Mobile plan details open arrow fix ===== */
+@media (max-width: 760px) {
+  .public-plan-mobile-details summary::after {
+    content: "▼";
+    margin-left: 5px;
+    font-size: 9px;
+    line-height: 1;
+    transform: translateY(-1px) rotate(0deg);
+    transition: transform 0.22s ease;
+  }
+
+  .public-plan-mobile-details[open] summary::after {
+    content: "▲";
+    transform: translateY(-1px) rotate(0deg);
+  }
+}
+
+/* ===== Mobile plan details repeat animation fix ===== */
+@media (max-width: 760px) {
+  .public-plan-mobile-details-body {
+    overflow: hidden;
+    transform-origin: top;
+  }
+
+  .public-plan-mobile-details.is-opening .public-plan-mobile-details-body {
+    animation: publicPlanDetailsOpen 0.28s ease both;
+  }
+
+  .public-plan-mobile-details.is-closing .public-plan-mobile-details-body {
+    animation: publicPlanDetailsClose 0.22s ease both;
+  }
+
+  .public-plan-mobile-details summary {
+    position: relative;
+  }
+
+  .public-plan-mobile-details.is-opening summary,
+  .public-plan-mobile-details.is-closing summary {
+    animation: publicPlanSummaryTap 0.18s ease both;
+  }
+
+  .public-plan-mobile-details summary::after {
+    content: "▼";
+    margin-left: 5px;
+    font-size: 9px;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+
+  .public-plan-mobile-details[open] summary::after,
+  .public-plan-mobile-details.is-closing summary::after {
+    content: "▲";
+  }
+}
+
+@keyframes publicPlanDetailsOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 720px;
+  }
+}
+
+@keyframes publicPlanDetailsClose {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 720px;
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+    max-height: 0;
+  }
+}
+
+@keyframes publicPlanSummaryTap {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.96);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===== Mobile plan details open and close animation final ===== */
+@media (max-width: 760px) {
+  .public-plan-mobile-details {
+    display: block;
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  .public-plan-mobile-details summary {
+    width: fit-content;
+    margin-left: auto;
+    padding: 6px 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(15, 23, 42, 0.18);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .public-plan-mobile-details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .public-plan-mobile-details summary::after {
+    content: "▼";
+    margin-left: 5px;
+    font-size: 9px;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+
+  .public-plan-mobile-details[open] summary::after {
+    content: "▲";
+  }
+
+  .public-plan-mobile-details-body {
+    width: 100%;
+    padding-top: 14px;
+    overflow: hidden;
+    transform-origin: top;
+    animation: none !important;
+  }
+
+  .public-plan-mobile-details[open]:not(.is-closing) .public-plan-mobile-details-body {
+    opacity: 1;
+    max-height: 900px;
+    transform: translateY(0);
+  }
+
+  .public-plan-mobile-details.is-opening .public-plan-mobile-details-body {
+    animation: publicPlanDetailsOpenFinal 0.28s ease both !important;
+  }
+
+  .public-plan-mobile-details.is-closing .public-plan-mobile-details-body {
+    animation: publicPlanDetailsCloseFinal 0.24s ease both !important;
+  }
+
+  .public-plan-mobile-details.is-opening summary,
+  .public-plan-mobile-details.is-closing summary {
+    animation: publicPlanSummaryTapFinal 0.16s ease both;
+  }
+}
+
+@keyframes publicPlanDetailsOpenFinal {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    max-height: 900px;
+    transform: translateY(0);
+  }
+}
+
+@keyframes publicPlanDetailsCloseFinal {
+  from {
+    opacity: 1;
+    max-height: 900px;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes publicPlanSummaryTapFinal {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(0.96);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
