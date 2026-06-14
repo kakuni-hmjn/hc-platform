@@ -36,7 +36,7 @@ function add_order_event(
     ?string $oldPaymentStatus,
     ?string $newPaymentStatus
 ): void {
-    $ipAddress = $_SERVER["REMOTE_ADDR"] ?? null;
+    $ipAddress = client_ip() ?? null;
 
     $stmt = $pdo->prepare("
         INSERT INTO server_order_events

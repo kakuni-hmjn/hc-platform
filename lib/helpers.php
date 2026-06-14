@@ -15,7 +15,7 @@ function client_ip(): string
         return trim(explode(",", $_SERVER["HTTP_X_FORWARDED_FOR"])[0]);
     }
 
-    return $_SERVER["REMOTE_ADDR"] ?? "0.0.0.0";
+    return client_ip();
 }
 
 function redirect(string $path): never

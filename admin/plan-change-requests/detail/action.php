@@ -78,7 +78,7 @@ function pc_add_event_safe(
             "new_status" => $newStatus,
             "old_payment_status" => $oldPaymentStatus,
             "new_payment_status" => $newPaymentStatus,
-            "ip_address" => $_SERVER["REMOTE_ADDR"] ?? null,
+            "ip_address" => client_ip() ?? null,
         ]);
     } catch (Throwable $e) {
         // 履歴テーブルが未作成でも処理は継続

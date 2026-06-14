@@ -106,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 ":category" => $category,
                 ":subject" => $subject,
                 ":message" => $message,
-                ":ip_address" => $_SERVER["REMOTE_ADDR"] ?? null,
+                ":ip_address" => client_ip() ?? null,
             ]);
 
             $messages[] = "お問い合わせを送信しました。内容を確認後、必要に応じてご連絡します。";
