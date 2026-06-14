@@ -43,10 +43,10 @@ if ($logExists) {
     }
 }
 
-require_once __DIR__ . "/../../parts/head.php";
+require_once __DIR__ . "/..//parts/head.php";
 ?>
 <body>
-<?php include __DIR__ . "/../../parts/header/header.php"; ?>
+<?php include __DIR__ . "/..//parts/header/header.php"; ?>
 
 <main class="dev-logs-page">
 
@@ -129,7 +129,7 @@ require_once __DIR__ . "/../../parts/head.php";
 
 </main>
 
-<?php include __DIR__ . "/../../parts/footer/footer.php"; ?>
+<?php include __DIR__ . "/..//parts/footer/footer.php"; ?>
 
 <script src="/common/base.js"></script>
 </body>

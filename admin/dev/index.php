@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-require_once __DIR__ . "/../lib/auth.php";
-require_once __DIR__ . "/../lib/helpers.php";
-require_once __DIR__ . "/../lib/db.php";
-require_once __DIR__ . "/../lib/permissions.php";
+require_once __DIR__ . "/../../lib/auth.php";
+require_once __DIR__ . "/../../lib/helpers.php";
+require_once __DIR__ . "/../../lib/db.php";
+require_once __DIR__ . "/../../lib/permissions.php";
 
 $user = require_role("developer");
 
@@ -50,19 +50,19 @@ try {
 }
 
 try {
-    $appConfig = require __DIR__ . "/../config/app.php";
+    $appConfig = require __DIR__ . "/../../config/app.php";
 } catch (Throwable $e) {
     $appConfig = [];
 }
 
 try {
-    $mailConfig = require __DIR__ . "/../config/mail.php";
+    $mailConfig = require __DIR__ . "/../../config/mail.php";
 } catch (Throwable $e) {
     $mailConfig = [];
 }
 
 try {
-    $securityConfig = require __DIR__ . "/../config/security.php";
+    $securityConfig = require __DIR__ . "/../../config/security.php";
 } catch (Throwable $e) {
     $securityConfig = [];
 }
@@ -80,10 +80,11 @@ function dev_mask_status($value): string
     return !empty($value) ? "SET" : "EMPTY";
 }
 
-require_once __DIR__ . "/../parts/head.php";
+require_once __DIR__ . "/../../parts/head.php";
 ?>
+<link rel="stylesheet" href="/admin/dev/dev.css?v=<?= time() ?>">
 <body>
-<?php include __DIR__ . "/../parts/header/header.php"; ?>
+<?php include __DIR__ . "/../../parts/header/header.php"; ?>
 
 <main class="dev-page">
 
@@ -272,7 +273,7 @@ require_once __DIR__ . "/../parts/head.php";
 
 </main>
 
-<?php include __DIR__ . "/../parts/footer/footer.php"; ?>
+<?php include __DIR__ . "/../../parts/footer/footer.php"; ?>
 
 <script src="/common/base.js"></script>
 </body>
