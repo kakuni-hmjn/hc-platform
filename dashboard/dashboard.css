@@ -763,3 +763,58 @@ body.dark-theme .dashboard-ptero-card-needs-setup .dashboard-ptero-status {
         width: 100%;
     }
 }
+
+/* ===== Dashboard role badge ===== */
+.dashboard-role-badge {
+  margin-top: 14px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+
+.dashboard-role-badge--owner {
+  border-color: rgba(245, 158, 11, 0.34);
+  background: linear-gradient(135deg, rgba(255, 247, 237, 0.95), rgba(254, 243, 199, 0.95));
+  color: #92400e;
+}
+
+.dashboard-role-badge--admin {
+  border-color: rgba(239, 68, 68, 0.30);
+  background: linear-gradient(135deg, rgba(254, 242, 242, 0.95), rgba(255, 228, 230, 0.95));
+  color: #991b1b;
+}
+
+.dashboard-role-badge--developer {
+  border-color: rgba(59, 130, 246, 0.30);
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.95), rgba(219, 234, 254, 0.95));
+  color: #1d4ed8;
+}
+
+.dashboard-role-badge--staff {
+  border-color: rgba(16, 185, 129, 0.30);
+  background: linear-gradient(135deg, rgba(236, 253, 245, 0.95), rgba(209, 250, 229, 0.95));
+  color: #047857;
+}
+
+.dashboard-role-badge--user {
+  border-color: rgba(100, 116, 139, 0.22);
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.95));
+  color: #334155;
+}
+
+@media (max-width: 640px) {
+  .dashboard-role-badge {
+    margin-top: 12px;
+    padding: 8px 13px;
+    font-size: 12.5px;
+  }
+}
+

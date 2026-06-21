@@ -4,8 +4,36 @@ session_start();
 
 require_once __DIR__ . "/../lib/helpers.php";
 require_once __DIR__ . "/../lib/auth.php";
+require_once __DIR__ . "/../lib/permissions.php";
 require_once __DIR__ . "/../lib/db.php";
 require_once __DIR__ . "/../lib/pterodactyl.php";
+
+
+
+$dashboardRoleUser = $currentUser ?? $user ?? [];
+
+if (!$dashboardRoleUser && function_exists("current_user")) {
+    $dashboardRoleUser = current_user() ?? [];
+}
+
+$currentRole = (string)($dashboardRoleUser["role"] ?? "user");
+
+$roleLabels = [
+    "owner" => "オーナー",
+    "admin" => "管理者",
+    "developer" => "開発者",
+    "staff" => "スタッフ",
+    "user" => "ユーザー",
+];
+
+$currentRoleLabel = $roleLabels[$currentRole] ?? $currentRole;
+$currentRoleClass = preg_replace('/[^a-z0-9_-]/i', '-', strtolower($currentRole));
+
+$dashboardRoleUser = $currentUser ?? $user ?? [];
+
+if (!$dashboardRoleUser && function_exists("current_user")) {
+    $dashboardRoleUser = current_user() ?? [];
+}
 
 $currentUser = current_user();
 
@@ -136,7 +164,8 @@ require_once __DIR__ . "/../parts/head.php";
                 <p>
                     HC Platformで利用中のサービス、契約中サーバー、通知、注文状況、アカウント情報を確認できます。
                 </p>
-            </div>
+
+</div>
 
             <aside class="dashboard-status-card reveal">
                 <span>HC Account</span>
@@ -145,7 +174,12 @@ require_once __DIR__ . "/../parts/head.php";
                     ログイン中のアカウントで利用中のサービス情報を表示しています。
                 </p>
 
-                <div class="dashboard-mini-stats">
+<div class="dashboard-role-badge dashboard-role-badge--<?= h($currentRoleClass) ?>">
+  <?= h($currentRoleLabel) ?>
+</div>
+
+
+<div class="dashboard-mini-stats">
                     <?php if ($activeServerCount > 0): ?>
                         <div>
                             <strong><?php echo h((string)$activeServerCount); ?></strong>
