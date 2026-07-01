@@ -1253,3 +1253,11 @@ body.dark-theme .mini-read-form button {
         min-height: 30px;
     }
 }
+
+/* Header font unification */
+.site-header,
+.site-header *,
+.header-drawer,
+.header-drawer * {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Hiragino Sans", sans-serif;
+}

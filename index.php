@@ -12,6 +12,76 @@ $pageDescription = "HC Platformは、ゲームサーバー、Webサービス、�
 $pageCss = "/index.css";
 $enableAdsense = true;
 
+$heroDisplayName = "";
+if ($currentUser) {
+    $heroDisplayName = trim((string)($currentUser["username"] ?? $currentUser["name"] ?? $currentUser["email"] ?? ""));
+}
+
+$heroWelcomeTitle = $heroDisplayName !== ""
+    ? "おかえりなさい、" . $heroDisplayName . "さん"
+    : "おかえりなさい";
+
+$heroPanel = $currentUser ? [
+    "badge" => "HC Account",
+    "status" => "Signed in",
+    "title" => $heroWelcomeTitle,
+    "description" => "契約中のサービス、サポート状況、アカウント情報をマイページから確認できます。",
+    "primary" => [
+        "text" => "マイページを開く",
+        "url" => "/dashboard/",
+    ],
+    "items" => [
+        [
+            "label" => "Dashboard",
+            "title" => "契約・アカウント",
+            "text" => "契約中サービスとアカウント情報を確認",
+            "url" => "/dashboard/",
+        ],
+        [
+            "label" => "Services",
+            "title" => "サービス一覧",
+            "text" => "提供中のHCサービスを確認",
+            "url" => "/services/",
+        ],
+        [
+            "label" => "Support",
+            "title" => "お問い合わせ",
+            "text" => "相談・サポート依頼を送信",
+            "url" => "/contact/",
+        ],
+    ],
+] : [
+    "badge" => "Start HC",
+    "status" => "Ready",
+    "title" => "サービスを始める",
+    "description" => "HC Accountを作成すると、サービス申込・お問い合わせ・契約情報の確認ができます。",
+    "primary" => [
+        "text" => "無料でアカウント作成",
+        "url" => "/register/",
+    ],
+    "items" => [
+        [
+            "label" => "Account",
+            "title" => "アカウント作成",
+            "text" => "HCサービスを使うためのアカウントを作成",
+            "url" => "/register/",
+        ],
+        [
+            "label" => "Login",
+            "title" => "ログイン",
+            "text" => "すでにアカウントを持っている方はこちら",
+            "url" => "/login/",
+        ],
+        [
+            "label" => "Services",
+            "title" => "サービスを見る",
+            "text" => "提供中のサービスを確認",
+            "url" => "/services/",
+        ],
+    ],
+];
+
+
 $newsItems = [];
 $newsErrors = [];
 
@@ -108,14 +178,21 @@ require_once __DIR__ . "/parts/head.php";
 <main class="home-page">
 
     <section class="home-hero">
+                <div class="top-hero-bg-motion" aria-hidden="true">
+                    <span class="top-hero-orb top-hero-orb-1"></span>
+                    <span class="top-hero-orb top-hero-orb-2"></span>
+                    <span class="top-hero-orb top-hero-orb-3"></span>
+                    <span class="top-hero-grid"></span>
+                </div>
+
+                
         <div class="container hero-grid">
 
             <div class="hero-copy reveal">
                 <p class="eyebrow">HC Platform</p>
 
                 <h1 class="hero-title">
-                    <span>HCと共にある生活。</span>
-                    <span>遊ぶ、作る、配信する。</span>
+                    <span>遊ぶ、作る、配信する。その裏側も支える</span>
                 </h1>
 
                 <p class="hero-lead">
@@ -136,28 +213,46 @@ require_once __DIR__ . "/parts/head.php";
                 </div>
             </div>
 
-            <aside class="hero-panel reveal">
-                <div class="panel-badge">Now Building</div>
-                <h2>公開に向けて整備中</h2>
-                <p>
-                    HC Account、お問い合わせ、スタッフ管理機能など、
-                    サービス公開に必要な基盤を順次整備しています。
+            <aside class="hero-panel hero-action-card reveal" aria-label="HCサービスメニュー">
+
+                <div class="hero-action-card-bg" aria-hidden="true"></div>
+
+                <div class="hero-action-head">
+                    <div>
+                        <div class="panel-badge"><?php echo h($heroPanel["badge"]); ?></div>
+                        <h2><?php echo h($heroPanel["title"]); ?></h2>
+                    </div>
+
+                    <span class="hero-action-status">
+                        <span></span>
+                        <?php echo h($heroPanel["status"]); ?>
+                    </span>
+                </div>
+
+                <p class="hero-action-description">
+                    <?php echo h($heroPanel["description"]); ?>
                 </p>
 
-                <div class="hero-mini-list">
-                    <div>
-                        <span>Account</span>
-                        <strong>HC Account</strong>
-                    </div>
-                    <div>
-                        <span>Support</span>
-                        <strong>Contact</strong>
-                    </div>
-                    <div>
-                        <span>Service</span>
-                        <strong>Coming Next</strong>
-                    </div>
+                <a class="hero-action-primary" href="<?php echo h($heroPanel["primary"]["url"]); ?>">
+                    <span><?php echo h($heroPanel["primary"]["text"]); ?></span>
+                    <strong>→</strong>
+                </a>
+
+                <div class="hero-action-list">
+                    <?php foreach ($heroPanel["items"] as $item): ?>
+                        <a class="hero-action-item" href="<?php echo h($item["url"]); ?>">
+                            <span class="hero-action-item-label"><?php echo h($item["label"]); ?></span>
+
+                            <span class="hero-action-item-main">
+                                <strong><?php echo h($item["title"]); ?></strong>
+                                <small><?php echo h($item["text"]); ?></small>
+                            </span>
+
+                            <span class="hero-action-item-arrow">→</span>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
+
             </aside>
 
         </div>

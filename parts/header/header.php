@@ -492,6 +492,7 @@ $headerRegisterUrl = "/register/?redirect=" . rawurlencode($headerRedirectPath);
     <nav class="drawer-nav" aria-label="サイトメニュー">
         <a href="/"><span>Top</span><strong>トップページ</strong></a>
         <a href="/services/"><span>Services</span><strong>事業一覧</strong></a>
+        <a href="/services/activities/"><span>Activities</span><strong>eスポーツ/配信者</strong></a>
         <a href="/news/"><span>News</span><strong>お知らせ</strong></a>
         <a href="/contact/"><span>Contact</span><strong>お問い合わせ</strong></a>
         <a href="/operator/"><span>Company</span><strong>運営情報</strong></a>

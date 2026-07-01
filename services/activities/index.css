@@ -1,0 +1,191 @@
+.activities-coming-soon {
+    --act-bg: #f7f9fc;
+    --act-panel: rgba(255, 255, 255, 0.84);
+    --act-panel-strong: #ffffff;
+    --act-text: #0f172a;
+    --act-muted: #64748b;
+    --act-line: rgba(15, 23, 42, 0.12);
+    --act-blue: #2563eb;
+    --act-cyan: #0284c7;
+    --act-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
+
+    min-height: 70vh;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 15% 8%, rgba(37, 99, 235, 0.16), transparent 30%),
+        radial-gradient(circle at 86% 18%, rgba(14, 165, 233, 0.12), transparent 30%),
+        var(--act-bg);
+    color: var(--act-text);
+}
+
+/* Dark theme support */
+html.dark-theme .activities-coming-soon,
+body.dark-theme .activities-coming-soon,
+html[data-theme="dark"] .activities-coming-soon,
+body[data-theme="dark"] .activities-coming-soon,
+html.dark .activities-coming-soon,
+body.dark .activities-coming-soon {
+    --act-bg: #05070c;
+    --act-panel: rgba(255, 255, 255, 0.075);
+    --act-panel-strong: rgba(255, 255, 255, 0.10);
+    --act-text: #f8fafc;
+    --act-muted: #94a3b8;
+    --act-line: rgba(255, 255, 255, 0.14);
+    --act-blue: #38bdf8;
+    --act-cyan: #22d3ee;
+    --act-shadow: 0 32px 90px rgba(0, 0, 0, 0.36);
+
+    background:
+        radial-gradient(circle at 15% 8%, rgba(37, 99, 235, 0.28), transparent 30%),
+        radial-gradient(circle at 86% 18%, rgba(14, 165, 233, 0.20), transparent 30%),
+        var(--act-bg);
+}
+
+/* Light theme support */
+html.light-theme .activities-coming-soon,
+body.light-theme .activities-coming-soon,
+html[data-theme="light"] .activities-coming-soon,
+body[data-theme="light"] .activities-coming-soon,
+html.light .activities-coming-soon,
+body.light .activities-coming-soon {
+    --act-bg: #f7f9fc;
+    --act-panel: rgba(255, 255, 255, 0.84);
+    --act-panel-strong: #ffffff;
+    --act-text: #0f172a;
+    --act-muted: #64748b;
+    --act-line: rgba(15, 23, 42, 0.12);
+    --act-blue: #2563eb;
+    --act-cyan: #0284c7;
+    --act-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
+}
+
+.activities-body {
+    background: var(--act-bg, #f7f9fc);
+}
+
+.coming-soon-hero {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: calc(100vh - 160px);
+    padding: 84px 20px;
+}
+
+.coming-soon-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(var(--act-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--act-line) 1px, transparent 1px);
+    background-size: 54px 54px;
+    mask-image: radial-gradient(circle at center, black 0%, transparent 70%);
+    opacity: 0.36;
+}
+
+.coming-soon-card {
+    position: relative;
+    width: min(820px, 100%);
+    padding: clamp(30px, 5vw, 48px);
+    border-radius: 34px;
+    text-align: center;
+    background:
+        linear-gradient(135deg, rgba(37, 99, 235, 0.08), transparent 42%),
+        var(--act-panel);
+    border: 1px solid var(--act-line);
+    box-shadow: var(--act-shadow);
+    backdrop-filter: blur(18px);
+}
+
+.coming-soon-kicker {
+    width: fit-content;
+    margin: 0 auto 18px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    color: var(--act-blue);
+    background: rgba(37, 99, 235, 0.10);
+    border: 1px solid var(--act-line);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.coming-soon-card h1 {
+    margin: 0;
+    color: var(--act-text);
+    font-size: clamp(3.2rem, 9vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.08em;
+    font-weight: 950;
+}
+
+.coming-soon-card h2 {
+    margin: 18px 0 0;
+    color: var(--act-text);
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    line-height: 1.35;
+    font-weight: 900;
+}
+
+.coming-soon-card p:not(.coming-soon-kicker) {
+    max-width: 620px;
+    margin: 18px auto 0;
+    color: var(--act-muted);
+    line-height: 1.85;
+}
+
+.coming-soon-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.coming-soon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 20px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 900;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.coming-soon-button:hover {
+    transform: translateY(-2px);
+}
+
+.coming-soon-button.primary {
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--act-blue), var(--act-cyan));
+    box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24);
+}
+
+.coming-soon-button.secondary {
+    color: var(--act-text);
+    background: var(--act-panel-strong);
+    border: 1px solid var(--act-line);
+}
+
+@media (max-width: 640px) {
+    .coming-soon-hero {
+        min-height: calc(100vh - 140px);
+        padding: 56px 14px;
+    }
+
+    .coming-soon-card {
+        border-radius: 26px;
+    }
+
+    .coming-soon-actions {
+        flex-direction: column;
+    }
+
+    .coming-soon-button {
+        width: 100%;
+    }
+}
