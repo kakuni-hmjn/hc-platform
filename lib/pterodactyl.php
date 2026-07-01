@@ -322,3 +322,147 @@ function hc_ptero_find_free_allocation(int $pteroNodeId): array
 
     throw new RuntimeException("Node #" . $pteroNodeId . " に空きAllocationがありません。Pterodactyl側でポート枠を追加してください。");
 }
+
+/* =========================================================
+   Compatibility wrappers for /admin/ptero/
+========================================================= */
+
+if (!function_exists("ptero_config")) {
+    function ptero_config(): array
+    {
+        return [
+            "enabled" => hc_ptero_enabled(),
+            "mock" => hc_ptero_mock(),
+            "panel_url" => rtrim((string)hc_ptero_env("PTERO_PANEL_URL", ""), "/"),
+            "api_key" => (string)hc_ptero_env("PTERO_API_KEY", ""),
+            "default_node_id" => (int)hc_ptero_env("PTERO_DEFAULT_NODE_ID", "1"),
+            "default_nest_id" => (int)hc_ptero_env("PTERO_DEFAULT_NEST_ID", "1"),
+            "default_egg_id" => (int)hc_ptero_env("PTERO_DEFAULT_EGG_ID", "1"),
+        ];
+    }
+}
+
+if (!function_exists("ptero_mask_api_key")) {
+    function ptero_mask_api_key(string $key): string
+    {
+        if ($key === "") {
+            return "未設定";
+        }
+
+        if (strlen($key) <= 12) {
+            return str_repeat("*", strlen($key));
+        }
+
+        return substr($key, 0, 6) . "..." . substr($key, -4);
+    }
+}
+
+if (!function_exists("ptero_result")) {
+    function ptero_result(callable $callback): array
+    {
+        try {
+            return [
+                "ok" => true,
+                "status" => 200,
+                "mock" => hc_ptero_mock(),
+                "error" => "",
+                "data" => $callback(),
+            ];
+        } catch (Throwable $e) {
+            return [
+                "ok" => false,
+                "status" => 500,
+                "mock" => hc_ptero_mock(),
+                "error" => $e->getMessage(),
+                "data" => null,
+            ];
+        }
+    }
+}
+
+if (!function_exists("ptero_get_nodes")) {
+    function ptero_get_nodes(): array
+    {
+        return ptero_result(function () {
+            if (hc_ptero_mock()) {
+                return [
+                    "object" => "list",
+                    "data" => [
+                        [
+                            "object" => "node",
+                            "attributes" => [
+                                "id" => 1,
+                                "name" => "HC Mock Node",
+                                "fqdn" => "node.local",
+                                "memory" => 32768,
+                                "disk" => 200000,
+                            ],
+                        ],
+                    ],
+                ];
+            }
+
+            return hc_ptero_request("GET", "/api/application/nodes");
+        });
+    }
+}
+
+if (!function_exists("ptero_get_nests")) {
+    function ptero_get_nests(): array
+    {
+        return ptero_result(function () {
+            if (hc_ptero_mock()) {
+                return [
+                    "object" => "list",
+                    "data" => [
+                        [
+                            "object" => "nest",
+                            "attributes" => [
+                                "id" => 1,
+                                "name" => "Minecraft",
+                                "description" => "Minecraft server eggs",
+                            ],
+                        ],
+                    ],
+                ];
+            }
+
+            return hc_ptero_request("GET", "/api/application/nests");
+        });
+    }
+}
+
+if (!function_exists("ptero_get_eggs")) {
+    function ptero_get_eggs(int $nestId = 1): array
+    {
+        return ptero_result(function () use ($nestId) {
+            if (hc_ptero_mock()) {
+                return [
+                    "object" => "list",
+                    "data" => [
+                        [
+                            "object" => "egg",
+                            "attributes" => [
+                                "id" => 1,
+                                "name" => "Paper",
+                                "nest" => $nestId,
+                                "description" => "Paper Minecraft Server",
+                            ],
+                        ],
+                        [
+                            "object" => "egg",
+                            "attributes" => [
+                                "id" => 2,
+                                "name" => "Vanilla",
+                                "nest" => $nestId,
+                                "description" => "Vanilla Minecraft Server",
+                            ],
+                        ],
+                    ],
+                ];
+            }
+
+            return hc_ptero_request("GET", "/api/application/nests/" . rawurlencode((string)$nestId) . "/eggs");
+        });
+    }
+}
