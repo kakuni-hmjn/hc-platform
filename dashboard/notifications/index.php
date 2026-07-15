@@ -5,6 +5,7 @@ session_start();
 require_once __DIR__ . "/../../lib/helpers.php";
 require_once __DIR__ . "/../../lib/auth.php";
 require_once __DIR__ . "/../../lib/db.php";
+require_once __DIR__ . "/../../lib/notifications.php";
 
 $currentUser = require_login();
 
@@ -13,6 +14,7 @@ $pageDescription = "HC Platformの通知一覧ページです。";
 $pageCss = "/dashboard/notifications/notifications.css";
 
 $pdo = db();
+hc_notifications_ensure_schema($pdo);
 
 $errors = [];
 $personalNotifications = [];
@@ -132,6 +134,7 @@ try {
 
     $personalNotifications = $stmt->fetchAll();
 } catch (Throwable $e) {
+    error_log("[dashboard notifications] " . $e->getMessage());
     $errors[] = "あなた宛通知の取得中にエラーが発生しました。";
 }
 

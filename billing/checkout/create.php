@@ -26,21 +26,23 @@ function checkout_create_flash(string $type, string $message): void
 
 function checkout_create_base_url(): string
 {
-    $publicUrl = hc_stripe_public_url();
+    $publicUrl = rtrim(trim(hc_stripe_public_url()), "/");
 
-    if ($publicUrl !== "") {
+    /*
+     * STRIPE_PUBLIC_URLが本番URLならその値を使用する。
+     * localhostや127.0.0.1が設定されている場合は、本番URLへ固定する。
+     */
+    if (
+        $publicUrl !== "" &&
+        !preg_match(
+            '#^https?://(?:localhost|127\.0\.0\.1)(?::\d+)?(?:/|$)#i',
+            $publicUrl
+        )
+    ) {
         return $publicUrl;
     }
 
-    $host = $_SERVER["HTTP_HOST"] ?? "localhost:8080";
-    $proto = $_SERVER["HTTP_X_FORWARDED_PROTO"] ?? null;
-
-    if (!$proto) {
-        $https = $_SERVER["HTTPS"] ?? "";
-        $proto = ($https !== "" && $https !== "off") ? "https" : "http";
-    }
-
-    return $proto . "://" . $host;
+    return "https://www.hc-jp.net";
 }
 
 function checkout_create_ensure_columns(PDO $pdo): void
@@ -50,6 +52,11 @@ function checkout_create_ensure_columns(PDO $pdo): void
         ADD COLUMN IF NOT EXISTS stripe_checkout_session_id VARCHAR(160),
         ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR(160),
         ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR(160)
+    ");
+
+    $pdo->exec("
+        ALTER TABLE game_server_plans
+        ADD COLUMN IF NOT EXISTS stripe_price_id VARCHAR(160)
     ");
 }
 
@@ -180,6 +187,7 @@ try {
 
     $session = hc_stripe_create_checkout_session([
         "mode" => "subscription",
+        "allow_promotion_codes" => "true",
         "success_url" => $successUrl,
         "cancel_url" => $cancelUrl,
         "customer_email" => (string)$order["email"],

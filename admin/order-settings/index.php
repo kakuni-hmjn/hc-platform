@@ -119,7 +119,7 @@ require_once __DIR__ . "/../../parts/head.php";
                                 </div>
                             </div>
 
-                            <form method="post" action="/admin/order-settings/update.php" class="order-setting-form">
+                            <form method="post" action="/admin/order-settings/update" class="order-setting-form">
                                 <input type="hidden" name="csrf_token" value="<?php echo h($csrfToken); ?>">
                                 <input type="hidden" name="service_key" value="<?php echo h((string)$setting["service_key"]); ?>">
 

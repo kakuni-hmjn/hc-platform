@@ -286,13 +286,13 @@ require_once __DIR__ . "/../../parts/head.php";
                                     請求詳細を見る
                                 </a>
                             <?php else: ?>
-                                <h3>オンライン支払いは準備中です</h3>
+                                <h3>Stripeでオンライン支払い</h3>
                                 <p>
-                                    Stripe Checkout連携後、このボタンから支払いページへ移動できるようにします。
-                                    現段階では仮UIとして表示しています。
+                                    Stripeの安全な決済ページへ移動します。
+                                    カード情報はStripe上で安全に処理されます。
                                 </p>
 
-                                <form method="post" action="/billing/checkout/create.php" class="checkout-start-form">
+                                <form method="post" action="/billing/checkout/create" class="checkout-start-form">
                                     <input type="hidden" name="csrf_token" value="<?php echo h($csrfToken); ?>">
                                     <input type="hidden" name="order_id" value="<?php echo h((string)$order["id"]); ?>">
                                     <button type="submit">
