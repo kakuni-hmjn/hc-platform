@@ -24,6 +24,24 @@ services:
     networks:
       - hc-dev-net
 
+  provision-worker:
+    build: ./docker/web
+    platform: linux/arm64
+    container_name: hc-dev-provision-worker
+    command:
+      - php
+      - /var/www/html/bin/provision-worker.php
+    env_file:
+      - ./.env.dev
+    volumes:
+      - ./:/var/www/html
+      - ./.env.dev:/var/www/.env:ro
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - hc-dev-net
+
   db:
     image: postgres:17
     container_name: hc-dev-db

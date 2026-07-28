@@ -1,328 +1,473 @@
 <?php
 
-session_start();
+declare(strict_types=1);
 
-require_once __DIR__ . "/../lib/helpers.php";
-require_once __DIR__ . "/../lib/auth.php";
-require_once __DIR__ . "/../lib/db.php";
-require_once __DIR__ . "/../lib/permissions.php";
+require_once __DIR__ . '/lib/bootstrap.php';
 
-$user = require_role("staff");
+$staffDashboard = staff_dashboard_load(
+    (int) $staffContext['user']['id']
+);
 
-$pageTitle = "スタッフページ | HC Platform";
-$pageDescription = "HC Platformのスタッフ向けダッシュボードです。";
-$pageCss = "/staff/staff.css";
+$staffGreeting = staff_greeting();
 
-$pdo = db();
+$pageTitle = 'スタッフコンソール';
 
-$openContactCount = 0;
-$inProgressContactCount = 0;
-$totalUserCount = 0;
-$unverifiedUserCount = 0;
-$pendingServerOrderCount = 0;
-$pendingPlanChangeCount = 0;
-$recentContacts = [];
+require_once __DIR__
+    . '/components/layout.php';
 
-try {
-    $stmt = $pdo->query("
-        SELECT
-            COUNT(*) FILTER (WHERE status = 'open') AS open_count,
-            COUNT(*) FILTER (WHERE status = 'in_progress') AS in_progress_count
-        FROM contacts
-    ");
-    $row = $stmt->fetch();
+staff_layout_start([
+    'title' => 'スタッフダッシュボード',
+    'heading' => 'ダッシュボード',
+    'eyebrow' => 'HC STAFF WORKSPACE',
+    'description' => '担当業務、通知、システム状況を確認できます。',
+    'active_navigation' => 'dashboard',
+    'show_heading' => false,
+]);
 
-    $openContactCount = (int)($row["open_count"] ?? 0);
-    $inProgressContactCount = (int)($row["in_progress_count"] ?? 0);
-} catch (Throwable $e) {
-    $openContactCount = 0;
-    $inProgressContactCount = 0;
-}
-
-try {
-    $stmt = $pdo->query("
-        SELECT
-            COUNT(*) AS total_count,
-            COUNT(*) FILTER (WHERE email_verified = false) AS unverified_count
-        FROM users
-        WHERE deleted_at IS NULL
-    ");
-    $row = $stmt->fetch();
-
-    $totalUserCount = (int)($row["total_count"] ?? 0);
-    $unverifiedUserCount = (int)($row["unverified_count"] ?? 0);
-} catch (Throwable $e) {
-    $totalUserCount = 0;
-    $unverifiedUserCount = 0;
-}
-
-try {
-    $stmt = $pdo->query("
-        SELECT COUNT(*) AS count
-        FROM game_server_orders
-        WHERE status IN ('pending_payment', 'paid', 'creating', 'provision_failed')
-    ");
-    $row = $stmt->fetch();
-
-    $pendingServerOrderCount = (int)($row["count"] ?? 0);
-} catch (Throwable $e) {
-    $pendingServerOrderCount = 0;
-}
-
-try {
-    $stmt = $pdo->query("
-        SELECT COUNT(*) AS count
-        FROM server_order_plan_change_requests
-        WHERE status = 'pending'
-    ");
-    $row = $stmt->fetch();
-
-    $pendingPlanChangeCount = (int)($row["count"] ?? 0);
-} catch (Throwable $e) {
-    $pendingPlanChangeCount = 0;
-}
-
-try {
-    $stmt = $pdo->query("
-        SELECT
-            c.id,
-            c.name,
-            c.email,
-            c.category,
-            c.subject,
-            c.status,
-            c.created_at,
-            u.username
-        FROM contacts c
-        LEFT JOIN users u ON u.id = c.user_id
-        ORDER BY c.created_at DESC, c.id DESC
-        LIMIT 5
-    ");
-
-    $recentContacts = $stmt->fetchAll();
-} catch (Throwable $e) {
-    $recentContacts = [];
-}
-
-function staff_contact_status_label(string $status): string
-{
-    return match ($status) {
-        "open" => "未対応",
-        "in_progress" => "対応中",
-        "closed" => "完了",
-        default => $status,
-    };
-}
-
-function staff_contact_category_label(string $category): string
-{
-    return match ($category) {
-        "general" => "一般",
-        "account" => "アカウント",
-        "service" => "サービス",
-        "billing" => "契約・支払い",
-        "bug" => "不具合",
-        "other" => "その他",
-        default => $category,
-    };
-}
-
-function staff_datetime(?string $value): string
-{
-    if (!$value) {
-        return "-";
-    }
-
-    try {
-        return (new DateTime($value))->format("Y/m/d H:i");
-    } catch (Throwable $e) {
-        return $value;
-    }
-}
-
-require_once __DIR__ . "/../parts/head.php";
 ?>
-
-<body>
-<?php include __DIR__ . "/../parts/header/header.php"; ?>
-
-<main class="staff-page">
-    <section class="staff-hero">
-        <div class="container staff-hero-grid">
-            <div class="staff-copy reveal">
-                <p class="eyebrow">Staff Console</p>
-                <h1>スタッフページ</h1>
-                <p>
-                    問い合わせ確認、ユーザー確認、契約状況の確認など、
-                    運営スタッフ向けの対応作業をまとめるページです。
-                </p>
-
-                <div class="staff-quick-links">
-                    <a href="/staff/contacts/">問い合わせ確認</a>
-                    <a href="/staff/users/">ユーザー確認</a>
-                    <a href="/staff/server-orders/">申込確認</a>
-                </div>
-            </div>
-
-            <aside class="staff-status-card reveal">
-                <span>ログイン中</span>
-                <h2><?php echo h((string)$user["username"]); ?></h2>
-                <p><?php echo h(role_label((string)$user["role"])); ?></p>
-
-                <div class="staff-mini-stats">
-                    <div class="<?php echo $openContactCount > 0 ? 'has-alert' : ''; ?>">
-                        <strong><?php echo h((string)$openContactCount); ?></strong>
-                        <small>未対応問い合わせ</small>
-                    </div>
-
+<section class="staff-page-heading">
                     <div>
-                        <strong><?php echo h((string)$inProgressContactCount); ?></strong>
-                        <small>対応中問い合わせ</small>
+                        <p
+                            class="staff-page-heading__eyebrow"
+                        >
+                            HC STAFF WORKSPACE
+                        </p>
+
+                        <h2>
+                            <?= htmlspecialchars(
+                                $staffGreeting['title'],
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>、
+                            <?= htmlspecialchars(
+                                $staffDisplayName,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>さん
+                        </h2>
+
+                        <p
+                            class="staff-page-heading__description"
+                        >
+                            <?= htmlspecialchars(
+                                $staffGreeting['message'],
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>
+                            タスク、通知、社内連絡、
+                            担当業務をまとめて確認できます。
+                        </p>
                     </div>
 
-                    <div>
-                        <strong><?php echo h((string)$totalUserCount); ?></strong>
-                        <small>有効ユーザー</small>
+                    <div
+                        class="staff-page-heading__status"
+                    >
+                        <span></span>
+
+                        <?= htmlspecialchars(
+                            $staffRoleName,
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
                     </div>
+                </section>
 
-                    <div class="<?php echo $pendingServerOrderCount > 0 ? 'has-alert' : ''; ?>">
-                        <strong><?php echo h((string)$pendingServerOrderCount); ?></strong>
-                        <small>確認対象申込</small>
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </section>
+                <section class="staff-summary-grid">
+                    <a
+                        href="/staff/tasks/?status=todo"
+                        class="staff-summary-card"
+                    >
+                        <span>今日のタスク</span>
 
-    <section class="section staff-section">
-        <div class="container">
-            <div class="section-head reveal">
-                <p class="eyebrow">Operation</p>
-                <h2>スタッフメニュー</h2>
-            </div>
-
-            <div class="staff-menu-grid reveal">
-                <a href="/staff/contacts/" class="staff-menu-card staff-card-contact">
-                    <span class="staff-card-mark" data-icon="contact_support"></span>
-                    <h3>問い合わせ確認</h3>
-                    <p>
-                        ユーザーや外部から送信された問い合わせを確認します。
-                        未対応・対応中・完了の状態を追跡できます。
-                    </p>
-
-                    <?php if ($openContactCount > 0): ?>
-                        <strong class="staff-card-badge">
-                            未対応 <?php echo h((string)$openContactCount); ?> 件
+                        <strong>
+                            <?= (int) $staffDashboard[
+                                'counts'
+                            ]['todo'] ?>
                         </strong>
-                    <?php endif; ?>
-                </a>
 
-                <a href="/staff/users/" class="staff-menu-card staff-card-user">
-                    <span class="staff-card-mark" data-icon="group"></span>
-                    <h3>ユーザー確認</h3>
-                    <p>
-                        登録ユーザー、権限、状態、メール認証状況を確認します。
-                        権限変更などの管理操作は管理者ページで行います。
-                    </p>
+                        <small>
+                            未着手の担当業務
+                        </small>
+                    </a>
 
-                    <?php if ($unverifiedUserCount > 0): ?>
-                        <strong class="staff-sub-badge">
-                            未認証 <?php echo h((string)$unverifiedUserCount); ?> 件
+                    <a
+                        href="/staff/tasks/?status=in_progress"
+                        class="staff-summary-card"
+                    >
+                        <span>対応中</span>
+
+                        <strong>
+                            <?= (int) $staffDashboard[
+                                'counts'
+                            ]['in_progress'] ?>
                         </strong>
-                    <?php endif; ?>
-                </a>
 
-                <a href="/staff/server-orders/" class="staff-menu-card staff-card-order">
-                    <span class="staff-card-mark" data-icon="dns"></span>
-                    <h3>申込・契約確認</h3>
-                    <p>
-                        ゲームサーバー申込、決済状態、作成状態を確認します。
-                        スタッフは閲覧・メモ・ユーザー連絡を中心に使います。
-                    </p>
+                        <small>
+                            現在進行中の仕事
+                        </small>
+                    </a>
 
-                    <?php if ($pendingServerOrderCount > 0): ?>
-                        <strong class="staff-card-badge">
-                            確認 <?php echo h((string)$pendingServerOrderCount); ?> 件
+                    <a
+                        href="/staff/tasks/?filter=overdue"
+                        class="staff-summary-card
+                               staff-summary-card--warning"
+                    >
+                        <span>期限超過</span>
+
+                        <strong>
+                            <?= (int) $staffDashboard[
+                                'counts'
+                            ]['overdue'] ?>
                         </strong>
-                    <?php endif; ?>
-                </a>
 
-                <a href="/dashboard/notifications/" class="staff-menu-card staff-card-notice">
-                    <span class="staff-card-mark" data-icon="notifications"></span>
-                    <h3>通知確認</h3>
-                    <p>
-                        自分宛・全体宛の通知を確認します。
-                        運営連絡や作業依頼の確認に使います。
-                    </p>
-                </a>
+                        <small>
+                            早めの確認が必要
+                        </small>
+                    </a>
 
-                <a href="/admin/user-notifications/" class="staff-menu-card staff-card-direct">
-                    <span class="staff-card-mark" data-icon="person"></span>
-                    <h3>個別通知送信</h3>
-                    <p>
-                        必要に応じてユーザーへ個別通知を送信します。
-                        支払い確認や設定確認の連絡に使います。
-                    </p>
-                </a>
+                    <a
+                        href="/staff/notifications/"
+                        class="staff-summary-card"
+                    >
+                        <span>未読通知</span>
 
-                <a href="/dashboard/" class="staff-menu-card staff-card-dashboard">
-                    <span class="staff-card-mark" data-icon="home"></span>
-                    <h3>マイページへ戻る</h3>
-                    <p>
-                        通常のアカウントダッシュボードへ戻ります。
-                    </p>
-                </a>
-            </div>
-        </div>
-    </section>
+                        <strong>
+                            <?= (int) $staffDashboard[
+                                'counts'
+                            ]['notifications'] ?>
+                        </strong>
 
-    <section class="section staff-recent-section">
-        <div class="container">
-            <div class="staff-recent-panel reveal">
-                <div class="panel-head">
-                    <div>
-                        <p class="eyebrow">Recent Contacts</p>
-                        <h2>最近の問い合わせ</h2>
-                    </div>
+                        <small>
+                            まだ確認していない通知
+                        </small>
+                    </a>
+                </section>
 
-                    <a href="/staff/contacts/" class="panel-link">一覧を見る</a>
-                </div>
-
-                <?php if (!$recentContacts): ?>
-                    <div class="staff-empty-box">
-                        <h3>問い合わせはまだありません。</h3>
-                        <p>問い合わせが送信されると、ここに直近の内容が表示されます。</p>
-                    </div>
-                <?php else: ?>
-                    <div class="staff-recent-list">
-                        <?php foreach ($recentContacts as $contact): ?>
-                            <a href="/staff/contacts/detail/?id=<?php echo h((string)$contact["id"]); ?>" class="staff-recent-item status-<?php echo h((string)$contact["status"]); ?>">
+                <div class="staff-dashboard-grid">
+                    <div class="staff-dashboard-column">
+                        <section class="staff-panel">
+                            <header
+                                class="staff-panel__header"
+                            >
                                 <div>
-                                    <span>
-                                        <?php echo h(staff_datetime((string)$contact["created_at"])); ?>
-                                        /
-                                        <?php echo h(staff_contact_category_label((string)$contact["category"])); ?>
-                                    </span>
-                                    <strong><?php echo h((string)$contact["subject"]); ?></strong>
+                                    <h3>自分のタスク</h3>
+
                                     <p>
-                                        <?php echo h((string)($contact["username"] ?: $contact["name"])); ?>
-                                        /
-                                        <?php echo h((string)$contact["email"]); ?>
+                                        優先度と期限順に表示
                                     </p>
                                 </div>
 
-                                <em><?php echo h(staff_contact_status_label((string)$contact["status"])); ?></em>
-                            </a>
-                        <?php endforeach; ?>
+                                <a href="/staff/tasks/">
+                                    すべて見る
+                                </a>
+                            </header>
+
+                            <div class="staff-list">
+                                <?php if (
+                                    $staffDashboard['tasks']
+                                    === []
+                                ): ?>
+                                    <div
+                                        class="staff-empty-state"
+                                    >
+                                        <strong>
+                                            担当タスクはありません
+                                        </strong>
+
+                                        <p>
+                                            新しい仕事が割り当て
+                                            られるとここに表示されます。
+                                        </p>
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach (
+                                        $staffDashboard['tasks']
+                                        as $task
+                                    ): ?>
+                                        <a
+                                            href="/staff/tasks/detail/?id=<?= (int) $task['id'] ?>"
+                                            class="staff-list-row"
+                                        >
+                                            <div>
+                                                <strong>
+                                                    <?= htmlspecialchars(
+                                                        (string) $task[
+                                                            'title'
+                                                        ],
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ) ?>
+                                                </strong>
+
+                                                <p>
+                                                    <?= htmlspecialchars(
+                                                        (string) $task[
+                                                            'task_number'
+                                                        ],
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ) ?>
+
+                                                    ·
+
+                                                    <?= htmlspecialchars(
+                                                        staff_format_due_date(
+                                                            $task[
+                                                                'due_at'
+                                                            ] ?? null
+                                                        ),
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ) ?>
+                                                </p>
+                                            </div>
+
+                                            <span
+                                                class="staff-status
+                                                       staff-status--<?= htmlspecialchars(
+                                                           (string) $task[
+                                                               'status'
+                                                           ],
+                                                           ENT_QUOTES,
+                                                           'UTF-8'
+                                                       ) ?>"
+                                            >
+                                                <?= htmlspecialchars(
+                                                    staff_task_status_label(
+                                                        (string) $task[
+                                                            'status'
+                                                        ]
+                                                    ),
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>
+                                            </span>
+                                        </a>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </section>
+
+                        <section class="staff-panel">
+                            <header
+                                class="staff-panel__header"
+                            >
+                                <div>
+                                    <h3>社内連絡</h3>
+
+                                    <p>
+                                        最新のお知らせ
+                                    </p>
+                                </div>
+
+                                <a
+                                    href="/staff/announcements/"
+                                >
+                                    一覧を見る
+                                </a>
+                            </header>
+
+                            <div class="staff-list">
+                                <?php if (
+                                    $staffDashboard[
+                                        'announcements'
+                                    ] === []
+                                ): ?>
+                                    <div
+                                        class="staff-empty-state"
+                                    >
+                                        <strong>
+                                            新しい社内連絡はありません
+                                        </strong>
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach (
+                                        $staffDashboard[
+                                            'announcements'
+                                        ]
+                                        as $announcement
+                                    ): ?>
+                                        <article
+                                            class="staff-list-row"
+                                        >
+                                            <div>
+                                                <strong>
+                                                    <?= htmlspecialchars(
+                                                        (string) $announcement[
+                                                            'title'
+                                                        ],
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ) ?>
+                                                </strong>
+
+                                                <p>
+                                                    <?= htmlspecialchars(
+                                                        (string) $announcement[
+                                                            'body'
+                                                        ],
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ) ?>
+                                                </p>
+                                            </div>
+
+                                            <?php if (
+                                                !empty(
+                                                    $announcement[
+                                                        'requires_confirmation'
+                                                    ]
+                                                )
+                                            ): ?>
+                                                <span
+                                                    class="staff-status
+                                                           staff-status--waiting"
+                                                >
+                                                    確認必須
+                                                </span>
+                                            <?php endif; ?>
+                                        </article>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </section>
                     </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </section>
-</main>
 
-<?php include __DIR__ . "/../parts/footer/footer.php"; ?>
+                    <aside class="staff-dashboard-side">
+                        <section class="staff-panel">
+                            <header
+                                class="staff-panel__header"
+                            >
+                                <div>
+                                    <h3>担当業務</h3>
 
-<script src="/common/base.js"></script>
-</body>
-</html>
+                                    <p>
+                                        カテゴリと権限から生成
+                                    </p>
+                                </div>
+                            </header>
+
+                            <div class="staff-category-grid">
+                                <?php foreach (
+                                    $staffContext['categories']
+                                    as $category
+                                ): ?>
+                                    <a
+                                        href="/staff/category/?slug=<?= urlencode(
+                                            (string) $category['slug']
+                                        ) ?>"
+                                        class="staff-category-card"
+                                    >
+                                        <strong>
+                                            <?= htmlspecialchars(
+                                                (string) $category[
+                                                    'name'
+                                                ],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
+                                        </strong>
+
+                                        <small>
+                                            <?= htmlspecialchars(
+                                                (string) (
+                                                    $category[
+                                                        'description'
+                                                    ] ?? ''
+                                                ),
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
+                                        </small>
+                                    </a>
+                                <?php endforeach; ?>
+
+                                <?php if (
+                                    staff_can_access_admin(
+                                        $staffContext
+                                    )
+                                ): ?>
+                                    <a
+                                        href="/staff/admin/"
+                                        class="staff-category-card"
+                                    >
+                                        <strong>
+                                            全体管理
+                                        </strong>
+
+                                        <small>
+                                            管理者向け業務機能
+                                        </small>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </section>
+
+                        <section class="staff-panel">
+                            <header
+                                class="staff-panel__header"
+                            >
+                                <div>
+                                    <h3>所属・権限</h3>
+
+                                    <p>
+                                        現在有効なスタッフ情報
+                                    </p>
+                                </div>
+                            </header>
+
+                            <div class="staff-context-grid">
+                                <div>
+                                    <span>基本ロール</span>
+
+                                    <strong>
+                                        <?= htmlspecialchars(
+                                            $staffRoleName,
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ) ?>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>カテゴリ</span>
+
+                                    <strong>
+                                        <?= count(
+                                            $staffContext[
+                                                'categories'
+                                            ]
+                                        ) ?>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>所属部署</span>
+
+                                    <strong>
+                                        <?= count(
+                                            $staffContext[
+                                                'departments'
+                                            ]
+                                        ) ?>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>有効権限</span>
+
+                                    <strong>
+                                        <?= count(
+                                            $staffContext[
+                                                'permissions'
+                                            ]
+                                        ) ?>
+                                    </strong>
+                                </div>
+                            </div>
+                        </section>
+                    </aside>
+                </div>
+<?php
+
+staff_layout_end();

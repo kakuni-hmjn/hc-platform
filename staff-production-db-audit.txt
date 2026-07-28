@@ -1,0 +1,210 @@
+===== DB connection files =====
+config/database.php
+lib/db.php
+lib/game_server_approval.php
+lib/game_server_payment.php
+lib/game_server_provisioning.php
+lib/notifications.php
+lib/order_access.php
+lib/provisioning_jobs.php
+lib/ptero_users.php
+staff/api/notifications/index.php
+staff/api/notifications/read-all.php
+staff/api/notifications/read.php
+staff/lib/db.php
+
+===== Staff bootstrap =====
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/icon.php';
+require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/permissions.php';
+require_once __DIR__ . '/dashboard.php';
+require_once __DIR__ . '/navigation.php';
+require_once __DIR__ . '/rental-server.php';
+
+/*
+|--------------------------------------------------------------------------
+| HCアカウント認証
+|--------------------------------------------------------------------------
+*/
+
+$staffAccount = staff_require_account();
+
+$staffAccountId = (int) (
+    $staffAccount['id']
+    ?? 0
+);
+
+/*
+|--------------------------------------------------------------------------
+| Staff Consoleアクセス権限
+|--------------------------------------------------------------------------
+*/
+
+if (
+    !staff_account_has_permission(
+        $staffAccountId,
+        'staff.access'
+    )
+) {
+    http_response_code(403);
+
+    exit(
+        'このHCアカウントにはスタッフコンソールを利用する権限がありません。'
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| スタッフ固有プロフィール
+|--------------------------------------------------------------------------
+*/
+
+$staffUser = staff_find_or_create_user(
+    $staffAccount
+);
+
+/*
+|--------------------------------------------------------------------------
+| ロール・権限・部署・カテゴリ
+|--------------------------------------------------------------------------
+*/
+
+$staffContext = staff_load_context(
+    $staffAccount,
+    $staffUser
+);
+
+staff_require_permission(
+    $staffContext,
+    'staff.dashboard.view'
+);
+
+$staffNavigation = staff_navigation_build(
+    $staffContext
+);
+
+/*
+|--------------------------------------------------------------------------
+| 共通表示情報
+|--------------------------------------------------------------------------
+*/
+
+$staffPrimaryRole = $staffContext['primary_role'];
+
+$staffDisplayName = trim(
+    (string) (
+        $staffAccount['display_name']
+        ?? $staffAccount['username']
+        ?? $staffUser['display_name']
+        ?? 'Staff'
+    )
+);
+
+if ($staffDisplayName === '') {
+    $staffDisplayName = 'Staff';
+}
+
+$staffRoleName = trim(
+    (string) (
+        $staffPrimaryRole['name']
+        ?? 'Staff'
+    )
+);
+
+if ($staffRoleName === '') {
+    $staffRoleName = 'Staff';
+}
+
+$staffRoleSlug = trim(
+    (string) (
+        $staffPrimaryRole['slug']
+        ?? 'staff'
+    )
+);
+
+if ($staffRoleSlug === '') {
+    $staffRoleSlug = 'staff';
+}
+
+===== Database-related PHP =====
+staff/lib/db.php:13:    $host = getenv('DB_HOST') ?: 'db';
+staff/lib/db.php:14:    $port = getenv('DB_PORT') ?: '5432';
+staff/lib/db.php:16:    $database = getenv('DB_NAME')
+staff/lib/db.php:17:        ?: getenv('POSTGRES_DB')
+staff/lib/db.php:20:    $username = getenv('DB_USER')
+staff/lib/db.php:21:        ?: getenv('POSTGRES_USER')
+staff/lib/db.php:24:    $password = getenv('DB_PASSWORD')
+staff/lib/db.php:25:        ?: getenv('POSTGRES_PASSWORD')
+staff/lib/db.php:29:        'pgsql:host=%s;port=%s;dbname=%s',
+staff/lib/db.php:35:    $pdo = new PDO(
+lib/env.php:39:    $value = $_ENV[$key] ?? getenv($key);
+lib/pterodactyl.php:5:    $value = getenv($key);
+lib/db.php:14:        "pgsql:host=%s;port=%s;dbname=%s",
+lib/db.php:20:    $pdo = new PDO($dsn, $config["user"], $config["password"], [
+lib/stripe.php:5:    $value = getenv($key);
+config/app.php:7:    "app_url" => rtrim(getenv("APP_URL") ?: "https://hc-jp.net", "/"),
+config/mail.php:7:    "mode" => getenv("MAIL_MODE") ?: "log",
+config/mail.php:9:    "smtp_host" => getenv("SMTP_HOST") ?: "smtp-relay.brevo.com",
+config/mail.php:10:    "smtp_port" => (int)(getenv("SMTP_PORT") ?: 587),
+config/mail.php:11:    "smtp_user" => getenv("SMTP_USER") ?: "",
+config/mail.php:12:    "smtp_password" => getenv("SMTP_PASSWORD") ?: "",
+config/mail.php:14:    "from_email" => getenv("MAIL_FROM_ADDRESS") ?: "no-reply@hc-jp.net",
+config/mail.php:15:    "from_name" => getenv("MAIL_FROM_NAME") ?: "HCPlatform",
+config/database.php:7:    "host" => getenv("DB_HOST") ?: "127.0.0.1",
+config/database.php:8:    "port" => getenv("DB_PORT") ?: "5432",
+config/database.php:9:    "dbname" => getenv("DB_NAME") ?: "hc_account",
+config/database.php:10:    "user" => getenv("DB_USER") ?: "hc_user",
+config/database.php:11:    "password" => getenv("DB_PASSWORD") ?: "",
+config/security.php:7:    "turnstile_site_key" => getenv("TURNSTILE_SITE_KEY") ?: "",
+config/security.php:8:    "turnstile_secret_key" => getenv("TURNSTILE_SECRET_KEY") ?: "",
+
+===== Environment variable names =====
+APP_URL
+DB_HOST
+DB_NAME
+DB_PASSWORD
+DB_PORT
+DB_USER
+MAIL_FROM_ADDRESS
+MAIL_FROM_NAME
+MAIL_MODE
+PTERO_API_KEY
+PTERO_DEFAULT_EGG_ID
+PTERO_DEFAULT_LOCATION_ID
+PTERO_DEFAULT_NEST_ID
+PTERO_DEFAULT_NODE_ID
+PTERO_DEFAULT_USER_ID
+PTERO_ENABLED
+PTERO_MOCK
+PTERO_PANEL_URL
+SMTP_HOST
+SMTP_PASSWORD
+SMTP_PORT
+SMTP_USER
+STRIPE_CANCEL_URL
+STRIPE_CURRENCY
+STRIPE_ENABLED
+STRIPE_MOCK
+STRIPE_SECRET_KEY
+STRIPE_SUCCESS_URL
+STRIPE_WEBHOOK_SECRET
+TURNSTILE_SECRET_KEY
+TURNSTILE_SITE_KEY
+
+===== Staff SQL queries =====
+staff/lib/rental-server.php:119:            "SELECT COUNT(*)
+staff/lib/rental-server.php:134:            "SELECT COUNT(*)
+staff/lib/auth.php:71:        'INSERT INTO staff_users (
+staff/lib/auth.php:89:        DO UPDATE SET
+staff/lib/permissions.php:24:        'SELECT 1
+staff/lib/permissions.php:84:        'SELECT DISTINCT
+staff/api/status/update.php:69:        'UPDATE staff_users
+staff/api/notifications/index.php:210:        SELECT COUNT(*)
+staff/api/notifications/read-all.php:140:        UPDATE staff_notifications
+staff/api/notifications/read.php:158:        UPDATE staff_notifications
+
+===== Mock/sample data usage =====

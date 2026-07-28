@@ -15,6 +15,13 @@ $pageCss = "/admin/server-orders/detail/detail.css";
 
 $pdo = db();
 
+if (empty($_SESSION["server_approval_token"])) {
+    $_SESSION["server_approval_token"] = bin2hex(random_bytes(32));
+}
+
+$serverApprovalToken = (string)$_SESSION["server_approval_token"];
+
+
 $errors = [];
 $order = null;
 $events = [];
@@ -319,6 +326,77 @@ if ($order) {
     if ($hasCancel) {
         $detailCardClass .= " is-cancel-related";
     }
+}
+
+
+$eventStmt = $pdo->prepare("
+    SELECT
+        soe.id,
+        soe.event_type,
+        soe.title,
+        soe.message,
+        soe.old_status,
+        soe.new_status,
+        soe.old_payment_status,
+        soe.new_payment_status,
+        soe.metadata_json,
+        soe.created_at,
+        u.username AS actor_username
+    FROM server_order_events soe
+    LEFT JOIN users u
+        ON u.id = soe.actor_user_id
+    WHERE soe.order_id = :order_id
+    ORDER BY soe.created_at DESC, soe.id DESC
+");
+
+$eventStmt->execute([
+    "order_id" => $orderId,
+]);
+
+$orderEvents = $eventStmt->fetchAll(PDO::FETCH_ASSOC);
+
+function detail_event_label(string $eventType): string
+{
+    return match ($eventType) {
+        "payment_completed" => "支払い完了",
+        "provisioning_requested" => "自動作成要求",
+        "provisioning_started" => "自動作成開始",
+        "ptero_user_resolved" => "パネルユーザー準備",
+        "ptero_server_created" => "サーバー作成完了",
+        "ptero_server_suspended" => "承認待ち停止",
+        "approval_requested" => "承認待ち",
+        "server_approved" => "利用開始承認",
+        "server_approval_failed" => "承認失敗",
+        "provisioning_failed",
+        "ptero_server_create_failed" => "自動作成失敗",
+        default => $eventType,
+    };
+}
+
+function detail_event_class(string $eventType): string
+{
+    if (
+        str_contains($eventType, "failed")
+        || str_contains($eventType, "error")
+    ) {
+        return "is-error";
+    }
+
+    if (
+        $eventType === "server_approved"
+        || $eventType === "payment_completed"
+    ) {
+        return "is-success";
+    }
+
+    if (
+        $eventType === "approval_requested"
+        || $eventType === "ptero_server_suspended"
+    ) {
+        return "is-warning";
+    }
+
+    return "is-info";
 }
 
 require_once __DIR__ . "/../../../parts/head.php";
@@ -919,6 +997,168 @@ require_once __DIR__ . "/../../../parts/head.php";
         </div>
     </section>
 </main>
+
+
+
+<?php if (in_array((string)$order["status"], ["pending_approval", "approval_failed"], true)): ?>
+<section class="section detail-approval-section">
+    <div class="container">
+        <section class="detail-approval-card <?php echo $order["status"] === "approval_failed" ? "is-failed" : ""; ?>">
+            <div class="detail-approval-copy">
+                <p class="eyebrow">Server Approval</p>
+
+                <h2>
+                    <?php echo $order["status"] === "approval_failed"
+                        ? "承認処理を再試行できます"
+                        : "利用開始の承認待ちです"; ?>
+                </h2>
+
+                <p>
+                    自動作成済みのゲームサーバーを確認し、
+                    問題がなければ利用開始を承認してください。
+                </p>
+
+                <?php if (!empty($order["approval_error"])): ?>
+                    <div class="detail-approval-error">
+                        <?php echo h((string)$order["approval_error"]); ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <form
+                method="post"
+                action="/admin/server-orders/approve"
+                class="detail-approval-form"
+            >
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="<?php echo h($serverApprovalToken); ?>"
+                >
+
+                <input
+                    type="hidden"
+                    name="order_id"
+                    value="<?php echo h((string)$order["id"]); ?>"
+                >
+
+                <button type="submit" class="primary-action">
+                    <?php echo $order["status"] === "approval_failed"
+                        ? "承認を再試行"
+                        : "承認して利用開始"; ?>
+                </button>
+            </form>
+        </section>
+    </div>
+</section>
+<?php endif; ?>
+
+<section class="section order-event-section">
+    <div class="container">
+        <section class="order-event-panel reveal">
+            <div class="order-event-panel-head">
+                <div>
+                    <p class="eyebrow">Order Timeline</p>
+                    <h2>処理履歴</h2>
+                    <p>
+                        支払い、自動作成、承認などの処理履歴を表示します。
+                    </p>
+                </div>
+
+                <span class="order-event-count">
+                    <?php echo h((string)count($orderEvents)); ?> 件
+                </span>
+            </div>
+
+            <?php if (!$orderEvents): ?>
+                <div class="order-event-empty">
+                    <strong>処理履歴はありません</strong>
+                    <p>この注文に記録されたイベントはまだありません。</p>
+                </div>
+            <?php else: ?>
+                <div class="order-event-timeline">
+                    <?php foreach ($orderEvents as $event): ?>
+                        <article class="order-event-item <?php echo h(detail_event_class((string)$event["event_type"])); ?>">
+                            <span class="order-event-dot"></span>
+
+                            <div class="order-event-content">
+                                <div class="order-event-head">
+                                    <div>
+                                        <span class="order-event-type">
+                                            <?php echo h(detail_event_label((string)$event["event_type"])); ?>
+                                        </span>
+
+                                        <h3>
+                                            <?php echo h((string)$event["title"]); ?>
+                                        </h3>
+                                    </div>
+
+                                    <time>
+                                        <?php echo h(detail_datetime((string)$event["created_at"])); ?>
+                                    </time>
+                                </div>
+
+                                <?php if (!empty($event["message"])): ?>
+                                    <p class="order-event-message">
+                                        <?php echo nl2br(h((string)$event["message"])); ?>
+                                    </p>
+                                <?php endif; ?>
+
+                                <div class="order-event-meta">
+                                    <?php if (!empty($event["old_status"]) || !empty($event["new_status"])): ?>
+                                        <span>
+                                            状態:
+                                            <?php echo h((string)($event["old_status"] ?: "-")); ?>
+                                            →
+                                            <?php echo h((string)($event["new_status"] ?: "-")); ?>
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($event["old_payment_status"]) || !empty($event["new_payment_status"])): ?>
+                                        <span>
+                                            支払い:
+                                            <?php echo h((string)($event["old_payment_status"] ?: "-")); ?>
+                                            →
+                                            <?php echo h((string)($event["new_payment_status"] ?: "-")); ?>
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <span>
+                                        実行者:
+                                        <?php echo h((string)($event["actor_username"] ?: "System")); ?>
+                                    </span>
+                                </div>
+
+                                <?php if (!empty($event["metadata_json"])): ?>
+                                    <details class="order-event-details">
+                                        <summary>詳細データ</summary>
+                                        <pre><?php
+                                            $metadata = $event["metadata_json"];
+
+                                            if (is_string($metadata)) {
+                                                $decoded = json_decode($metadata, true);
+                                                $metadata = $decoded ?? $metadata;
+                                            }
+
+                                            echo h(
+                                                json_encode(
+                                                    $metadata,
+                                                    JSON_PRETTY_PRINT
+                                                    | JSON_UNESCAPED_UNICODE
+                                                    | JSON_UNESCAPED_SLASHES
+                                                )
+                                            );
+                                        ?></pre>
+                                    </details>
+                                <?php endif; ?>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </section>
+    </div>
+</section>
 
 <?php include __DIR__ . "/../../../parts/footer/footer.php"; ?>
 

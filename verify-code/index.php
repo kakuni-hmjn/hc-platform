@@ -4,6 +4,7 @@ session_start();
 require_once __DIR__ . "/../lib/db.php";
 require_once __DIR__ . "/../lib/csrf.php";
 require_once __DIR__ . "/../lib/helpers.php";
+require_once __DIR__ . "/../lib/auth.php";
 require_once __DIR__ . "/../lib/mailer.php";
 
 $security = require __DIR__ . "/../config/security.php";
@@ -60,11 +61,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             } elseif ((int)$pending["resend_count"] >= (int)$security["max_verification_resends"]) {
                 $errors[] = "認証コードの再送回数が上限に達しました。もう一度新規登録してください。";
             } elseif (!empty($pending["last_sent_at"])) {
-                $lastSentAt = strtotime($pending["last_sent_at"]);
                 $waitSeconds = (int)$security["verification_resend_wait_seconds"];
 
-                if ($lastSentAt !== false && (time() - $lastSentAt) < $waitSeconds) {
-                    $remaining = $waitSeconds - (time() - $lastSentAt);
+                $waitStmt = $pdo->prepare("
+                    SELECT GREATEST(
+                        0,
+                        :wait_seconds - EXTRACT(EPOCH FROM (NOW() - last_sent_at))
+                    )::integer AS remaining_seconds
+                    FROM pending_registrations
+                    WHERE id = :id
+                ");
+
+                $waitStmt->execute([
+                    ":wait_seconds" => $waitSeconds,
+                    ":id" => $pending["id"],
+                ]);
+
+                $remaining = (int)($waitStmt->fetchColumn() ?: 0);
+
+                if ($remaining > 0) {
                     $errors[] = "認証コードの再送はあと" . $remaining . "秒後にお試しください。";
                 }
             }

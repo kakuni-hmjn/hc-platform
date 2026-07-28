@@ -38,9 +38,12 @@ function user_order_status_label(string $status): string
     return match ($status) {
         "pending_payment" => "決済待ち",
         "paid" => "決済済み",
-        "creating" => "作成中",
+        "creating" => "サーバー作成中",
+        "pending_approval" => "管理者確認待ち",
+        "activating" => "利用開始処理中",
         "active" => "稼働中",
-        "provision_failed" => "作成失敗",
+        "provision_failed" => "サーバー作成失敗",
+        "approval_failed" => "利用開始処理失敗",
         "suspended" => "停止中",
         "cancelled" => "キャンセル",
         "expired" => "期限切れ",
@@ -296,7 +299,18 @@ $canPayOrder = $order
         $status === "pending_payment"
         || in_array($paymentStatus, ["unpaid", "checkout_created", "failed"], true)
     )
-    && !in_array($status, ["paid", "creating", "active", "cancelled", "expired", "suspended"], true);
+    && !in_array($status, [
+        "paid",
+        "creating",
+        "pending_approval",
+        "activating",
+        "active",
+        "provision_failed",
+        "approval_failed",
+        "cancelled",
+        "expired",
+        "suspended"
+    ], true);
 
 $pteroServer = null;
 

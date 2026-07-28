@@ -9,6 +9,10 @@ function hc_notifications_ensure_schema(PDO $pdo): void
             title VARCHAR(180) NOT NULL,
             body TEXT,
             link_url VARCHAR(255),
+            dedupe_key VARCHAR(180) NULL,
+            status VARCHAR(30) NOT NULL DEFAULT 'published',
+            published_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            created_by INTEGER NULL,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP NULL
         )
@@ -20,8 +24,32 @@ function hc_notifications_ensure_schema(PDO $pdo): void
         ADD COLUMN IF NOT EXISTS title VARCHAR(180),
         ADD COLUMN IF NOT EXISTS body TEXT,
         ADD COLUMN IF NOT EXISTS link_url VARCHAR(255),
+        ADD COLUMN IF NOT EXISTS dedupe_key VARCHAR(180) NULL,
+        ADD COLUMN IF NOT EXISTS status VARCHAR(30),
+        ADD COLUMN IF NOT EXISTS published_at TIMESTAMP NULL,
+        ADD COLUMN IF NOT EXISTS created_by INTEGER NULL,
         ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NULL
+    ");
+
+    $pdo->exec("
+        UPDATE user_direct_notifications
+        SET status = 'published'
+        WHERE status IS NULL OR status = ''
+    ");
+
+    $pdo->exec("
+        UPDATE user_direct_notifications
+        SET published_at = COALESCE(created_at, NOW())
+        WHERE published_at IS NULL
+    ");
+
+    $pdo->exec("
+        ALTER TABLE user_direct_notifications
+        ALTER COLUMN status SET DEFAULT 'published',
+        ALTER COLUMN status SET NOT NULL,
+        ALTER COLUMN published_at SET DEFAULT CURRENT_TIMESTAMP,
+        ALTER COLUMN published_at SET NOT NULL
     ");
 
     $pdo->exec("
@@ -32,6 +60,12 @@ function hc_notifications_ensure_schema(PDO $pdo): void
     $pdo->exec("
         CREATE INDEX IF NOT EXISTS idx_user_direct_notifications_created_at
         ON user_direct_notifications(created_at)
+    ");
+
+    $pdo->exec("
+        CREATE UNIQUE INDEX IF NOT EXISTS uq_user_direct_notifications_dedupe
+        ON user_direct_notifications(user_id, dedupe_key)
+        WHERE dedupe_key IS NOT NULL
     ");
 
     $pdo->exec("
@@ -53,33 +87,49 @@ function hc_notify_user(
     string $title,
     string $message,
     ?string $targetUrl = null,
-    string $type = "info"
-): void {
+    string $type = "info",
+    ?string $dedupeKey = null
+): bool {
     if ($userId <= 0) {
-        return;
+        return false;
     }
 
     hc_notifications_ensure_schema($pdo);
 
+    $dedupeKey = $dedupeKey !== null
+        ? trim($dedupeKey)
+        : null;
+
+    if ($dedupeKey === "") {
+        $dedupeKey = null;
+    }
+
     $stmt = $pdo->prepare("
-        INSERT INTO user_direct_notifications
-        (
+        INSERT INTO user_direct_notifications (
             user_id,
             title,
             body,
             link_url,
+            dedupe_key,
+            status,
+            published_at,
             created_at,
             updated_at
         )
-        VALUES
-        (
+        VALUES (
             :user_id,
             :title,
             :body,
             :link_url,
+            :dedupe_key,
+            'published',
+            NOW(),
             NOW(),
             NOW()
         )
+        ON CONFLICT (user_id, dedupe_key)
+        WHERE dedupe_key IS NOT NULL
+        DO NOTHING
     ");
 
     $stmt->execute([
@@ -87,5 +137,8 @@ function hc_notify_user(
         "title" => $title,
         "body" => $message,
         "link_url" => $targetUrl,
+        "dedupe_key" => $dedupeKey,
     ]);
+
+    return $stmt->rowCount() > 0;
 }
