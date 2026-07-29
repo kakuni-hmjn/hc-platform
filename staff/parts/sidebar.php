@@ -276,6 +276,12 @@ function staff_sidebar_render_items(
                 </div>
             </section>
         <?php endforeach; ?>
+
+
+
+        <?php require __DIR__
+    . '/hpmc-sidebar-menu.php'; ?>
+
     </nav>
 
     <div class="staff-sidebar__account">

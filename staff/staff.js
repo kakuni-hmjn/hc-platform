@@ -1234,3 +1234,173 @@
 })();
 
 /* HC_STAFF_NAV_ACCORDION_END */
+
+/* HPMC sidebar dropdown state */
+(() => {
+    'use strict';
+
+    const group = document.querySelector(
+        '[data-staff-sidebar-group="hpmc"]'
+    );
+
+    if (!(group instanceof HTMLDetailsElement)) {
+        return;
+    }
+
+    const storageKey =
+        'hc_staff_sidebar_hpmc_open_v1';
+
+    const path = window.location.pathname;
+    const isHpmcPage =
+        path.startsWith('/staff/property/');
+
+    if (isHpmcPage) {
+        group.open = true;
+    } else {
+        const saved =
+            window.localStorage.getItem(storageKey);
+
+        if (saved === '1') {
+            group.open = true;
+        }
+
+        if (saved === '0') {
+            group.open = false;
+        }
+    }
+
+    group.addEventListener('toggle', () => {
+        window.localStorage.setItem(
+            storageKey,
+            group.open ? '1' : '0'
+        );
+    });
+})();
+
+/* HPMC sidebar dropdown state */
+(() => {
+    'use strict';
+
+    const group = document.querySelector(
+        '[data-staff-sidebar-group="hpmc"]'
+    );
+
+    if (!(group instanceof HTMLDetailsElement)) {
+        return;
+    }
+
+    const storageKey =
+        'hc_staff_sidebar_hpmc_open_v1';
+
+    const path = window.location.pathname;
+    const isHpmcPage =
+        path.startsWith('/staff/property/');
+
+    if (isHpmcPage) {
+        group.open = true;
+    } else {
+        const saved =
+            window.localStorage.getItem(storageKey);
+
+        if (saved === '1') {
+            group.open = true;
+        }
+
+        if (saved === '0') {
+            group.open = false;
+        }
+    }
+
+    group.addEventListener('toggle', () => {
+        window.localStorage.setItem(
+            storageKey,
+            group.open ? '1' : '0'
+        );
+    });
+})();
+
+/* ==================================================
+   HPMC full page navigation
+   HPMCはページ固有JSを確実に初期化するため、
+   スタッフコンソールの部分読み込みを使用しない。
+   ================================================== */
+(() => {
+    'use strict';
+
+    const hpmcPrefix = '/staff/property/';
+
+    document.addEventListener(
+        'click',
+        (event) => {
+            if (
+                event.defaultPrevented
+                || event.button !== 0
+                || event.metaKey
+                || event.ctrlKey
+                || event.shiftKey
+                || event.altKey
+            ) {
+                return;
+            }
+
+            const target = event.target;
+
+            if (!(target instanceof Element)) {
+                return;
+            }
+
+            const link = target.closest('a[href]');
+
+            if (!(link instanceof HTMLAnchorElement)) {
+                return;
+            }
+
+            if (
+                link.target === '_blank'
+                || link.hasAttribute('download')
+            ) {
+                return;
+            }
+
+            let url;
+
+            try {
+                url = new URL(
+                    link.href,
+                    window.location.origin
+                );
+            } catch (error) {
+                return;
+            }
+
+            if (
+                url.origin !== window.location.origin
+                || !url.pathname.startsWith(hpmcPrefix)
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            const currentUrl =
+                window.location.pathname
+                + window.location.search
+                + window.location.hash;
+
+            const destinationUrl =
+                url.pathname
+                + url.search
+                + url.hash;
+
+            if (currentUrl === destinationUrl) {
+                window.location.reload();
+                return;
+            }
+
+            window.location.assign(url.href);
+        },
+        true
+    );
+})();

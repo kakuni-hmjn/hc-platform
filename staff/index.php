@@ -143,6 +143,41 @@ staff_layout_start([
                     </a>
                 </section>
 
+                <section class="staff-panel">
+                    <header class="staff-panel__header">
+                        <div>
+                            <h3>業務システム</h3>
+
+                            <p>
+                                担当業務に使用する管理センター
+                            </p>
+                        </div>
+                    </header>
+
+                    <div class="staff-list">
+                        <a
+                            href="/staff/property/"
+                            class="staff-list-row"
+                        >
+                            <div>
+                                <strong>
+                                    HC物品管理センター
+                                </strong>
+
+                                <p>
+                                    商品、備品、IT資産、在庫、
+                                    ロケーションを管理
+                                </p>
+                            </div>
+
+                            <span class="staff-status
+                                         staff-status--in_progress">
+                                HPMC
+                            </span>
+                        </a>
+                    </div>
+                </section>
+
                 <div class="staff-dashboard-grid">
                     <div class="staff-dashboard-column">
                         <section class="staff-panel">

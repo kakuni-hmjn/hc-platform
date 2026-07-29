@@ -167,7 +167,7 @@ function staff_layout_end(): void
         defer
     ></script>
 
-    <script src="/staff/staff.js?v=1784390834"></script>
+    <script src="/staff/staff.js?v=1785294209"></script>
     <script src="/staff/account-menu.js?v=1784391309" defer></script>
     <script src="/staff/search-palette.js?v=1784437057" defer></script>
 </body>

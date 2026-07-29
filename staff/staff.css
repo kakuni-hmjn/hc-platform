@@ -5041,3 +5041,694 @@ body.staff-command-palette-open {
         transition: none;
     }
 }
+
+/* HPMC sidebar navigation */
+.staff-sidebar-property-link {
+    min-height: 48px;
+    margin: 6px 8px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    border: 1px solid transparent;
+    border-radius: 13px;
+    color: var(--staff-muted, #94a3b8);
+    text-decoration: none;
+    transition:
+        background .16s ease,
+        border-color .16s ease,
+        color .16s ease;
+}
+
+.staff-sidebar-property-link:hover {
+    border-color: rgba(59, 130, 246, .16);
+    background: rgba(59, 130, 246, .07);
+    color: inherit;
+}
+
+.staff-sidebar-property-link.is-active {
+    border-color: rgba(59, 130, 246, .24);
+    background: rgba(37, 99, 235, .13);
+    color: #60a5fa;
+}
+
+.staff-sidebar-property-link > .material-icons {
+    font-size: 21px;
+}
+
+.staff-sidebar-property-link__text {
+    min-width: 0;
+    display: grid;
+    gap: 1px;
+}
+
+.staff-sidebar-property-link__text strong {
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.staff-sidebar-property-link__text small {
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .1em;
+}
+
+/* ==================================================
+   HPMC sidebar dropdown
+   ================================================== */
+
+.staff-sidebar-group {
+    margin: 6px 8px;
+}
+
+.staff-sidebar-group > summary {
+    list-style: none;
+}
+
+.staff-sidebar-group > summary::-webkit-details-marker {
+    display: none;
+}
+
+.staff-sidebar-group__summary {
+    min-height: 52px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    color: var(--staff-muted, #94a3b8);
+    cursor: pointer;
+    user-select: none;
+    transition:
+        border-color .16s ease,
+        background .16s ease,
+        color .16s ease;
+}
+
+.staff-sidebar-group__summary:hover {
+    border-color: rgba(59, 130, 246, .18);
+    background: rgba(59, 130, 246, .065);
+    color: inherit;
+}
+
+.staff-sidebar-group__summary.is-active {
+    border-color: rgba(59, 130, 246, .25);
+    background: rgba(37, 99, 235, .115);
+    color: #60a5fa;
+}
+
+.staff-sidebar-group__main {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.staff-sidebar-group__icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, .1);
+    color: #60a5fa;
+}
+
+.staff-sidebar-group__icon .material-icons {
+    font-size: 19px;
+}
+
+.staff-sidebar-group__text {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+}
+
+.staff-sidebar-group__text strong {
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 850;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.staff-sidebar-group__text small {
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: .12em;
+}
+
+.staff-sidebar-group__arrow {
+    flex: 0 0 auto;
+    color: #64748b;
+    font-size: 19px;
+    transition:
+        color .16s ease,
+        transform .2s ease;
+}
+
+.staff-sidebar-group[open]
+.staff-sidebar-group__arrow {
+    color: #60a5fa;
+    transform: rotate(180deg);
+}
+
+.staff-sidebar-submenu {
+    margin: 5px 0 2px 16px;
+    padding: 4px 0 5px 16px;
+    position: relative;
+    display: grid;
+    gap: 2px;
+    border-left: 1px solid rgba(148, 163, 184, .15);
+}
+
+.staff-sidebar-submenu::before {
+    content: "";
+    width: 1px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -1px;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(59, 130, 246, .42),
+            rgba(59, 130, 246, .05)
+        );
+    opacity: 0;
+    transition: opacity .18s ease;
+}
+
+.staff-sidebar-group[open]
+.staff-sidebar-submenu::before {
+    opacity: 1;
+}
+
+.staff-sidebar-submenu__item {
+    min-height: 37px;
+    padding: 0 9px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border-radius: 10px;
+    color: var(--staff-muted, #94a3b8);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 750;
+    transition:
+        background .15s ease,
+        color .15s ease,
+        transform .15s ease;
+}
+
+.staff-sidebar-submenu__item::before {
+    content: "";
+    width: 8px;
+    height: 1px;
+    position: absolute;
+    top: 50%;
+    left: -17px;
+    background: rgba(148, 163, 184, .28);
+}
+
+.staff-sidebar-submenu__item:hover {
+    background: rgba(59, 130, 246, .06);
+    color: inherit;
+    transform: translateX(2px);
+}
+
+.staff-sidebar-submenu__item.is-active {
+    background: rgba(37, 99, 235, .13);
+    color: #60a5fa;
+}
+
+.staff-sidebar-submenu__item.is-active::before {
+    height: 9px;
+    left: -21px;
+    border-radius: 999px;
+    background: #3b82f6;
+}
+
+.staff-sidebar-submenu__item .material-icons {
+    width: 18px;
+    flex: 0 0 auto;
+    font-size: 17px;
+}
+
+.staff-sidebar-submenu__item span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 以前の単独リンク用CSSを無効化 */
+.staff-sidebar-property-link {
+    display: none !important;
+}
+
+/* ==================================================
+   HPMC sidebar dropdown
+   ================================================== */
+
+.staff-sidebar-group {
+    margin: 6px 8px;
+}
+
+.staff-sidebar-group > summary {
+    list-style: none;
+}
+
+.staff-sidebar-group > summary::-webkit-details-marker {
+    display: none;
+}
+
+.staff-sidebar-group__summary {
+    min-height: 52px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    color: var(--staff-muted, #94a3b8);
+    cursor: pointer;
+    user-select: none;
+    transition:
+        border-color .16s ease,
+        background .16s ease,
+        color .16s ease;
+}
+
+.staff-sidebar-group__summary:hover {
+    border-color: rgba(59, 130, 246, .18);
+    background: rgba(59, 130, 246, .065);
+    color: inherit;
+}
+
+.staff-sidebar-group__summary.is-active {
+    border-color: rgba(59, 130, 246, .25);
+    background: rgba(37, 99, 235, .115);
+    color: #60a5fa;
+}
+
+.staff-sidebar-group__main {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.staff-sidebar-group__icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, .1);
+    color: #60a5fa;
+}
+
+.staff-sidebar-group__icon .material-icons {
+    font-size: 19px;
+}
+
+.staff-sidebar-group__text {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+}
+
+.staff-sidebar-group__text strong {
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 850;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.staff-sidebar-group__text small {
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: .12em;
+}
+
+.staff-sidebar-group__arrow {
+    flex: 0 0 auto;
+    color: #64748b;
+    font-size: 19px;
+    transition:
+        color .16s ease,
+        transform .2s ease;
+}
+
+.staff-sidebar-group[open]
+.staff-sidebar-group__arrow {
+    color: #60a5fa;
+    transform: rotate(180deg);
+}
+
+.staff-sidebar-submenu {
+    margin: 5px 0 2px 16px;
+    padding: 4px 0 5px 16px;
+    position: relative;
+    display: grid;
+    gap: 2px;
+    border-left: 1px solid rgba(148, 163, 184, .15);
+}
+
+.staff-sidebar-submenu::before {
+    content: "";
+    width: 1px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -1px;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(59, 130, 246, .42),
+            rgba(59, 130, 246, .05)
+        );
+    opacity: 0;
+    transition: opacity .18s ease;
+}
+
+.staff-sidebar-group[open]
+.staff-sidebar-submenu::before {
+    opacity: 1;
+}
+
+.staff-sidebar-submenu__item {
+    min-height: 37px;
+    padding: 0 9px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border-radius: 10px;
+    color: var(--staff-muted, #94a3b8);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 750;
+    transition:
+        background .15s ease,
+        color .15s ease,
+        transform .15s ease;
+}
+
+.staff-sidebar-submenu__item::before {
+    content: "";
+    width: 8px;
+    height: 1px;
+    position: absolute;
+    top: 50%;
+    left: -17px;
+    background: rgba(148, 163, 184, .28);
+}
+
+.staff-sidebar-submenu__item:hover {
+    background: rgba(59, 130, 246, .06);
+    color: inherit;
+    transform: translateX(2px);
+}
+
+.staff-sidebar-submenu__item.is-active {
+    background: rgba(37, 99, 235, .13);
+    color: #60a5fa;
+}
+
+.staff-sidebar-submenu__item.is-active::before {
+    height: 9px;
+    left: -21px;
+    border-radius: 999px;
+    background: #3b82f6;
+}
+
+.staff-sidebar-submenu__item .material-icons {
+    width: 18px;
+    flex: 0 0 auto;
+    font-size: 17px;
+}
+
+.staff-sidebar-submenu__item span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 以前の単独リンク用CSSを無効化 */
+.staff-sidebar-property-link {
+    display: none !important;
+}
+
+/* ==================================================
+   HPMC sidebar dropdown
+   ================================================== */
+
+.staff-sidebar-group {
+    margin: 6px 8px;
+}
+
+.staff-sidebar-group > summary {
+    list-style: none;
+}
+
+.staff-sidebar-group > summary::-webkit-details-marker {
+    display: none;
+}
+
+.staff-sidebar-group__summary {
+    min-height: 52px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    color: var(--staff-muted, #94a3b8);
+    cursor: pointer;
+    user-select: none;
+    transition:
+        border-color .16s ease,
+        background .16s ease,
+        color .16s ease;
+}
+
+.staff-sidebar-group__summary:hover {
+    border-color: rgba(59, 130, 246, .18);
+    background: rgba(59, 130, 246, .065);
+    color: inherit;
+}
+
+.staff-sidebar-group__summary.is-active {
+    border-color: rgba(59, 130, 246, .25);
+    background: rgba(37, 99, 235, .115);
+    color: #60a5fa;
+}
+
+.staff-sidebar-group__main {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.staff-sidebar-group__icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: rgba(59, 130, 246, .1);
+    color: #60a5fa;
+}
+
+.staff-sidebar-group__icon .material-icons {
+    font-size: 19px;
+}
+
+.staff-sidebar-group__text {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+}
+
+.staff-sidebar-group__text strong {
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 850;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.staff-sidebar-group__text small {
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: .12em;
+}
+
+.staff-sidebar-group__arrow {
+    flex: 0 0 auto;
+    color: #64748b;
+    font-size: 19px;
+    transition:
+        color .16s ease,
+        transform .2s ease;
+}
+
+.staff-sidebar-group[open]
+.staff-sidebar-group__arrow {
+    color: #60a5fa;
+    transform: rotate(180deg);
+}
+
+.staff-sidebar-submenu {
+    margin: 5px 0 2px 16px;
+    padding: 4px 0 5px 16px;
+    position: relative;
+    display: grid;
+    gap: 2px;
+    border-left: 1px solid rgba(148, 163, 184, .15);
+}
+
+.staff-sidebar-submenu::before {
+    content: "";
+    width: 1px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -1px;
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(59, 130, 246, .42),
+            rgba(59, 130, 246, .05)
+        );
+    opacity: 0;
+    transition: opacity .18s ease;
+}
+
+.staff-sidebar-group[open]
+.staff-sidebar-submenu::before {
+    opacity: 1;
+}
+
+.staff-sidebar-submenu__item {
+    min-height: 37px;
+    padding: 0 9px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border-radius: 10px;
+    color: var(--staff-muted, #94a3b8);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 750;
+    transition:
+        background .15s ease,
+        color .15s ease,
+        transform .15s ease;
+}
+
+.staff-sidebar-submenu__item::before {
+    content: "";
+    width: 8px;
+    height: 1px;
+    position: absolute;
+    top: 50%;
+    left: -17px;
+    background: rgba(148, 163, 184, .28);
+}
+
+.staff-sidebar-submenu__item:hover {
+    background: rgba(59, 130, 246, .06);
+    color: inherit;
+    transform: translateX(2px);
+}
+
+.staff-sidebar-submenu__item.is-active {
+    background: rgba(37, 99, 235, .13);
+    color: #60a5fa;
+}
+
+.staff-sidebar-submenu__item.is-active::before {
+    height: 9px;
+    left: -21px;
+    border-radius: 999px;
+    background: #3b82f6;
+}
+
+.staff-sidebar-submenu__item .material-icons {
+    width: 18px;
+    flex: 0 0 auto;
+    font-size: 17px;
+}
+
+.staff-sidebar-submenu__item span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 以前の単独リンク用CSSを無効化 */
+.staff-sidebar-property-link {
+    display: none !important;
+}
+
+/* HPMC page frame */
+body:has(.hpmc-content) .staff-topbar,
+body:has(.hpmc-content) .staff-header,
+body:has(.hpmc-content) .staff-page-header {
+    border-color: rgba(148, 163, 184, .12) !important;
+    background: rgba(5, 7, 11, .96) !important;
+    color: #e5e7eb !important;
+}
+
+body:has(.hpmc-content) .staff-page-header h1,
+body:has(.hpmc-content) .staff-page-header h2,
+body:has(.hpmc-content) .staff-header h1,
+body:has(.hpmc-content) .staff-header h2 {
+    color: #f8fafc !important;
+}
+
+body:has(.hpmc-content) .staff-page-header p,
+body:has(.hpmc-content) .staff-header p {
+    color: #94a3b8 !important;
+}
+
+/* HPMC light page frame */
+body:has(.hpmc-content) .staff-topbar,
+body:has(.hpmc-content) .staff-header,
+body:has(.hpmc-content) .staff-page-header {
+    border-color: #dce2ea !important;
+    background: rgba(255, 255, 255, .96) !important;
+    color: #172033 !important;
+}
+
+body:has(.hpmc-content) .staff-page-header h1,
+body:has(.hpmc-content) .staff-page-header h2,
+body:has(.hpmc-content) .staff-header h1,
+body:has(.hpmc-content) .staff-header h2 {
+    color: #111827 !important;
+}
+
+body:has(.hpmc-content) .staff-page-header p,
+body:has(.hpmc-content) .staff-header p {
+    color: #64748b !important;
+}
