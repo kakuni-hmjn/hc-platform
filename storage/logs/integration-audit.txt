@@ -1,0 +1,426 @@
+
+==================================================
+1. Docker Compose
+==================================================
+✅ Docker Engine に接続できました
+✅ docker-compose.yml を正常に読み込めました
+
+[サービス一覧]
+db
+provision-worker
+web
+reverse
+adminer
+
+[コンテナ状態]
+NAME                      IMAGE                     COMMAND                  SERVICE            CREATED             STATUS          PORTS
+hc-dev-adminer            adminer                   "entrypoint.sh docke…"   adminer            About an hour ago   Up 26 minutes   0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
+hc-dev-db                 postgres:17               "docker-entrypoint.s…"   db                 About an hour ago   Up 25 minutes   0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp
+hc-dev-provision-worker   hc-web-provision-worker   "docker-php-entrypoi…"   provision-worker   About an hour ago   Up 25 minutes   80/tcp
+hc-dev-reverse            nginx:1.27-alpine         "/docker-entrypoint.…"   reverse            About an hour ago   Up 26 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+hc-dev-web                hc-web-web                "docker-php-entrypoi…"   web                About an hour ago   Up 9 minutes    80/tcp
+✅ web コンテナが起動しています
+✅ db コンテナが起動しています
+✅ reverse コンテナが起動しています
+✅ adminer コンテナが起動しています
+
+==================================================
+2. PHP・Webコンテナ
+==================================================
+✅ PHPが実行できます: 8.3.32
+
+[主要PHP拡張]
+✅ PHP拡張 pdo
+✅ PHP拡張 pdo_pgsql
+✅ PHP拡張 curl
+✅ PHP拡張 openssl
+✅ PHP拡張 mbstring
+✅ PHP拡張 json
+
+==================================================
+3. PHP構文チェック
+==================================================
+__LINT_RESULT__ files=165 errors=0
+✅ PHPファイルの構文エラーはありません
+
+==================================================
+4. PostgreSQL接続
+==================================================
+✅ PostgreSQLへ接続できました
+
+[DB情報]
+  database  | db_user |                                                          version                                                           
+------------+---------+----------------------------------------------------------------------------------------------------------------------------
+ hc_account | hc_user | PostgreSQL 17.10 (Debian 17.10-1.pgdg13+1) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
+
+==================================================
+5. 必須テーブル
+==================================================
+✅ テーブル users
+✅ テーブル account_roles
+✅ テーブル permissions
+✅ テーブル user_roles
+✅ テーブル role_permissions
+✅ Staffテーブル staff_users
+✅ Staffテーブル staff_roles
+✅ Staffテーブル staff_permissions
+✅ Staffテーブル staff_user_roles
+✅ Staffテーブル staff_role_permissions
+
+[staff_ テーブル一覧]
+        table_name        
+--------------------------
+ staff_announcement_reads
+ staff_announcements
+ staff_audit_logs
+ staff_categories
+ staff_departments
+ staff_notifications
+ staff_order_notes
+ staff_permissions
+ staff_role_permissions
+ staff_roles
+ staff_task_logs
+ staff_tasks
+ staff_user_categories
+ staff_user_departments
+ staff_user_roles
+ staff_users
+(16 rows)
+
+
+==================================================
+6. users・ロール・権限
+==================================================
+
+[ユーザー一覧]
+ id | username |          email           |         created_at         
+----+----------+--------------------------+----------------------------
+  1 | sou      | so.isizaki0730@gmail.com | 2026-07-28 15:07:08.239955
+(1 row)
+
+
+[アカウントロール]
+ id |      slug       |          name           | role_type | priority | is_system | is_staff_role 
+----+-----------------+-------------------------+-----------+----------+-----------+---------------
+  1 | owner           | Owner                   | system    |     1000 | t         | t
+  3 | administrator   | Administrator           | system    |      900 | t         | t
+  4 | manager         | Manager                 | staff     |      800 | t         | t
+  5 | staff           | Staff                   | staff     |      700 | t         | t
+  6 | temporary_staff | Temporary Staff         | staff     |      600 | t         | t
+  7 | web_developer   | Web Developer           | job       |      500 | f         | t
+  8 | infra_operator  | Infrastructure Operator | job       |      500 | f         | t
+  9 | support_agent   | Support Agent           | job       |      500 | f         | t
+ 10 | order_operator  | Order Operator          | job       |      500 | f         | t
+ 11 | order_approver  | Order Approver          | job       |      500 | f         | t
+(10 rows)
+
+
+[権限一覧]
+ id |         permission_key         |              name              
+----+--------------------------------+--------------------------------
+ 25 | announcements.manage           | 社内連絡管理
+ 24 | announcements.view             | 社内連絡閲覧
+ 12 | audit.logs.view                | 操作ログ閲覧
+ 11 | development.deploy.production  | 本番デプロイ
+ 34 | development.deploy.staging     | ステージングデプロイ
+ 33 | development.projects.view      | 開発プロジェクト閲覧
+ 32 | infrastructure.servers.restart | サーバー再起動
+ 31 | infrastructure.servers.view    | サーバー状態閲覧
+ 10 | orders.approve                 | 注文承認
+  9 | orders.process                 | 注文処理
+  8 | orders.view                    | 注文閲覧
+  1 | staff.access                   | スタッフコンソールへのアクセス
+ 15 | staff.admin.view_all           | 全カテゴリ表示
+  2 | staff.dashboard.view           | スタッフダッシュボード閲覧
+  5 | staff.permissions.manage       | スタッフ権限管理
+ 18 | staff.roles.assign             | ロール割り当て
+  4 | staff.roles.manage             | スタッフロール管理
+ 17 | staff.users.edit               | スタッフ情報編集
+  3 | staff.users.view               | スタッフ情報閲覧
+ 30 | support.tickets.reply          | 問い合わせ返信
+ 29 | support.tickets.view           | 問い合わせ閲覧
+ 13 | system.settings                | システム設定
+  7 | tasks.assign                   | タスク割り当て
+ 23 | tasks.complete                 | タスク完了
+ 21 | tasks.create                   | タスク作成
+ 20 | tasks.view.department          | 部署タスク閲覧
+  6 | tasks.view.own                 | 自分のタスク閲覧
+(27 rows)
+
+
+==================================================
+7. souオーナー連携
+==================================================
+✅ ユーザー sou が存在します
+✅ ownerロールが存在します
+✅ sou にownerロールが付与されています
+✅ sou は staff.access を持っています
+
+[souのロール・権限]
+ user_id | username | role_slug |         permission_key         
+---------+----------+-----------+--------------------------------
+       1 | sou      | owner     | announcements.manage
+       1 | sou      | owner     | announcements.view
+       1 | sou      | owner     | audit.logs.view
+       1 | sou      | owner     | development.deploy.production
+       1 | sou      | owner     | development.deploy.staging
+       1 | sou      | owner     | development.projects.view
+       1 | sou      | owner     | infrastructure.servers.restart
+       1 | sou      | owner     | infrastructure.servers.view
+       1 | sou      | owner     | orders.approve
+       1 | sou      | owner     | orders.process
+       1 | sou      | owner     | orders.view
+       1 | sou      | owner     | staff.access
+       1 | sou      | owner     | staff.admin.view_all
+       1 | sou      | owner     | staff.dashboard.view
+       1 | sou      | owner     | staff.permissions.manage
+       1 | sou      | owner     | staff.roles.assign
+       1 | sou      | owner     | staff.roles.manage
+       1 | sou      | owner     | staff.users.edit
+       1 | sou      | owner     | staff.users.view
+       1 | sou      | owner     | support.tickets.reply
+       1 | sou      | owner     | support.tickets.view
+       1 | sou      | owner     | system.settings
+       1 | sou      | owner     | tasks.assign
+       1 | sou      | owner     | tasks.complete
+       1 | sou      | owner     | tasks.create
+       1 | sou      | owner     | tasks.view.department
+       1 | sou      | owner     | tasks.view.own
+(27 rows)
+
+
+[owner権限数]
+ slug  | granted | total 
+-------+---------+-------
+ owner |      27 |    27
+(1 row)
+
+
+==================================================
+8. DB整合性
+==================================================
+
+[参照先のないuser_roles]
+ user_id | role_id | assigned_by | assigned_at 
+---------+---------+-------------+-------------
+(0 rows)
+
+
+[参照先のないrole_permissions]
+ role_id | permission_id 
+---------+---------------
+(0 rows)
+
+
+[重複user_roles]
+ user_id | role_id | duplicate_count 
+---------+---------+-----------------
+(0 rows)
+
+
+[重複role_permissions]
+ role_id | permission_id | duplicate_count 
+---------+---------------+-----------------
+(0 rows)
+
+
+==================================================
+9. Staff Console旧テーブル連携
+==================================================
+
+[staff_users構造]
+                                            Table "public.staff_users"
+        Column        |           Type           | Collation | Nullable |                 Default                 
+----------------------+--------------------------+-----------+----------+-----------------------------------------
+ id                   | bigint                   |           | not null | nextval('staff_users_id_seq'::regclass)
+ account_id           | bigint                   |           | not null | 
+ employee_code        | character varying(50)    |           |          | 
+ display_name         | character varying(150)   |           |          | 
+ status               | character varying(30)    |           | not null | 'active'::character varying
+ work_status          | character varying(30)    |           | not null | 'offline'::character varying
+ discord_user_id      | character varying(40)    |           |          | 
+ discord_display_name | character varying(150)   |           |          | 
+ discord_linked_at    | timestamp with time zone |           |          | 
+ last_seen_at         | timestamp with time zone |           |          | 
+ created_at           | timestamp with time zone |           | not null | CURRENT_TIMESTAMP
+ updated_at           | timestamp with time zone |           | not null | CURRENT_TIMESTAMP
+Indexes:
+    "staff_users_pkey" PRIMARY KEY, btree (id)
+    "idx_staff_users_account_id" btree (account_id)
+    "staff_users_account_id_key" UNIQUE CONSTRAINT, btree (account_id)
+Check constraints:
+    "staff_users_status_check" CHECK (status::text = ANY (ARRAY['active'::character varying, 'inactive'::character varying, 'suspended'::character varying, 'temporary'::character varying, 'external'::character varying]::text[]))
+    "staff_users_work_status_check" CHECK (work_status::text = ANY (ARRAY['offline'::character varying, 'online'::character varying, 'working'::character varying, 'busy'::character varying, 'away'::character varying, 'break'::character varying]::text[]))
+Referenced by:
+    TABLE "staff_announcement_reads" CONSTRAINT "staff_announcement_reads_user_id_fkey" FOREIGN KEY (user_id) REFERENCES staff_users(id) ON DELETE CASCADE
+    TABLE "staff_announcements" CONSTRAINT "staff_announcements_created_by_fkey" FOREIGN KEY (created_by) REFERENCES staff_users(id) ON DELETE SET NULL
+    TABLE "staff_audit_logs" CONSTRAINT "staff_audit_logs_actor_staff_id_fkey" FOREIGN KEY (actor_staff_id) REFERENCES staff_users(id) ON DELETE SET NULL
+    TABLE "staff_audit_logs" CONSTRAINT "staff_audit_logs_approved_by_fkey" FOREIGN KEY (approved_by) REFERENCES staff_users(id) ON DELETE SET NULL
+    TABLE "staff_notifications" CONSTRAINT "staff_notifications_user_id_fkey" FOREIGN KEY (user_id) REFERENCES staff_users(id) ON DELETE CASCADE
+    TABLE "staff_task_logs" CONSTRAINT "staff_task_logs_user_id_fkey" FOREIGN KEY (user_id) REFERENCES staff_users(id) ON DELETE SET NULL
+    TABLE "staff_tasks" CONSTRAINT "staff_tasks_assigned_user_id_fkey" FOREIGN KEY (assigned_user_id) REFERENCES staff_users(id) ON DELETE SET NULL
+    TABLE "staff_tasks" CONSTRAINT "staff_tasks_requested_by_fkey" FOREIGN KEY (requested_by) REFERENCES staff_users(id) ON DELETE SET NULL
+    TABLE "staff_user_categories" CONSTRAINT "staff_user_categories_assigned_by_fkey" FOREIGN KEY (assigned_by) REFERENCES staff_users(id) ON DELETE SET NULL
+    TABLE "staff_user_categories" CONSTRAINT "staff_user_categories_user_id_fkey" FOREIGN KEY (user_id) REFERENCES staff_users(id) ON DELETE CASCADE
+    TABLE "staff_user_departments" CONSTRAINT "staff_user_departments_assigned_by_fkey" FOREIGN KEY (assigned_by) REFERENCES staff_users(id) ON DELETE SET NULL
+    TABLE "staff_user_departments" CONSTRAINT "staff_user_departments_user_id_fkey" FOREIGN KEY (user_id) REFERENCES staff_users(id) ON DELETE CASCADE
+    TABLE "staff_user_roles" CONSTRAINT "staff_user_roles_assigned_by_fkey" FOREIGN KEY (assigned_by) REFERENCES staff_users(id) ON DELETE SET NULL
+    TABLE "staff_user_roles" CONSTRAINT "staff_user_roles_user_id_fkey" FOREIGN KEY (user_id) REFERENCES staff_users(id) ON DELETE CASCADE
+
+
+[staff_usersデータ]
+ id | account_id | employee_code | display_name | status | work_status | discord_user_id | discord_display_name | discord_linked_at |         last_seen_at          |          created_at          |          updated_at           
+----+------------+---------------+--------------+--------+-------------+-----------------+----------------------+-------------------+-------------------------------+------------------------------+-------------------------------
+  1 |          1 |               | sou          | active | online      |                 |                      |                   | 2026-07-28 15:51:02.730526+09 | 2026-07-28 15:41:52.81462+09 | 2026-07-28 15:51:02.730526+09
+(1 row)
+
+
+==================================================
+10. 環境変数
+==================================================
+⚠️  DBホスト: 候補の環境変数が見つかりません [DB_HOST POSTGRES_HOST DATABASE_HOST]
+⚠️  DB名: 候補の環境変数が見つかりません [DB_NAME POSTGRES_DB DATABASE_NAME]
+⚠️  DBユーザー: 候補の環境変数が見つかりません [DB_USER POSTGRES_USER DATABASE_USER]
+⚠️  Stripe秘密鍵: 候補の環境変数が見つかりません [STRIPE_SECRET_KEY STRIPE_API_KEY]
+⚠️  Stripe公開鍵: 候補の環境変数が見つかりません [STRIPE_PUBLISHABLE_KEY STRIPE_PUBLIC_KEY]
+⚠️  Stripe Webhook Secret: 候補の環境変数が見つかりません [STRIPE_WEBHOOK_SECRET]
+⚠️  Pterodactyl URL: 候補の環境変数が見つかりません [PTERODACTYL_URL PTERO_URL PTERODACTYL_PANEL_URL PTERO_PANEL_URL]
+⚠️  Pterodactyl APIキー: 候補の環境変数が見つかりません [PTERODACTYL_API_KEY PTERO_API_KEY PTERODACTYL_APPLICATION_API_KEY]
+⚠️  SMTPホスト: 候補の環境変数が見つかりません [MAIL_HOST SMTP_HOST]
+⚠️  SMTPユーザー: 候補の環境変数が見つかりません [MAIL_USERNAME SMTP_USERNAME MAIL_USER SMTP_USER]
+⚠️  Cloudflare Turnstile Site Key: 候補の環境変数が見つかりません [TURNSTILE_SITE_KEY CLOUDFLARE_TURNSTILE_SITE_KEY]
+⚠️  Cloudflare Turnstile Secret: 候補の環境変数が見つかりません [TURNSTILE_SECRET_KEY CLOUDFLARE_TURNSTILE_SECRET_KEY]
+
+==================================================
+11. Stripe API疎通
+==================================================
+⚠️  Stripe秘密鍵がないためAPI疎通を省略しました
+
+==================================================
+12. Pterodactyl API疎通
+==================================================
+⚠️  Pterodactyl URLまたはAPIキーがないため疎通を省略しました
+
+==================================================
+13. SMTP疎通
+==================================================
+⚠️  SMTPホストがないため疎通を省略しました
+
+==================================================
+14. HTTP主要画面
+==================================================
+✅ HTTP / → 200
+✅ HTTP /login/ → 200
+✅ HTTP /dashboard/ → 302
+✅ HTTP /staff/ → 302
+✅ HTTP /services/ → 200
+✅ HTTP /services/rental/game-server/ → 200
+✅ HTTP /admin/ → 302
+
+==================================================
+15. Webログ
+==================================================
+
+[直近のPHP・Apacheエラー候補]
+
+==================================================
+16. コード内の連携設定候補
+==================================================
+
+[参照されている環境変数]
+APP_URL
+DB_HOST
+DB_NAME
+DB_PASSWORD
+DB_PORT
+DB_USER
+HC_PUBLIC_URL
+MAIL_FROM_ADDRESS
+MAIL_FROM_NAME
+MAIL_MODE
+POSTGRES_DB
+POSTGRES_PASSWORD
+POSTGRES_USER
+PTERO_API_KEY
+PTERO_DEFAULT_EGG_ID
+PTERO_DEFAULT_NEST_ID
+PTERO_DEFAULT_NODE_ID
+PTERO_PANEL_URL
+SMTP_HOST
+SMTP_PASSWORD
+SMTP_PORT
+SMTP_USER
+STRIPE_CURRENCY
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+TURNSTILE_SECRET_KEY
+TURNSTILE_SITE_KEY
+
+[Stripe関連ファイル]
+./admin/plan-change-requests/detail/index.php
+./admin/server-orders/detail/index.php
+./admin/server-orders/index.php
+./admin/server-orders/ready/index.php
+./admin/stripe-plans/index.php
+./admin/stripe-plans/sync.php
+./billing/checkout/create.php
+./billing/success/index.php
+./billing/webhook/index.php
+./dashboard/servers/detail/billing-portal.php
+./dashboard/servers/detail/index.php
+./lib/game_server_payment.php
+./lib/stripe.php
+./order/game-server/index.php
+./order/game-server/success/index.php
+./parts/backoffice/menu.php
+./webhooks/stripe/index.php
+
+[Pterodactyl関連ファイル]
+./admin/game-plans/edit/index.php
+./admin/game-plans/index.php
+./admin/header-settings/index.php
+./admin/lib/menu.php
+./admin/plan-change-requests/detail/action.php
+./admin/ptero-users/index.php
+./admin/ptero-users/link.php
+./admin/ptero-users/reset-password.php
+./admin/ptero-users/unlink.php
+./admin/ptero/allocations/index.php
+./admin/ptero/index.php
+./admin/server-orders/detail/action.php
+./admin/server-orders/detail/index.php
+./admin/server-orders/pending/index.php
+./admin/server-orders/provision/create.php
+./admin/server-orders/provision/failed/index.php
+./admin/server-orders/provision/failed/retry.php
+./admin/server-orders/provision/index.php
+./dashboard/index.php
+./dashboard/ptero-account/complete-password.php
+./dashboard/ptero-account/index.php
+./dashboard/servers/cancel/index.php
+./dashboard/servers/detail/index.php
+./dashboard/servers/index.php
+./dashboard/servers/panel/index.php
+./lib/game_server_approval.php
+./lib/game_server_provisioning.php
+./lib/ptero_users.php
+./lib/pterodactyl.php
+./order/game-server/index.php
+./parts/backoffice/menu.php
+./parts/dashboard/ptero-account-card.php
+./parts/header/header.php
+./services/rental/game-server/index.php
+./staff/lib/rental-server.php
+./tools/test-provisioning-e2e.php
+
+==================================================
+監査結果
+==================================================
+✅ PASS: 36
+⚠️  WARN: 15
+❌ FAIL: 0
+
+重大な異常は検出されませんでした。
