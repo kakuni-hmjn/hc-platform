@@ -1,0 +1,1593 @@
+===== staff/lib/navigation.php =====
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/permissions.php';
+
+function staff_navigation_build(array $context): array
+{
+    $groups = [];
+
+    /*
+    |--------------------------------------------------------------------------
+    | ワークスペース
+    |--------------------------------------------------------------------------
+    */
+
+    $groups[] = [
+        'label' => 'ワークスペース',
+        'items' => [
+            [
+                'label' => 'ダッシュボード',
+                'href' => '/staff/',
+                'icon' => 'home',
+                'permission' => 'staff.dashboard.view',
+            ],
+            [
+                'label' => 'マイタスク',
+                'href' => '/staff/tasks/',
+                'icon' => 'task_alt',
+                'permission' => 'tasks.view.own',
+            ],
+            [
+                'label' => '通知',
+                'href' => '/staff/notifications/',
+                'icon' => 'notifications',
+                'permission' => 'staff.dashboard.view',
+            ],
+            [
+                'label' => '社内連絡',
+                'href' => '/staff/announcements/',
+                'icon' => 'campaign',
+                'permission' => 'announcements.view',
+            ],
+        ],
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | サービス
+    |--------------------------------------------------------------------------
+    |
+    | 担当カテゴリ・担当部署・権限のいずれも確認する。
+    | Owner / Administratorは全サービスを表示する。
+    |
+    */
+
+    $serviceItems = [];
+
+    if (
+        staff_can_access_service(
+            $context,
+            [
+                'categories' => [
+                    'game-operations',
+                    'rental-server',
+                ],
+                'departments' => [
+                    'rental-server',
+                    'game-server',
+                    'infrastructure',
+                ],
+                'permissions' => [
+                    'orders.view',
+                    'orders.process',
+                ],
+            ]
+        )
+    ) {
+        $serviceItems[] = [
+            'label' => 'レンタルサーバー',
+            'href' => '/staff/rental-server/',
+            'icon' => 'dns',
+            'permission' => 'orders.view',
+        ];
+
+        $serviceItems[] = [
+            'label' => 'ゲームサーバー',
+            'href' => '/staff/rental-server/game-server/',
+            'icon' => 'sports_esports',
+            'permission' => 'orders.view',
+        ];
+
+        $serviceItems[] = [
+            'label' => '申込・契約',
+            'href' => '/staff/rental-server/game-server/contracts/',
+            'icon' => 'receipt_long',
+            'permission' => 'orders.view',
+        ];
+
+        $serviceItems[] = [
+            'label' => '作成・承認',
+            'href' => '/staff/rental-server/game-server/approvals/',
+            'icon' => 'approval',
+            'permission' => 'orders.process',
+        ];
+
+        $serviceItems[] = [
+            'label' => 'Provisioning',
+            'href' => '/staff/rental-server/game-server/provisioning/',
+            'icon' => 'precision_manufacturing',
+            'permission' => 'orders.process',
+        ];
+
+        $serviceItems[] = [
+            'label' => 'サーバー一覧',
+            'href' => '/staff/rental-server/game-server/servers/',
+            'icon' => 'storage',
+            'permission' => 'orders.view',
+        ];
+
+        $serviceItems[] = [
+            'label' => 'プラン管理',
+            'href' => '/staff/rental-server/game-server/plans/',
+            'icon' => 'sell',
+            'permission' => 'orders.process',
+        ];
+
+        $serviceItems[] = [
+            'label' => 'Node管理',
+            'href' => '/staff/rental-server/game-server/nodes/',
+            'icon' => 'hub',
+            'permission' => 'infrastructure.servers.view',
+        ];
+    }
+
+    /*
+     * 将来ここへ追加する。
+     *
+     * Gaming PC:
+     * categories:
+     *   shop-operations
+     *
+     * departments:
+     *   gaming-pc
+     *   shop
+     *   logistics
+     *
+     * href:
+     *   /staff/shop/gaming-pc/
+     */
+
+    if ($serviceItems !== []) {
+        $groups[] = [
+            'label' => 'サービス',
+            'items' => $serviceItems,
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 共通業務
+    |--------------------------------------------------------------------------
+    */
+
+    $commonItems = [
+        [
+            'label' => '顧客管理',
+            'href' => '/staff/customers/',
+            'icon' => 'group',
+            'permission' => 'support.tickets.view',
+        ],
+        [
+            'label' => 'お問い合わせ',
+            'href' => '/staff/support/',
+            'icon' => 'support_agent',
+            'permission' => 'support.tickets.view',
+        ],
+        [
+            'label' => '決済・請求',
+            'href' => '/staff/billing/',
+            'icon' => 'payments',
+            'permission' => 'orders.view',
+        ],
+        [
+            'label' => '操作ログ',
+            'href' => '/staff/audit/',
+            'icon' => 'history',
+            'permission' => 'audit.logs.view',
+        ],
+    ];
+
+    $groups[] = [
+        'label' => '共通業務',
+        'items' => $commonItems,
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | 開発・インフラ
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        staff_can_access_service(
+            $context,
+            [
+                'categories' => [
+                    'development',
+                ],
+                'departments' => [
+                    'development',
+                    'web-development',
+                ],
+                'permissions' => [
+                    'development.projects.view',
+                    'development.deploy.staging',
+                ],
+            ]
+        )
+    ) {
+        $groups[] = [
+            'label' => '開発',
+            'items' => [
+                [
+                    'label' => 'プロジェクト',
+                    'href' => '/staff/development/',
+                    'icon' => 'code',
+                    'permission' =>
+                        'development.projects.view',
+                ],
+                [
+                    'label' => 'デプロイ',
+                    'href' => '/staff/deployments/',
+                    'icon' => 'rocket_launch',
+                    'permission' =>
+                        'development.deploy.staging',
+                ],
+            ],
+        ];
+    }
+
+    if (
+        staff_can_access_service(
+            $context,
+            [
+                'categories' => [
+                    'infrastructure',
+                ],
+                'departments' => [
+                    'infrastructure',
+                    'rental-server',
+                ],
+                'permissions' => [
+                    'infrastructure.servers.view',
+                ],
+            ]
+        )
+    ) {
+        $groups[] = [
+            'label' => 'インフラ',
+            'items' => [
+                [
+                    'label' => 'システム状態',
+                    'href' => '/staff/infrastructure/',
+                    'icon' => 'monitor_heart',
+                    'permission' =>
+                        'infrastructure.servers.view',
+                ],
+                [
+                    'label' => '物理・仮想サーバー',
+                    'href' =>
+                        '/staff/infrastructure/servers/',
+                    'icon' => 'storage',
+                    'permission' =>
+                        'infrastructure.servers.view',
+                ],
+            ],
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | システム管理
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        staff_has_permission(
+            $context,
+            'staff.users.view'
+        )
+        || staff_has_permission(
+            $context,
+            'audit.logs.view'
+        )
+        || staff_can_access_admin($context)
+    ) {
+        $groups[] = [
+            'label' => 'システム管理',
+            'items' => [
+                [
+                    'label' => 'スタッフ管理',
+                    'href' => '/staff/admin/users/',
+                    'icon' => 'groups',
+                    'permission' => 'staff.users.view',
+                ],
+                [
+                    'label' => '有効権限',
+                    'href' =>
+                        '/staff/account/permissions/',
+                    'icon' => 'key',
+                    'permission' =>
+                        'staff.dashboard.view',
+                ],
+                [
+                    'label' => '承認センター',
+                    'href' => '/staff/approvals/',
+                    'icon' => 'approval',
+                    'permission' => 'orders.approve',
+                ],
+                [
+                    'label' => 'システム設定',
+                    'href' => '/staff/settings/',
+                    'icon' => 'settings',
+                    'permission' => 'staff.users.view',
+                ],
+            ],
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 権限による最終フィルタ
+    |--------------------------------------------------------------------------
+    */
+
+    $visibleGroups = [];
+
+    foreach ($groups as $group) {
+        $visibleItems = [];
+
+        foreach (
+            $group['items'] ?? []
+            as $item
+        ) {
+            $permission = trim(
+                (string) (
+                    $item['permission'] ?? ''
+                )
+            );
+
+            if (
+                $permission === ''
+                || staff_has_permission(
+                    $context,
+                    $permission
+                )
+                || staff_can_access_admin($context)
+            ) {
+                $visibleItems[] = $item;
+            }
+        }
+
+        if ($visibleItems === []) {
+            continue;
+        }
+
+        $group['items'] = $visibleItems;
+        $visibleGroups[] = $group;
+    }
+
+    return $visibleGroups;
+}
+
+===== staff/parts/sidebar.php =====
+<?php
+
+declare(strict_types=1);
+
+$currentPath = parse_url(
+    $_SERVER['REQUEST_URI'] ?? '/staff/',
+    PHP_URL_PATH
+);
+
+$currentPath = is_string($currentPath)
+    ? rtrim($currentPath, '/') . '/'
+    : '/staff/';
+
+function staff_sidebar_initial(string $name): string
+{
+    $name = trim($name);
+
+    if ($name === '') {
+        return 'S';
+    }
+
+    return mb_strtoupper(
+        mb_substr($name, 0, 1, 'UTF-8'),
+        'UTF-8'
+    );
+}
+
+function staff_sidebar_normalize_path(string $path): string
+{
+    return rtrim($path, '/') . '/';
+}
+
+function staff_sidebar_item_is_active(
+    array $item,
+    string $currentPath
+): bool {
+    $itemPath = staff_sidebar_normalize_path(
+        (string) ($item['href'] ?? '/staff/')
+    );
+
+    if ($currentPath === $itemPath) {
+        return true;
+    }
+
+    foreach ((array) ($item['children'] ?? []) as $child) {
+        if (staff_sidebar_item_is_active($child, $currentPath)) {
+            return true;
+        }
+    }
+
+    return (
+        $itemPath !== '/staff/'
+        && str_starts_with($currentPath, $itemPath)
+    );
+}
+
+function staff_sidebar_render_items(
+    array $items,
+    string $currentPath,
+    int $depth = 0
+): void {
+    foreach ($items as $item) {
+        $href = (string) ($item['href'] ?? '/staff/');
+        $children = (array) ($item['children'] ?? []);
+        $isActive = staff_sidebar_item_is_active(
+            $item,
+            $currentPath
+        );
+
+        $hasChildren = $children !== [];
+        $isExpanded = $hasChildren && $isActive;
+
+        ?>
+        <div
+            class="staff-nav-entry
+                   staff-nav-entry--depth-<?= $depth ?>
+                   <?= $isExpanded ? 'is-expanded' : '' ?>"
+        >
+            <a
+                href="<?= htmlspecialchars(
+                    $href,
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>"
+                class="staff-nav-item
+                       <?= $isActive
+                           ? ' staff-nav-item--active'
+                           : '' ?>
+                       <?= $hasChildren
+                           ? ' staff-nav-item--parent'
+                           : '' ?>"
+                <?= $currentPath === staff_sidebar_normalize_path($href)
+                    ? 'aria-current="page"'
+                    : '' ?>
+            >
+                <?php if ($depth <= 1): ?>
+                    <span class="staff-nav-item__icon">
+                        <?= staff_icon(
+                            (string) ($item['icon'] ?? 'circle'),
+                            'staff-nav-icon',
+                            $depth === 0 ? 19 : 17
+                        ) ?>
+                    </span>
+                <?php else: ?>
+                    <span
+                        class="staff-nav-item__bullet"
+                        aria-hidden="true"
+                    ></span>
+                <?php endif; ?>
+
+                <span class="staff-nav-item__label">
+                    <?= htmlspecialchars(
+                        (string) ($item['label'] ?? ''),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </span>
+
+                <?php if ($hasChildren): ?>
+                    <?= staff_icon(
+                        $isExpanded
+                            ? 'expand_more'
+                            : 'chevron_right',
+                        'staff-nav-item__arrow',
+                        18
+                    ) ?>
+                <?php elseif (
+                    $currentPath === staff_sidebar_normalize_path($href)
+                ): ?>
+                    <?= staff_icon(
+                        'chevron_right',
+                        'staff-nav-item__arrow',
+                        18
+                    ) ?>
+                <?php endif; ?>
+            </a>
+
+            <?php if ($hasChildren && $isExpanded): ?>
+                <div
+                    class="staff-nav-children
+                           staff-nav-children--depth-<?= $depth + 1 ?>"
+                >
+                    <?php staff_sidebar_render_items(
+                        $children,
+                        $currentPath,
+                        $depth + 1
+                    ); ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+}
+?>
+
+<aside
+    class="staff-sidebar"
+    data-staff-sidebar
+>
+    <div class="staff-sidebar__brand">
+        <a
+            href="/staff/"
+            class="staff-sidebar__brand-link"
+            aria-label="スタッフコンソール ホーム"
+        >
+            <div class="staff-brand-mark">HC</div>
+
+            <div class="staff-brand-copy">
+                <strong>Staff Console</strong>
+                <span>HC Platform</span>
+            </div>
+        </a>
+
+        <button
+            type="button"
+            class="staff-sidebar__close"
+            data-staff-sidebar-close
+            aria-label="メニューを閉じる"
+        >
+            <?= staff_icon(
+                'close',
+                'staff-sidebar__close-icon',
+                22
+            ) ?>
+        </button>
+    </div>
+
+    <nav
+        class="staff-sidebar__nav"
+        aria-label="スタッフメニュー"
+    >
+        <?php foreach ($staffNavigation as $group): ?>
+            <section class="staff-nav-group">
+                <p class="staff-nav-group__label">
+                    <?= htmlspecialchars(
+                        (string) $group['label'],
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </p>
+
+                <div class="staff-nav-group__items">
+                    <?php staff_sidebar_render_items(
+                        (array) $group['items'],
+                        $currentPath
+                    ); ?>
+                </div>
+            </section>
+        <?php endforeach; ?>
+    </nav>
+
+    <div class="staff-sidebar__account">
+        <div class="staff-account-avatar">
+            <?= htmlspecialchars(
+                staff_sidebar_initial($staffDisplayName),
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>
+        </div>
+
+        <div class="staff-sidebar__account-copy">
+            <strong>
+                <?= htmlspecialchars(
+                    $staffDisplayName,
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>
+            </strong>
+
+            <span>
+                <?= htmlspecialchars(
+                    $staffRoleName,
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>
+            </span>
+        </div>
+
+        <a
+            href="/staff/account/"
+            class="staff-sidebar__account-action"
+            aria-label="スタッフアカウント設定"
+            title="アカウント設定"
+        >
+            <?= staff_icon(
+                'manage_accounts',
+                '',
+                19
+            ) ?>
+        </a>
+    </div>
+</aside>
+
+<div
+    class="staff-sidebar-backdrop"
+    data-staff-sidebar-backdrop
+></div>
+
+===== staff/staff.js =====
+(() => {
+    'use strict';
+
+    const sidebar = document.querySelector(
+        '[data-staff-sidebar]'
+    );
+
+    const backdrop = document.querySelector(
+        '[data-staff-sidebar-backdrop]'
+    );
+
+    const openButton = document.querySelector(
+        '[data-staff-sidebar-open]'
+    );
+
+    const closeButton = document.querySelector(
+        '[data-staff-sidebar-close]'
+    );
+
+    const openSidebar = () => {
+        sidebar?.classList.add(
+            'staff-sidebar--open'
+        );
+
+        backdrop?.classList.add(
+            'staff-sidebar-backdrop--visible'
+        );
+
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeSidebar = () => {
+        sidebar?.classList.remove(
+            'staff-sidebar--open'
+        );
+
+        backdrop?.classList.remove(
+            'staff-sidebar-backdrop--visible'
+        );
+
+        document.body.style.overflow = '';
+    };
+
+    openButton?.addEventListener(
+        'click',
+        openSidebar
+    );
+
+    closeButton?.addEventListener(
+        'click',
+        closeSidebar
+    );
+
+    backdrop?.addEventListener(
+        'click',
+        closeSidebar
+    );
+
+    window.addEventListener(
+        'keydown',
+        (event) => {
+            if (event.key === 'Escape') {
+                closeSidebar();
+            }
+        }
+    );
+
+    window.addEventListener(
+        'resize',
+        () => {
+            if (window.innerWidth > 800) {
+                closeSidebar();
+            }
+        }
+    );
+})();
+
+/* ==========================================================
+   Staff Notification Center
+   ========================================================== */
+
+(() => {
+    'use strict';
+
+    const root = document.querySelector('[data-staff-notifications]');
+
+    if (!root) {
+        return;
+    }
+
+    const trigger = root.querySelector('[data-notification-trigger]');
+    const panel = root.querySelector('[data-notification-panel]');
+    const badge = root.querySelector('[data-notification-badge]');
+    const body = root.querySelector('[data-notification-body]');
+    const readAllButton = root.querySelector(
+        '[data-notification-read-all]'
+    );
+    const footerCount = root.querySelector(
+        '[data-notification-footer-count]'
+    );
+    const categoryButtons = Array.from(
+        root.querySelectorAll('[data-notification-category]')
+    );
+
+    let activeCategory = 'all';
+    let notifications = [];
+    let loading = false;
+
+    const categoryLabels = {
+        system: 'システム',
+        order: '注文',
+        user: 'ユーザー',
+        discord: 'Discord',
+        github: 'GitHub',
+        development: '開発'
+    };
+
+    const levelSymbols = {
+        critical: '!',
+        warning: '!',
+        success: '✓',
+        info: 'i',
+        development: '</>'
+    };
+
+    const escapeHtml = (value) => {
+        const div = document.createElement('div');
+        div.textContent = String(value ?? '');
+        return div.innerHTML;
+    };
+
+    const formatDate = (value) => {
+        if (!value) {
+            return '';
+        }
+
+        const normalized = String(value).replace(
+            ' ',
+            'T'
+        );
+
+        const date = new Date(normalized);
+
+        if (Number.isNaN(date.getTime())) {
+            return String(value);
+        }
+
+        const seconds = Math.floor(
+            (Date.now() - date.getTime()) / 1000
+        );
+
+        if (seconds < 60) {
+            return 'たった今';
+        }
+
+        const minutes = Math.floor(seconds / 60);
+
+        if (minutes < 60) {
+            return `${minutes}分前`;
+        }
+
+        const hours = Math.floor(minutes / 60);
+
+        if (hours < 24) {
+            return `${hours}時間前`;
+        }
+
+        const days = Math.floor(hours / 24);
+
+        if (days < 7) {
+            return `${days}日前`;
+        }
+
+        return new Intl.DateTimeFormat('ja-JP', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    };
+
+    const updateBadge = (count) => {
+        const unread = Number(count) || 0;
+
+        if (unread <= 0) {
+            badge.hidden = true;
+            badge.textContent = '0';
+            return;
+        }
+
+        badge.hidden = false;
+        badge.textContent = unread > 99
+            ? '99+'
+            : String(unread);
+    };
+
+    const notificationItemHtml = (item) => {
+        const level = [
+            'critical',
+            'warning',
+            'success',
+            'info',
+            'development'
+        ].includes(item.level)
+            ? item.level
+            : 'info';
+
+        const symbol = levelSymbols[level] || 'i';
+        const category = categoryLabels[item.category]
+            || item.category
+            || '通知';
+
+        return `
+            <button
+                type="button"
+                class="staff-notifications__item${
+                    item.is_read ? '' : ' is-unread'
+                }"
+                data-notification-id="${Number(item.id)}"
+                data-notification-url="${
+                    escapeHtml(item.url || '')
+                }"
+            >
+                <span
+                    class="staff-notifications__icon
+                    staff-notifications__icon--${level}"
+                    aria-hidden="true"
+                >
+                    ${escapeHtml(symbol)}
+                </span>
+
+                <span class="staff-notifications__content">
+                    <strong class="staff-notifications__item-title">
+                        ${escapeHtml(item.title)}
+                    </strong>
+
+                    <span class="staff-notifications__message">
+                        ${escapeHtml(item.message || '')}
+                    </span>
+
+                    <span class="staff-notifications__meta">
+                        <span class="staff-notifications__category">
+                            ${escapeHtml(category)}
+                        </span>
+
+                        <time>
+                            ${escapeHtml(formatDate(item.created_at))}
+                        </time>
+
+                        ${
+                            item.url
+                                ? `
+                                    <span
+                                        class="staff-notifications__open"
+                                        data-notification-open
+                                        role="link"
+                                        tabindex="0"
+                                    >
+                                        開く
+                                        <span aria-hidden="true">→</span>
+                                    </span>
+                                `
+                                : ''
+                        }
+                    </span>
+                </span>
+            </button>
+        `;
+    };
+
+    const render = () => {
+        if (!notifications.length) {
+            body.innerHTML = `
+                <div class="staff-notifications__empty">
+                    現在表示できる通知はありません。
+                </div>
+            `;
+
+            footerCount.textContent = '通知はありません';
+            readAllButton.disabled = true;
+            return;
+        }
+
+        body.innerHTML = notifications
+            .map(notificationItemHtml)
+            .join('');
+
+        const unreadCount = notifications.filter(
+            (item) => !item.is_read
+        ).length;
+
+        footerCount.textContent =
+            `${notifications.length}件を表示中`;
+
+        readAllButton.disabled = unreadCount === 0;
+    };
+
+    const loadNotifications = async ({
+        silent = false
+    } = {}) => {
+        if (loading) {
+            return;
+        }
+
+        loading = true;
+
+        if (!silent) {
+            body.innerHTML = `
+                <div class="staff-notifications__loading">
+                    通知を読み込んでいます
+                </div>
+            `;
+        }
+
+        try {
+            const response = await fetch(
+                `/staff/api/notifications/?category=${
+                    encodeURIComponent(activeCategory)
+                }&limit=30`,
+                {
+                    credentials: 'same-origin',
+                    headers: {
+                        Accept: 'application/json'
+                    },
+                    cache: 'no-store'
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.message || '通知の取得に失敗しました。'
+                );
+            }
+
+            notifications = Array.isArray(data.items)
+                ? data.items
+                : [];
+
+            updateBadge(data.unread);
+            render();
+        } catch (error) {
+            if (!silent) {
+                body.innerHTML = `
+                    <div class="staff-notifications__error">
+                        ${escapeHtml(
+                            error.message
+                            || '通知の取得に失敗しました。'
+                        )}
+                    </div>
+                `;
+
+                footerCount.textContent =
+                    '通知を取得できませんでした';
+            }
+        } finally {
+            loading = false;
+        }
+    };
+
+    const markAsRead = async (id) => {
+        const response = await fetch(
+            '/staff/api/notifications/read.php',
+            {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json'
+                },
+                body: JSON.stringify({
+                    id
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+            throw new Error(
+                data.message || '既読処理に失敗しました。'
+            );
+        }
+
+        const item = notifications.find(
+            (notification) => Number(notification.id) === Number(id)
+        );
+
+        if (item) {
+            item.is_read = true;
+        }
+
+        return data;
+    };
+
+    const markAllAsRead = async () => {
+        readAllButton.disabled = true;
+
+        try {
+            const response = await fetch(
+                '/staff/api/notifications/read-all.php',
+                {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        Accept: 'application/json'
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.message
+                    || '一括既読処理に失敗しました。'
+                );
+            }
+
+            notifications = notifications.map((item) => ({
+                ...item,
+                is_read: true
+            }));
+
+            updateBadge(0);
+            render();
+        } catch (error) {
+            console.error(error);
+            readAllButton.disabled = false;
+        }
+    };
+
+    const openPanel = () => {
+        panel.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+        loadNotifications();
+    };
+
+    const closePanel = () => {
+        panel.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+    };
+
+    trigger.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        if (panel.hidden) {
+            openPanel();
+        } else {
+            closePanel();
+        }
+    });
+
+    categoryButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            activeCategory =
+                button.dataset.notificationCategory || 'all';
+
+            categoryButtons.forEach((item) => {
+                item.classList.toggle(
+                    'is-active',
+                    item === button
+                );
+            });
+
+            loadNotifications();
+        });
+    });
+
+    readAllButton.addEventListener('click', () => {
+        markAllAsRead();
+    });
+
+    body.addEventListener('click', async (event) => {
+        const item = event.target.closest(
+            '[data-notification-id]'
+        );
+
+        if (!item) {
+            return;
+        }
+
+        const openButton = event.target.closest(
+            '[data-notification-open]'
+        );
+
+        const url = item.dataset.notificationUrl || '';
+
+        if (openButton) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (url) {
+                window.location.href = url;
+            }
+
+            return;
+        }
+
+        event.preventDefault();
+
+        const id = Number(item.dataset.notificationId);
+
+        if (
+            !id
+            || !item.classList.contains('is-unread')
+            || item.dataset.notificationReading === 'true'
+        ) {
+            return;
+        }
+
+        item.dataset.notificationReading = 'true';
+
+        try {
+            await markAsRead(id);
+
+            item.classList.remove('is-unread');
+
+            const notification = notifications.find(
+                (entry) => Number(entry.id) === id
+            );
+
+            if (notification) {
+                notification.is_read = true;
+            }
+
+            const unreadCount = notifications.filter(
+                (entry) => !entry.is_read
+            ).length;
+
+            updateBadge(unreadCount);
+            readAllButton.disabled = unreadCount === 0;
+        } catch (error) {
+            console.error(error);
+        } finally {
+            delete item.dataset.notificationReading;
+        }
+    });
+
+    body.addEventListener('keydown', (event) => {
+        const openButton = event.target.closest(
+            '[data-notification-open]'
+        );
+
+        if (
+            !openButton
+            || (
+                event.key !== 'Enter'
+                && event.key !== ' '
+            )
+        ) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const item = openButton.closest(
+            '[data-notification-id]'
+        );
+
+        const url = item?.dataset.notificationUrl || '';
+
+        if (url) {
+            window.location.href = url;
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) {
+            closePanel();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closePanel();
+            trigger.focus();
+        }
+    });
+
+    loadNotifications({
+        silent: true
+    });
+
+    window.setInterval(() => {
+        loadNotifications({
+            silent: true
+        });
+    }, 30000);
+})();
+
+/* ==========================================================
+   Staff work status menu
+   ========================================================== */
+
+(() => {
+    'use strict';
+
+    const root = document.querySelector(
+        '[data-staff-status-menu]'
+    );
+
+    if (!root) {
+        return;
+    }
+
+    const trigger = root.querySelector(
+        '[data-staff-status-trigger]'
+    );
+    const dropdown = root.querySelector(
+        '[data-staff-status-dropdown]'
+    );
+    const label = root.querySelector(
+        '[data-staff-status-label]'
+    );
+    const dot = root.querySelector(
+        '[data-staff-status-dot]'
+    );
+    const message = root.querySelector(
+        '[data-staff-status-message]'
+    );
+    const options = Array.from(
+        root.querySelectorAll(
+            '[data-staff-status-option]'
+        )
+    );
+
+    if (
+        !trigger
+        || !dropdown
+        || !label
+        || !dot
+        || !message
+    ) {
+        return;
+    }
+
+    const allowedStatuses = [
+        'online',
+        'working',
+        'busy',
+        'away',
+        'break',
+        'offline'
+    ];
+
+    const close = () => {
+        dropdown.hidden = true;
+        trigger.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+    };
+
+    const open = () => {
+        dropdown.hidden = false;
+        trigger.setAttribute(
+            'aria-expanded',
+            'true'
+        );
+        message.hidden = true;
+    };
+
+    const setLoading = (loading) => {
+        options.forEach((option) => {
+            option.disabled = loading;
+        });
+    };
+
+    const updateDisplay = (status, statusLabel) => {
+        label.textContent = statusLabel;
+        trigger.title = statusLabel;
+
+        allowedStatuses.forEach((value) => {
+            dot.classList.remove(
+                `staff-status-button__dot--${value}`
+            );
+        });
+
+        dot.classList.add(
+            `staff-status-button__dot--${status}`
+        );
+
+        options.forEach((option) => {
+            option.classList.toggle(
+                'is-active',
+                option.dataset.staffStatusOption
+                    === status
+            );
+        });
+
+        const accountDots = document.querySelectorAll(
+            '[data-staff-account-status-dot], '
+            + '[data-staff-account-dropdown-status]'
+        );
+
+        accountDots.forEach((accountDot) => {
+            allowedStatuses.forEach((value) => {
+                accountDot.classList.remove(
+                    `staff-topbar-profile__status--${value}`,
+                    `staff-account-dropdown__status--${value}`
+                );
+            });
+
+            if (
+                accountDot.hasAttribute(
+                    'data-staff-account-status-dot'
+                )
+            ) {
+                accountDot.classList.add(
+                    `staff-topbar-profile__status--${status}`
+                );
+            } else {
+                accountDot.classList.add(
+                    `staff-account-dropdown__status--${status}`
+                );
+            }
+        });
+
+        const accountStatusLabel = document.querySelector(
+            '[data-staff-account-status-label]'
+        );
+
+        if (accountStatusLabel) {
+            accountStatusLabel.textContent = statusLabel;
+        }
+    };
+
+    const updateStatus = async (status) => {
+        setLoading(true);
+        message.hidden = true;
+
+        try {
+            const response = await fetch(
+                '/staff/api/status/update.php',
+                {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.message
+                    || '勤務状態を更新できませんでした。'
+                );
+            }
+
+            updateDisplay(
+                data.status,
+                data.label
+            );
+
+            close();
+        } catch (error) {
+            message.textContent =
+                error.message
+                || '勤務状態を更新できませんでした。';
+
+            message.hidden = false;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    trigger.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        if (dropdown.hidden) {
+            open();
+        } else {
+            close();
+        }
+    });
+
+    options.forEach((option) => {
+        option.addEventListener('click', () => {
+            const status =
+                option.dataset.staffStatusOption;
+
+            if (
+                !status
+                || !allowedStatuses.includes(status)
+                || option.classList.contains('is-active')
+            ) {
+                close();
+                return;
+            }
+
+            updateStatus(status);
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) {
+            close();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (
+            event.key === 'Escape'
+            && !dropdown.hidden
+        ) {
+            close();
+            trigger.focus();
+        }
+    });
+})();
+
+/* ==========================================================
+   Staff account menu
+   ========================================================== */
+
+(() => {
+    'use strict';
+
+    const root = document.querySelector(
+        '[data-staff-account-menu]'
+    );
+
+    if (!root) {
+        return;
+    }
+
+    const trigger = root.querySelector(
+        '[data-staff-account-trigger]'
+    );
+    const dropdown = root.querySelector(
+        '[data-staff-account-dropdown]'
+    );
+
+    if (!trigger || !dropdown) {
+        return;
+    }
+
+    const close = () => {
+        dropdown.hidden = true;
+        trigger.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+    };
+
+    const open = () => {
+        dropdown.hidden = false;
+        trigger.setAttribute(
+            'aria-expanded',
+            'true'
+        );
+    };
+
+    trigger.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        if (dropdown.hidden) {
+            open();
+        } else {
+            close();
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) {
+            close();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (
+            event.key === 'Escape'
+            && !dropdown.hidden
+        ) {
+            close();
+            trigger.focus();
+        }
+    });
+})();
+
+/* ==========================================================
+   Staff account menu
+   ========================================================== */
+
+(() => {
+    'use strict';
+
+    const root = document.querySelector(
+        '[data-staff-account-menu]'
+    );
+
+    if (!root) {
+        return;
+    }
+
+    const trigger = root.querySelector(
+        '[data-staff-account-trigger]'
+    );
+    const dropdown = root.querySelector(
+        '[data-staff-account-dropdown]'
+    );
+
+    if (!trigger || !dropdown) {
+        return;
+    }
+
+    const close = () => {
+        dropdown.hidden = true;
+        trigger.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+    };
+
+    const open = () => {
+        dropdown.hidden = false;
+        trigger.setAttribute(
+            'aria-expanded',
+            'true'
+        );
+    };
+
+    trigger.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        if (dropdown.hidden) {
+            open();
+        } else {
+            close();
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) {
+            close();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (
+            event.key === 'Escape'
+            && !dropdown.hidden
+        ) {
+            close();
+            trigger.focus();
+        }
+    });
+})();

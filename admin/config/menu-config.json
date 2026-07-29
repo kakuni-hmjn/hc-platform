@@ -1,0 +1,126 @@
+{
+    "categories": {
+        "operations": {
+            "name": "運用管理",
+            "description": "注文からサービス提供までの運用機能",
+            "order": 10
+        },
+        "customers": {
+            "name": "ユーザー管理",
+            "description": "ユーザー、権限、アカウント連携",
+            "order": 20
+        },
+        "services": {
+            "name": "事業・サービス",
+            "description": "事業一覧、プラン、提供サービス",
+            "order": 30
+        },
+        "billing": {
+            "name": "請求・決済",
+            "description": "請求書、支払い、Stripe関連機能",
+            "order": 40
+        },
+        "content": {
+            "name": "コンテンツ・通知",
+            "description": "ニュース、通知、お問い合わせ",
+            "order": 50
+        },
+        "system": {
+            "name": "システム",
+            "description": "Worker、ログ、設定、開発機能",
+            "order": 60
+        },
+        "レンタルサーバー": {
+            "name": "レンタルサーバー",
+            "description": "レンタルサーバーやホスティング事業",
+            "order": 70
+        },
+        "uncategorized": {
+            "name": "未分類",
+            "description": "カテゴリが設定されていない管理機能",
+            "order": 80
+        }
+    },
+    "assignments": {
+        "/admin/server-orders/": "operations",
+        "/admin/provisioning-jobs/": "operations",
+        "/admin/servers/": "operations",
+        "/admin/plan-change-requests/": "operations",
+        "/admin/cancellation-requests/": "operations",
+        "/admin/users/": "customers",
+        "/admin/ptero-users/": "customers",
+        "/admin/roles/": "customers",
+        "/admin/admin-users/": "customers",
+        "/admin/services/": "services",
+        "/admin/businesses/": "services",
+        "/admin/activities/": "services",
+        "/admin/game-plans/": "services",
+        "/admin/order-settings/": "services",
+        "/admin/nodes/": "services",
+        "/admin/eggs/": "services",
+        "/admin/allocations/": "services",
+        "/admin/billing/": "billing",
+        "/admin/invoices/": "billing",
+        "/admin/payments/": "billing",
+        "/admin/coupons/": "billing",
+        "/admin/promotions/": "billing",
+        "/admin/notifications/": "content",
+        "/admin/news/": "content",
+        "/admin/inquiries/": "content",
+        "/admin/contact/": "content",
+        "/admin/system/workers/": "system",
+        "/admin/system/events/": "system",
+        "/admin/settings/": "system",
+        "/admin/audit-logs/": "system",
+        "/admin/logs/": "system",
+        "/admin/dev/": "system",
+        "/admin/ptero/allocations/": "レンタルサーバー",
+        "/admin/server-orders/provision/failed/": "レンタルサーバー",
+        "/admin/header-settings/": "system",
+        "/admin/billing/invoice/": "billing",
+        "/admin/dev/logs/": "uncategorized",
+        "/admin/server-orders/pending/": "レンタルサーバー",
+        "/admin/ptero/": "レンタルサーバー",
+        "/admin/server-orders/provision/": "レンタルサーバー",
+        "/admin/server-orders/ready/": "レンタルサーバー",
+        "/admin/site-notifications/": "operations",
+        "/admin/staff/": "operations",
+        "/admin/stripe-plans/": "billing",
+        "/admin/user-notifications/": "operations"
+    },
+    "descriptions": {
+        "/admin/server-orders/": "ゲームサーバーの注文内容、支払い状況、承認状態を確認・管理します。",
+        "/admin/provisioning-jobs/": "ゲームサーバー作成処理の進行状況や失敗したジョブを確認します。",
+        "/admin/servers/": "契約中のゲームサーバー、割り当て先ノード、稼働状態を管理します。",
+        "/admin/plan-change-requests/": "ユーザーから申請されたプラン変更を確認し、承認または対応します。",
+        "/admin/cancellation-requests/": "ユーザーから送信された解約申請と解約予定日を管理します。",
+        "/admin/users/": "HCアカウント、ユーザー情報、権限、利用状態を管理します。",
+        "/admin/ptero-users/": "HCアカウントとPterodactylアカウントの連携状態を管理します。",
+        "/admin/roles/": "オーナー、管理者、スタッフ、一般ユーザーなどの権限を管理します。",
+        "/admin/admin-users/": "管理画面へアクセスできるスタッフと管理者を管理します。",
+        "/admin/services/": "HCが提供している事業やサービスの内容、公開状態を管理します。",
+        "/admin/businesses/": "事業一覧に表示する事業情報、説明、リンク、表示状態を管理します。",
+        "/admin/activities/": "クリエイター支援や活動支援サービスの内容を管理します。",
+        "/admin/game-plans/": "ゲームサーバープランの料金、CPU、メモリ、容量、販売状態を管理します。",
+        "/admin/order-settings/": "注文受付の有効・無効、受付条件、注文時の設定を管理します。",
+        "/admin/nodes/": "ゲームサーバーを稼働させるノードと接続状態を管理します。",
+        "/admin/eggs/": "ゲームやアプリケーションの起動テンプレートを管理します。",
+        "/admin/allocations/": "ノードで使用するIPアドレスとポートの割り当てを管理します。",
+        "/admin/billing/": "請求、支払い、未払い状況などの決済情報をまとめて確認します。",
+        "/admin/invoices/": "ユーザーへ発行された請求書、支払期限、支払い状態を管理します。",
+        "/admin/payments/": "Stripeなどを通じて行われた支払い履歴と決済結果を確認します。",
+        "/admin/coupons/": "注文時に使用できる割引クーポンと有効期限を管理します。",
+        "/admin/promotions/": "期間限定キャンペーン、割引、プロモーション設定を管理します。",
+        "/admin/notifications/": "ユーザー個別通知、全体通知、重要なお知らせを作成・配信します。",
+        "/admin/news/": "HC Platformやサービスに関するニュース記事を作成・管理します。",
+        "/admin/inquiries/": "ユーザーから送信されたお問い合わせと対応状況を管理します。",
+        "/admin/contact/": "お問い合わせフォームから受信した内容を確認・管理します。",
+        "/admin/system/workers/": "バックグラウンド処理を行うWorkerの稼働状態を確認します。",
+        "/admin/system/events/": "注文、決済、サーバー作成などのシステムイベントを確認します。",
+        "/admin/settings/": "HC Platform全体で使用する共通設定を管理します。",
+        "/admin/audit-logs/": "管理者やスタッフが行った操作の記録を確認します。",
+        "/admin/logs/": "アプリケーションエラーやシステム処理のログを確認します。",
+        "/admin/dev/": "開発中の機能、検証ツール、デバッグ情報を利用します。",
+        "/admin/menu-settings/": "管理ページのカテゴリ、表示順、説明文を管理します。"
+    }
+}

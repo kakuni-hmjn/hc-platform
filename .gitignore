@@ -33,3 +33,4 @@ vendor/
 .env
 .env.*
 !.env.example
+.env.audit.local

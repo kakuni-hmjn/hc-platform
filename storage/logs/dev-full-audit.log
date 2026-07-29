@@ -1,0 +1,320 @@
+==================================================
+HC Platform 開発環境監査
+Dockerコマンドは使用しません
+==================================================
+URL: http://127.0.0.1:8080
+DB: 127.0.0.1:5433/hc_account
+DB USER: hc_user
+
+[DB事前接続テスト]
+ current_database | current_user 
+------------------+--------------
+ hc_account       | hc_user
+(1 row)
+
+OK: DBへ直接接続できました
+
+==================================================
+実行環境
+==================================================
+MODE=dev
+APP_DIR=/Users/sou/Workspace/hc-web
+BASE_URL=http://127.0.0.1:8080
+DB=127.0.0.1:5433/hc_account (hc_user)
+✅ アプリケーションディレクトリ
+✅ .env
+
+==================================================
+ホストコマンド
+==================================================
+✅ php
+✅ psql
+✅ curl
+✅ git
+
+==================================================
+PHP
+==================================================
+PHP 8.3.32 (cli) (built: Jul  1 2026 08:57:05) (NTS)
+✅ PHP拡張 PDO
+✅ PHP拡張 pdo_pgsql
+✅ PHP拡張 curl
+✅ PHP拡張 openssl
+✅ PHP拡張 mbstring
+✅ PHP拡張 json
+✅ PHP拡張 session
+
+==================================================
+PHP構文
+==================================================
+✅ PHP構文 165ファイル
+
+==================================================
+Git
+==================================================
+## feature/automatic-server-provisioning
+ M .gitignore
+ M admin/admin.css
+ M admin/index.php
+ M admin/server-orders/detail/detail.css
+ M admin/server-orders/detail/index.php
+ M admin/server-orders/provision/failed/retry.php
+ M dashboard/servers/detail/detail.css
+ M dashboard/servers/detail/index.php
+ M dashboard/servers/index.php
+ M docker-compose.yaml
+ M lib/game_server_payment.php
+ M lib/game_server_provisioning.php
+ M lib/notifications.php
+ M lib/ptero_users.php
+ D staff/contacts/contacts.css
+ D staff/contacts/detail/detail.css
+ D staff/contacts/detail/index.php
+ D staff/contacts/index.php
+ M staff/index.php
+ D staff/server-orders/detail/index.php
+ D staff/server-orders/index.php
+ D staff/server-orders/server-orders.css
+ M staff/staff.css
+ D staff/users/index.php
+ D staff/users/users.css
+ M verify-code/index.php
+?? admin/admin.js
+?? admin/config/
+?? admin/lib/
+?? admin/menu-settings/
+?? admin/server-orders/.htaccess
+?? admin/server-orders/approve.php
+?? admin/server-orders/pending/
+?? bin/
+?? database/
+?? docker/db/init/018_server_approval.sql
+?? docker/db/init/019_provisioning_jobs.sql
+?? docker/db/init/020_notification_dedupe.sql
+?? docker/db/init/021_notification_publish_columns.sql
+?? docker/db/init/040_staff_notifications.sql
+?? hc-staff-console-base.txt
+?? lib/game_server_approval.php
+?? lib/provisioning_jobs.php
+?? parts/backoffice/
+?? scripts/
+?? staff-production-db-audit.txt
+?? staff-sidebar-current.txt
+?? staff/account-menu.js
+?? staff/api/
+?? staff/audit/
+?? staff/billing/
+?? staff/components/
+?? staff/customers/
+?? staff/lib/
+?? staff/navigation.css
+?? staff/navigation.js
+?? staff/parts/
+?? staff/rental-server/
+?? staff/search-palette.js
+?? staff/settings/
+?? staff/staff.js
+?? staff/tasks/
+?? tools/
+7363ef8 Stripe checkout improvements and routing fixes
+⚠️  Git作業ツリーに変更があります
+
+==================================================
+PostgreSQL
+==================================================
+✅ PostgreSQL接続
+  database  | db_user |    host    | port 
+------------+---------+------------+------
+ hc_account | hc_user | 172.18.0.2 | 5432
+(1 row)
+
+
+==================================================
+HC Account・認証
+==================================================
+✅ テーブル users
+✅ テーブル pending_registrations
+✅ テーブル account_roles
+✅ テーブル permissions
+✅ テーブル user_roles
+✅ テーブル role_permissions
+✅ sou → owner → staff.access
+ slug  | granted | total 
+-------+---------+-------
+ owner |      27 |    27
+(1 row)
+
+
+==================================================
+Staff Console
+==================================================
+✅ テーブル staff_users
+✅ テーブル staff_roles
+✅ テーブル staff_permissions
+✅ テーブル staff_user_roles
+✅ テーブル staff_role_permissions
+✅ テーブル staff_tasks
+✅ テーブル staff_notifications
+✅ テーブル staff_announcements
+✅ テーブル staff_audit_logs
+
+==================================================
+Notification Center DB
+==================================================
+✅ staff_notifications
+ ordinal_position | column_name  |        data_type         | is_nullable 
+------------------+--------------+--------------------------+-------------
+                1 | id           | bigint                   | NO
+                2 | user_id      | bigint                   | NO
+                3 | type         | character varying        | NO
+                4 | title        | character varying        | NO
+                5 | body         | text                     | YES
+                6 | action_url   | text                     | YES
+                7 | is_read      | boolean                  | NO
+                8 | read_at      | timestamp with time zone | YES
+                9 | created_at   | timestamp with time zone | NO
+               10 | category     | character varying        | NO
+               11 | level        | character varying        | NO
+               12 | message      | text                     | YES
+               13 | link_url     | text                     | YES
+               14 | source       | character varying        | YES
+               15 | metadata     | jsonb                    | NO
+               16 | external_id  | character varying        | YES
+               17 | dedupe_key   | character varying        | YES
+               18 | published_at | timestamp with time zone | YES
+               19 | updated_at   | timestamp with time zone | NO
+               20 | icon         | character varying        | YES
+(20 rows)
+
+✅ staff_notifications.id
+✅ staff_notifications.user_id
+✅ staff_notifications.category
+✅ staff_notifications.level
+✅ staff_notifications.created_at
+✅ 通知タイトル列
+✅ 通知本文列
+✅ 通知既読列
+ category | total 
+----------+-------
+ system   |     1
+(1 row)
+
+
+==================================================
+注文・決済・Provisioning
+==================================================
+✅ テーブル game_server_plans
+✅ テーブル game_server_orders
+✅ テーブル server_order_events
+⚠️  テーブル invoicesがありません
+⚠️  テーブル payment_methodsがありません
+✅ テーブル provisioning_jobs
+
+[連携関連テーブル]
+            table_name             
+-----------------------------------
+ game_server_orders
+ payment_events
+ provisioning_jobs
+ ptero_nodes
+ ptero_servers
+ ptero_user_links
+ server_order_events
+ server_order_plan_change_requests
+ site_notifications
+ staff_audit_logs
+ staff_notifications
+ staff_order_notes
+ stripe_events
+ user_direct_notifications
+ user_notification_reads
+(15 rows)
+
+
+==================================================
+Notification Center API
+==================================================
+✅ 通知API all
+✅ 通知API system
+✅ 通知API order
+✅ 通知API discord
+✅ 通知API github
+✅ 通知API development
+✅ /staff/api/notifications/read.php HTTP 405
+✅ /staff/api/notifications/read-all.php HTTP 405
+✅ /staff/api/status/update.php HTTP 405
+✅ 通知個別既読API入力検証
+⚠️  一括既読APIはデータ変更を伴うため未実行
+
+==================================================
+環境変数
+==================================================
+✅ APP URL: APP_URL
+⚠️  SMTP: 未設定 [SMTP_HOST MAIL_HOST]
+⚠️  SMTP認証: 未設定 [SMTP_USER SMTP_PASSWORD MAIL_USERNAME MAIL_PASSWORD]
+⚠️  Mail From: 未設定 [MAIL_FROM_ADDRESS]
+⚠️  Turnstile: 未設定 [TURNSTILE_SITE_KEY TURNSTILE_SECRET_KEY]
+⚠️  Stripe: 未設定 [STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET]
+⚠️  Pterodactyl: 未設定 [PTERO_PANEL_URL PTERO_API_KEY]
+⚠️  Discord: 未設定 [DISCORD_BOT_TOKEN DISCORD_WEBHOOK_URL DISCORD_GUILD_ID]
+✅ GitHub: GITHUB_REPOSITORY
+⚠️  Cloudflare: 未設定 [CLOUDFLARE_API_TOKEN CLOUDFLARE_TUNNEL_ID]
+
+==================================================
+Stripe
+==================================================
+⚠️  Stripe秘密鍵未設定
+
+==================================================
+Pterodactyl
+==================================================
+⚠️  Pterodactyl設定不足
+
+==================================================
+Discord
+==================================================
+⚠️  Discord Bot Token未設定
+⚠️  Discord Webhook未設定
+
+==================================================
+GitHub
+==================================================
+✅ GitHub Repository API
+
+==================================================
+SMTP・Turnstile・Cloudflare
+==================================================
+⚠️  SMTPホストまたはncがありません
+⚠️  Turnstile Secret未設定
+⚠️  Cloudflare API Token未設定
+
+==================================================
+主要画面
+==================================================
+✅ / HTTP 200
+✅ /login/ HTTP 200
+✅ /register/ HTTP 200
+✅ /verify-code/ HTTP 200
+✅ /dashboard/ HTTP 302
+✅ /services/ HTTP 200
+✅ /services/rental/game-server/ HTTP 200
+✅ /order/game-server/ HTTP 302
+✅ /billing/ HTTP 302
+✅ /admin/ HTTP 302
+✅ /staff/ HTTP 302
+✅ /staff/tasks/ HTTP 302
+✅ /staff/notifications/ HTTP 403
+✅ /staff/rental-server/ HTTP 302
+✅ /staff/rental-server/game-server/ HTTP 302
+✅ /staff/audit/ HTTP 302
+
+==================================================
+ログ
+==================================================
+
+==================================================
+監査結果
+==================================================
+✅ PASS: 73
+⚠️  WARN: 19
+❌ FAIL: 0

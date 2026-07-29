@@ -1,0 +1,20 @@
+==================================================
+HC Platform 開発環境監査
+Dockerコマンドは使用しません
+==================================================
+URL: http://127.0.0.1:8080
+DB: 127.0.0.1:5433/hc_account
+DB USER: hc_user
+
+[DB事前接続テスト]
+psql: error: connection to server at "127.0.0.1", port 5433 failed: FATAL:  password authentication failed for user "hc_user"
+
+ERROR: DBへ直接接続できません
+
+確認値:
+  HOST=127.0.0.1
+  PORT=5433
+  NAME=hc_account
+  USER=hc_user
+
+.envのPOSTGRES_PASSWORDまたはDB_PASSWORDを確認してください

@@ -1,0 +1,164 @@
+
+==================================================
+1. Docker
+==================================================
+OK: Docker Engine
+OK: Docker Compose設定
+NAME                      IMAGE                     COMMAND                  SERVICE            CREATED          STATUS          PORTS
+hc-dev-adminer            adminer                   "entrypoint.sh docke…"   adminer            2 hours ago      Up 43 minutes   0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
+hc-dev-db                 postgres:17               "docker-entrypoint.s…"   db                 2 hours ago      Up 41 minutes   0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp
+hc-dev-provision-worker   hc-web-provision-worker   "docker-php-entrypoi…"   provision-worker   19 seconds ago   Up 8 seconds    80/tcp
+hc-dev-reverse            nginx:1.27-alpine         "/docker-entrypoint.…"   reverse            2 hours ago      Up 43 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+hc-dev-web                hc-web-web                "docker-php-entrypoi…"   web                19 seconds ago   Up 8 seconds    80/tcp
+OK: web起動中
+OK: db起動中
+
+==================================================
+2. PHP
+==================================================
+OK: PHP実行可能
+PHP 8.3.32 (cli) (built: Jul 14 2026 01:32:59) (NTS)
+OK: PHP拡張 pdo
+OK: PHP拡張 pdo_pgsql
+OK: PHP拡張 curl
+OK: PHP拡張 openssl
+OK: PHP拡張 mbstring
+OK: PHP拡張 json
+
+==================================================
+3. PHP構文
+==================================================
+OK: PHP構文エラーなし
+
+==================================================
+4. PostgreSQL
+==================================================
+OK: PostgreSQL接続
+  database  | db_user |                                                          version                                                           
+------------+---------+----------------------------------------------------------------------------------------------------------------------------
+ hc_account | hc_user | PostgreSQL 17.10 (Debian 17.10-1.pgdg13+1) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
+
+==================================================
+5. 必須テーブル
+==================================================
+OK: テーブル users
+OK: テーブル account_roles
+OK: テーブル permissions
+OK: テーブル user_roles
+OK: テーブル role_permissions
+
+==================================================
+6. Staff Consoleテーブル
+==================================================
+OK: テーブル staff_users
+OK: テーブル staff_roles
+OK: テーブル staff_permissions
+OK: テーブル staff_user_roles
+OK: テーブル staff_role_permissions
+
+        table_name        
+--------------------------
+ staff_announcement_reads
+ staff_announcements
+ staff_audit_logs
+ staff_categories
+ staff_departments
+ staff_notifications
+ staff_order_notes
+ staff_permissions
+ staff_role_permissions
+ staff_roles
+ staff_task_logs
+ staff_tasks
+ staff_user_categories
+ staff_user_departments
+ staff_user_roles
+ staff_users
+(16 rows)
+
+
+==================================================
+7. staff_notifications構造
+==================================================
+OK: staff_notifications存在
+                                       Table "public.staff_notifications"
+   Column   |           Type           | Collation | Nullable |                     Default                     
+------------+--------------------------+-----------+----------+-------------------------------------------------
+ id         | bigint                   |           | not null | nextval('staff_notifications_id_seq'::regclass)
+ user_id    | bigint                   |           | not null | 
+ type       | character varying(80)    |           | not null | 'general'::character varying
+ title      | character varying(255)   |           | not null | 
+ body       | text                     |           |          | 
+ action_url | text                     |           |          | 
+ is_read    | boolean                  |           | not null | false
+ read_at    | timestamp with time zone |           |          | 
+ created_at | timestamp with time zone |           | not null | CURRENT_TIMESTAMP
+Indexes:
+    "staff_notifications_pkey" PRIMARY KEY, btree (id)
+    "idx_staff_notifications_user_read" btree (user_id, is_read)
+Foreign-key constraints:
+    "staff_notifications_user_id_fkey" FOREIGN KEY (user_id) REFERENCES staff_users(id) ON DELETE CASCADE
+
+OK: staff_notifications.user_id存在
+
+==================================================
+8. owner権限
+==================================================
+OK: ユーザー sou
+OK: ownerロール
+OK: souにowner付与済み
+OK: souはstaff.accessを保持
+ slug  | granted | total 
+-------+---------+-------
+ owner |      27 |    27
+(1 row)
+
+
+==================================================
+9. 環境変数
+==================================================
+WARN: DBホストが未設定
+WARN: DB名が未設定
+WARN: DBユーザーが未設定
+WARN: Stripe秘密鍵が未設定
+WARN: Stripe公開鍵が未設定
+WARN: Stripe Webhook Secretが未設定
+WARN: Pterodactyl URLが未設定
+WARN: Pterodactyl APIキーが未設定
+WARN: SMTPホストが未設定
+WARN: Turnstile Site Keyが未設定
+WARN: Turnstile Secret Keyが未設定
+
+==================================================
+10. Stripe API
+==================================================
+WARN: Stripe秘密鍵未設定
+
+==================================================
+11. Pterodactyl API
+==================================================
+WARN: Pterodactyl設定不足
+
+==================================================
+12. HTTP主要画面
+==================================================
+OK: / HTTP 200
+OK: /login/ HTTP 200
+OK: /dashboard/ HTTP 302
+OK: /staff/ HTTP 302
+OK: /services/ HTTP 200
+OK: /services/rental/game-server/ HTTP 200
+OK: /admin/ HTTP 302
+
+==================================================
+13. Webログ
+==================================================
+
+==================================================
+監査結果
+==================================================
+PASS: 36
+WARN: 13
+FAIL: 0

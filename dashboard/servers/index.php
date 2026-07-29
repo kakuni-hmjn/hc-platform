@@ -103,9 +103,12 @@ function order_status_label_servers(string $status): string
     return match ($status) {
         "pending_payment" => "決済待ち",
         "paid" => "決済済み",
-        "creating" => "作成中",
+        "creating" => "サーバー作成中",
+        "pending_approval" => "管理者確認待ち",
+        "activating" => "利用開始処理中",
         "active" => "稼働中",
-        "provision_failed" => "作成失敗",
+        "provision_failed" => "サーバー作成失敗",
+        "approval_failed" => "利用開始処理失敗",
         "suspended" => "停止中",
         "cancelled" => "キャンセル",
         "expired" => "期限切れ",
@@ -222,7 +225,15 @@ try {
         FROM game_server_orders gso
         JOIN game_server_plans gsp ON gsp.id = gso.plan_id
         WHERE gso.user_id = :user_id
-          AND gso.status IN ('pending_payment', 'paid', 'creating', 'provision_failed')
+          AND gso.status IN (
+              'pending_payment',
+              'paid',
+              'creating',
+              'pending_approval',
+              'activating',
+              'provision_failed',
+              'approval_failed'
+          )
           AND NOT EXISTS (
               SELECT 1
               FROM ptero_servers ps

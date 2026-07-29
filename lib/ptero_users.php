@@ -68,22 +68,28 @@ function hc_ptero_random_password(): string
     return $password . "Aa1!";
 }
 
-function hc_ptero_upsert_user_link(PDO $pdo, int $userId, string $externalId, array $pteroUser, ?string $initialPassword = null): array
-{
+function hc_ptero_upsert_user_link(
+    PDO $pdo,
+    int $userId,
+    string $externalId,
+    array $pteroUser,
+    ?string $initialPassword = null
+): array {
     $attributes = $pteroUser["attributes"] ?? $pteroUser;
 
     $pteroUserId = (int)($attributes["id"] ?? 0);
-    $pteroUuid = (string)($attributes["uuid"] ?? "");
-    $username = (string)($attributes["username"] ?? "");
-    $email = (string)($attributes["email"] ?? "");
+    $pteroUuid = trim((string)($attributes["uuid"] ?? ""));
+    $username = trim((string)($attributes["username"] ?? ""));
+    $email = trim((string)($attributes["email"] ?? ""));
 
     if ($pteroUserId <= 0) {
-        throw new RuntimeException("PterodactylユーザーIDを取得できませんでした。");
+        throw new RuntimeException(
+            "PterodactylユーザーIDを取得できませんでした。"
+        );
     }
 
     $stmt = $pdo->prepare("
-        INSERT INTO ptero_user_links
-        (
+        INSERT INTO ptero_user_links (
             user_id,
             ptero_user_id,
             ptero_external_id,
@@ -97,30 +103,40 @@ function hc_ptero_upsert_user_link(PDO $pdo, int $userId, string $externalId, ar
             updated_at,
             last_synced_at
         )
-        VALUES
-        (
+        VALUES (
             :user_id,
             :ptero_user_id,
             :ptero_external_id,
-            :ptero_uuid,
-            :username,
-            :email,
+            CAST(:ptero_uuid AS VARCHAR),
+            CAST(:username AS VARCHAR),
+            CAST(:email AS VARCHAR),
             'active',
-            :initial_password,
-            CASE WHEN :initial_password_created IS NULL THEN NULL ELSE NOW() END,
+            CAST(:initial_password AS TEXT),
+            CASE
+                WHEN CAST(:initial_password_created AS TEXT) IS NULL
+                    THEN NULL
+                ELSE NOW()
+            END,
             NOW(),
             NOW(),
             NOW()
         )
-        ON CONFLICT (user_id) DO UPDATE SET
+        ON CONFLICT (user_id)
+        DO UPDATE SET
             ptero_user_id = EXCLUDED.ptero_user_id,
             ptero_external_id = EXCLUDED.ptero_external_id,
             ptero_uuid = EXCLUDED.ptero_uuid,
             username = EXCLUDED.username,
             email = EXCLUDED.email,
             status = 'active',
-            initial_password = COALESCE(EXCLUDED.initial_password, ptero_user_links.initial_password),
-            initial_password_created_at = COALESCE(EXCLUDED.initial_password_created_at, ptero_user_links.initial_password_created_at),
+            initial_password = COALESCE(
+                EXCLUDED.initial_password,
+                ptero_user_links.initial_password
+            ),
+            initial_password_created_at = COALESCE(
+                EXCLUDED.initial_password_created_at,
+                ptero_user_links.initial_password_created_at
+            ),
             updated_at = NOW(),
             last_synced_at = NOW()
     ");
@@ -141,6 +157,8 @@ function hc_ptero_upsert_user_link(PDO $pdo, int $userId, string $externalId, ar
         "ptero_user_id" => $pteroUserId,
         "ptero_external_id" => $externalId,
         "ptero_uuid" => $pteroUuid,
+        "ptero_username" => $username,
+        "ptero_email" => $email,
         "username" => $username,
         "email" => $email,
         "initial_password_created" => $initialPassword !== null,

@@ -1391,3 +1391,171 @@ body.dark-theme .ptero-account-button {
         width: 100%;
     }
 }
+
+.server-detail-summary.status-pending_approval::before {
+    background: linear-gradient(180deg, #f59e0b, #f97316);
+}
+
+.server-detail-summary.status-activating::before {
+    background: linear-gradient(180deg, #3b82f6, #6366f1);
+}
+
+.server-detail-summary.status-approval_failed::before {
+    background: linear-gradient(180deg, #ef4444, #b91c1c);
+}
+
+.status-pending_approval {
+    border-color: rgba(245, 158, 11, 0.24);
+    background: rgba(245, 158, 11, 0.1);
+    color: #b45309;
+}
+
+.status-activating {
+    border-color: rgba(59, 130, 246, 0.24);
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+}
+
+.status-approval_failed {
+    border-color: rgba(239, 68, 68, 0.24);
+    background: rgba(239, 68, 68, 0.1);
+    color: #b91c1c;
+}
+
+body.dark-theme .status-pending_approval {
+    border-color: rgba(245, 158, 11, 0.28);
+    background: rgba(245, 158, 11, 0.14);
+    color: #fbbf24;
+}
+
+body.dark-theme .status-activating {
+    border-color: rgba(96, 165, 250, 0.28);
+    background: rgba(59, 130, 246, 0.14);
+    color: #93c5fd;
+}
+
+body.dark-theme .status-approval_failed {
+    border-color: rgba(248, 113, 113, 0.28);
+    background: rgba(239, 68, 68, 0.14);
+    color: #fca5a5;
+}
+
+.server-user-status-notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+    margin-bottom: 22px;
+    padding: 18px 20px;
+    border: 1px solid var(--border-color, rgba(15, 23, 42, 0.1));
+    border-radius: 18px;
+    background: var(--surface-color, rgba(255, 255, 255, 0.94));
+}
+
+.server-user-status-notice > div {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    min-width: 0;
+}
+
+.server-user-status-dot {
+    width: 11px;
+    height: 11px;
+    flex: 0 0 auto;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: #64748b;
+    box-shadow: 0 0 0 5px rgba(100, 116, 139, 0.12);
+}
+
+.server-user-status-notice strong {
+    display: block;
+    font-size: 0.98rem;
+}
+
+.server-user-status-notice p {
+    margin: 5px 0 0;
+    color: var(--text-muted, #667085);
+    font-size: 0.88rem;
+    line-height: 1.7;
+}
+
+.server-user-status-notice.is-info {
+    border-color: rgba(59, 130, 246, 0.2);
+    background: rgba(59, 130, 246, 0.06);
+}
+
+.server-user-status-notice.is-info .server-user-status-dot {
+    background: #3b82f6;
+    box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.13);
+}
+
+.server-user-status-notice.is-warning {
+    border-color: rgba(245, 158, 11, 0.22);
+    background: rgba(245, 158, 11, 0.07);
+}
+
+.server-user-status-notice.is-warning .server-user-status-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.14);
+}
+
+.server-user-status-notice.is-success {
+    border-color: rgba(34, 197, 94, 0.22);
+    background: rgba(34, 197, 94, 0.07);
+}
+
+.server-user-status-notice.is-success .server-user-status-dot {
+    background: #22c55e;
+    box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.14);
+}
+
+.server-user-status-notice.is-error {
+    border-color: rgba(239, 68, 68, 0.22);
+    background: rgba(239, 68, 68, 0.07);
+}
+
+.server-user-status-notice.is-error .server-user-status-dot {
+    background: #ef4444;
+    box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.14);
+}
+
+.server-user-status-action {
+    display: inline-flex;
+    min-height: 40px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    border-radius: 12px;
+    background: #111827;
+    color: #fff;
+    font-size: 0.84rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+body.dark-theme .server-user-status-notice {
+    background: rgba(17, 24, 39, 0.88);
+}
+
+body.dark-theme .server-user-status-notice p {
+    color: #94a3b8;
+}
+
+body.dark-theme .server-user-status-action {
+    background: #f8fafc;
+    color: #111827;
+}
+
+@media (max-width: 720px) {
+    .server-user-status-notice {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .server-user-status-action {
+        width: 100%;
+    }
+}

@@ -1,0 +1,876 @@
+==================================================
+通知取得API
+==================================================
+     1	<?php
+     2	
+     3	declare(strict_types=1);
+     4	
+     5	header('Content-Type: application/json; charset=UTF-8');
+     6	header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+     7	
+     8	require_once dirname(__DIR__, 2) . '/lib/bootstrap.php';
+     9	
+    10	/**
+    11	 * JSONレスポンスを返して終了する。
+    12	 *
+    13	 * @param array<string, mixed> $payload
+    14	 */
+    15	function notification_json(array $payload, int $status = 200): never
+    16	{
+    17	    http_response_code($status);
+    18	
+    19	    echo json_encode(
+    20	        $payload,
+    21	        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    22	    );
+    23	
+    24	    exit;
+    25	}
+    26	
+    27	/**
+    28	 * bootstrap.phpからPDO接続を取得する。
+    29	 */
+    30	function notification_resolve_pdo(): ?PDO
+    31	{
+    32	    global $pdo, $db;
+    33	
+    34	    if (isset($pdo) && $pdo instanceof PDO) {
+    35	        return $pdo;
+    36	    }
+    37	
+    38	    if (isset($db) && $db instanceof PDO) {
+    39	        return $db;
+    40	    }
+    41	
+    42	    foreach ([
+    43	        'db',
+    44	        'database',
+    45	        'get_db',
+    46	        'get_database',
+    47	        'staff_db',
+    48	        'app_db',
+    49	    ] as $functionName) {
+    50	        if (!function_exists($functionName)) {
+    51	            continue;
+    52	        }
+    53	
+    54	        try {
+    55	            $connection = $functionName();
+    56	
+    57	            if ($connection instanceof PDO) {
+    58	                return $connection;
+    59	            }
+    60	        } catch (Throwable) {
+    61	            // 次の候補を確認する
+    62	        }
+    63	    }
+    64	
+    65	    return null;
+    66	}
+    67	
+    68	/**
+    69	 * ログイン中スタッフのIDを取得する。
+    70	 */
+    71	function notification_resolve_staff_user_id(): ?int
+    72	{
+    73	    global $currentStaffUser, $staffUser, $currentUser;
+    74	
+    75	    $candidates = [
+    76	        $currentStaffUser ?? null,
+    77	        $staffUser ?? null,
+    78	        $currentUser ?? null,
+    79	        $_SESSION['staff_user'] ?? null,
+    80	        $_SESSION['current_staff_user'] ?? null,
+    81	        $_SESSION['user'] ?? null,
+    82	    ];
+    83	
+    84	    foreach ($candidates as $candidate) {
+    85	        if (!is_array($candidate)) {
+    86	            continue;
+    87	        }
+    88	
+    89	        foreach (['id', 'staff_user_id', 'user_id'] as $key) {
+    90	            if (
+    91	                isset($candidate[$key])
+    92	                && filter_var($candidate[$key], FILTER_VALIDATE_INT) !== false
+    93	            ) {
+    94	                $id = (int) $candidate[$key];
+    95	
+    96	                if ($id > 0) {
+    97	                    return $id;
+    98	                }
+    99	            }
+   100	        }
+   101	    }
+   102	
+   103	    foreach ([
+   104	        $_SESSION['staff_user_id'] ?? null,
+   105	        $_SESSION['staff_id'] ?? null,
+   106	        $_SESSION['user_id'] ?? null,
+   107	    ] as $candidateId) {
+   108	        if (filter_var($candidateId, FILTER_VALIDATE_INT) !== false) {
+   109	            $id = (int) $candidateId;
+   110	
+   111	            if ($id > 0) {
+   112	                return $id;
+   113	            }
+   114	        }
+   115	    }
+   116	
+   117	    foreach ([
+   118	        'current_staff_user_id',
+   119	        'staff_user_id',
+   120	        'authenticated_staff_user_id',
+   121	    ] as $functionName) {
+   122	        if (!function_exists($functionName)) {
+   123	            continue;
+   124	        }
+   125	
+   126	        try {
+   127	            $id = (int) $functionName();
+   128	
+   129	            if ($id > 0) {
+   130	                return $id;
+   131	            }
+   132	        } catch (Throwable) {
+   133	            // 次の候補を確認する
+   134	        }
+   135	    }
+   136	
+   137	    return null;
+   138	}
+   139	
+   140	if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+   141	    header('Allow: GET');
+   142	
+   143	    notification_json([
+   144	        'ok' => false,
+   145	        'error' => 'method_not_allowed',
+   146	        'message' => 'GETメソッドのみ利用できます。',
+   147	    ], 405);
+   148	}
+   149	
+   150	$pdo = notification_resolve_pdo();
+   151	
+   152	if (!$pdo instanceof PDO) {
+   153	    notification_json([
+   154	        'ok' => false,
+   155	        'error' => 'database_connection_not_found',
+   156	        'message' => 'データベース接続を取得できませんでした。',
+   157	    ], 500);
+   158	}
+   159	
+   160	$staffUserId = notification_resolve_staff_user_id();
+   161	
+   162	if ($staffUserId === null) {
+   163	    notification_json([
+   164	        'ok' => false,
+   165	        'error' => 'unauthorized',
+   166	        'message' => 'ログイン中のスタッフを確認できませんでした。',
+   167	    ], 401);
+   168	}
+   169	
+   170	$allowedCategories = [
+   171	    'all',
+   172	    'system',
+   173	    'order',
+   174	    'user',
+   175	    'discord',
+   176	    'github',
+   177	    'development',
+   178	];
+   179	
+   180	$category = strtolower(trim((string) ($_GET['category'] ?? 'all')));
+   181	
+   182	if (!in_array($category, $allowedCategories, true)) {
+   183	    notification_json([
+   184	        'ok' => false,
+   185	        'error' => 'invalid_category',
+   186	        'message' => '指定された通知カテゴリは利用できません。',
+   187	    ], 422);
+   188	}
+   189	
+   190	$limit = filter_input(
+   191	    INPUT_GET,
+   192	    'limit',
+   193	    FILTER_VALIDATE_INT,
+   194	    [
+   195	        'options' => [
+   196	            'default' => 20,
+   197	            'min_range' => 1,
+   198	            'max_range' => 50,
+   199	        ],
+   200	    ]
+   201	);
+   202	
+   203	if (!is_int($limit)) {
+   204	    $limit = 20;
+   205	}
+   206	
+   207	try {
+   208	    $unreadStatement = $pdo->prepare(
+   209	        <<<'SQL'
+   210	        SELECT COUNT(*)
+   211	        FROM staff_notifications
+   212	        WHERE user_id = :user_id
+   213	          AND is_read = FALSE
+   214	        SQL
+   215	    );
+   216	
+   217	    $unreadStatement->execute([
+   218	        ':user_id' => $staffUserId,
+   219	    ]);
+   220	
+   221	    $unreadCount = (int) $unreadStatement->fetchColumn();
+   222	
+   223	    $whereCategory = '';
+   224	    $parameters = [
+   225	        ':user_id' => $staffUserId,
+   226	    ];
+   227	
+   228	    if ($category !== 'all') {
+   229	        $whereCategory = ' AND category = :category';
+   230	        $parameters[':category'] = $category;
+   231	    }
+   232	
+   233	    $query = <<<SQL
+   234	        SELECT
+   235	            id,
+   236	            type,
+   237	            category,
+   238	            level,
+   239	            title,
+   240	            body,
+   241	            action_url,
+   242	            icon,
+   243	            source,
+   244	            metadata,
+   245	            is_read,
+   246	            read_at,
+   247	            created_at,
+   248	            updated_at
+   249	        FROM staff_notifications
+   250	        WHERE user_id = :user_id
+   251	        {$whereCategory}
+   252	        ORDER BY created_at DESC, id DESC
+   253	        LIMIT {$limit}
+   254	        SQL;
+   255	
+   256	    $statement = $pdo->prepare($query);
+   257	    $statement->execute($parameters);
+   258	
+   259	    $items = [];
+   260	
+   261	    while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+   262	        $metadata = $row['metadata'] ?? [];
+   263	
+   264	        if (is_string($metadata)) {
+   265	            $decodedMetadata = json_decode($metadata, true);
+   266	            $metadata = is_array($decodedMetadata) ? $decodedMetadata : [];
+   267	        }
+   268	
+   269	        $items[] = [
+   270	            'id' => (int) $row['id'],
+   271	            'type' => (string) $row['type'],
+   272	            'category' => (string) ($row['category'] ?? 'system'),
+   273	            'level' => (string) ($row['level'] ?? 'info'),
+   274	            'title' => (string) $row['title'],
+   275	            'message' => (string) ($row['body'] ?? ''),
+   276	            'url' => $row['action_url'] !== null
+   277	                ? (string) $row['action_url']
+   278	                : null,
+   279	            'icon' => $row['icon'] !== null
+   280	                ? (string) $row['icon']
+   281	                : null,
+   282	            'source' => (string) ($row['source'] ?? 'hc-platform'),
+   283	            'metadata' => $metadata,
+   284	            'is_read' => (bool) $row['is_read'],
+   285	            'read_at' => $row['read_at'],
+   286	            'created_at' => $row['created_at'],
+   287	        ];
+   288	    }
+   289	
+   290	    notification_json([
+   291	        'ok' => true,
+   292	        'unread' => $unreadCount,
+   293	        'category' => $category,
+   294	        'items' => $items,
+   295	    ]);
+   296	} catch (Throwable $exception) {
+   297	    error_log(
+   298	        '[staff notifications API] '
+   299	        . $exception->getMessage()
+   300	    );
+   301	
+   302	    notification_json([
+   303	        'ok' => false,
+   304	        'error' => 'notification_fetch_failed',
+   305	        'message' => '通知の取得に失敗しました。',
+   306	    ], 500);
+   307	}
+
+==================================================
+個別既読API
+==================================================
+     1	<?php
+     2	
+     3	declare(strict_types=1);
+     4	
+     5	header('Content-Type: application/json; charset=UTF-8');
+     6	header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+     7	
+     8	require_once dirname(__DIR__, 2) . '/lib/bootstrap.php';
+     9	
+    10	function notification_json(array $payload, int $status = 200): never
+    11	{
+    12	    http_response_code($status);
+    13	
+    14	    echo json_encode(
+    15	        $payload,
+    16	        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    17	    );
+    18	
+    19	    exit;
+    20	}
+    21	
+    22	function notification_resolve_pdo(): ?PDO
+    23	{
+    24	    global $pdo, $db;
+    25	
+    26	    if (isset($pdo) && $pdo instanceof PDO) {
+    27	        return $pdo;
+    28	    }
+    29	
+    30	    if (isset($db) && $db instanceof PDO) {
+    31	        return $db;
+    32	    }
+    33	
+    34	    foreach ([
+    35	        'db',
+    36	        'database',
+    37	        'get_db',
+    38	        'get_database',
+    39	        'staff_db',
+    40	        'app_db',
+    41	    ] as $functionName) {
+    42	        if (!function_exists($functionName)) {
+    43	            continue;
+    44	        }
+    45	
+    46	        try {
+    47	            $connection = $functionName();
+    48	
+    49	            if ($connection instanceof PDO) {
+    50	                return $connection;
+    51	            }
+    52	        } catch (Throwable) {
+    53	        }
+    54	    }
+    55	
+    56	    return null;
+    57	}
+    58	
+    59	function notification_resolve_staff_user_id(): ?int
+    60	{
+    61	    global $currentStaffUser, $staffUser, $currentUser;
+    62	
+    63	    $candidates = [
+    64	        $currentStaffUser ?? null,
+    65	        $staffUser ?? null,
+    66	        $currentUser ?? null,
+    67	        $_SESSION['staff_user'] ?? null,
+    68	        $_SESSION['current_staff_user'] ?? null,
+    69	        $_SESSION['user'] ?? null,
+    70	    ];
+    71	
+    72	    foreach ($candidates as $candidate) {
+    73	        if (!is_array($candidate)) {
+    74	            continue;
+    75	        }
+    76	
+    77	        foreach (['id', 'staff_user_id', 'user_id'] as $key) {
+    78	            if (
+    79	                isset($candidate[$key])
+    80	                && filter_var($candidate[$key], FILTER_VALIDATE_INT) !== false
+    81	            ) {
+    82	                $id = (int) $candidate[$key];
+    83	
+    84	                if ($id > 0) {
+    85	                    return $id;
+    86	                }
+    87	            }
+    88	        }
+    89	    }
+    90	
+    91	    foreach ([
+    92	        $_SESSION['staff_user_id'] ?? null,
+    93	        $_SESSION['staff_id'] ?? null,
+    94	        $_SESSION['user_id'] ?? null,
+    95	    ] as $candidateId) {
+    96	        if (filter_var($candidateId, FILTER_VALIDATE_INT) !== false) {
+    97	            $id = (int) $candidateId;
+    98	
+    99	            if ($id > 0) {
+   100	                return $id;
+   101	            }
+   102	        }
+   103	    }
+   104	
+   105	    return null;
+   106	}
+   107	
+   108	if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+   109	    header('Allow: POST');
+   110	
+   111	    notification_json([
+   112	        'ok' => false,
+   113	        'error' => 'method_not_allowed',
+   114	        'message' => 'POSTメソッドのみ利用できます。',
+   115	    ], 405);
+   116	}
+   117	
+   118	$pdo = notification_resolve_pdo();
+   119	$staffUserId = notification_resolve_staff_user_id();
+   120	
+   121	if (!$pdo instanceof PDO) {
+   122	    notification_json([
+   123	        'ok' => false,
+   124	        'error' => 'database_connection_not_found',
+   125	        'message' => 'データベース接続を取得できませんでした。',
+   126	    ], 500);
+   127	}
+   128	
+   129	if ($staffUserId === null) {
+   130	    notification_json([
+   131	        'ok' => false,
+   132	        'error' => 'unauthorized',
+   133	        'message' => 'ログイン中のスタッフを確認できませんでした。',
+   134	    ], 401);
+   135	}
+   136	
+   137	$payload = json_decode(file_get_contents('php://input'), true);
+   138	
+   139	if (!is_array($payload)) {
+   140	    $payload = $_POST;
+   141	}
+   142	
+   143	$notificationId = $payload['id'] ?? null;
+   144	
+   145	if (filter_var($notificationId, FILTER_VALIDATE_INT) === false) {
+   146	    notification_json([
+   147	        'ok' => false,
+   148	        'error' => 'invalid_notification_id',
+   149	        'message' => '通知IDが正しくありません。',
+   150	    ], 422);
+   151	}
+   152	
+   153	$notificationId = (int) $notificationId;
+   154	
+   155	try {
+   156	    $statement = $pdo->prepare(
+   157	        <<<'SQL'
+   158	        UPDATE staff_notifications
+   159	        SET
+   160	            is_read = TRUE,
+   161	            read_at = COALESCE(read_at, CURRENT_TIMESTAMP),
+   162	            updated_at = CURRENT_TIMESTAMP
+   163	        WHERE id = :id
+   164	          AND user_id = :user_id
+   165	        RETURNING id
+   166	        SQL
+   167	    );
+   168	
+   169	    $statement->execute([
+   170	        ':id' => $notificationId,
+   171	        ':user_id' => $staffUserId,
+   172	    ]);
+   173	
+   174	    $updatedId = $statement->fetchColumn();
+   175	
+   176	    if ($updatedId === false) {
+   177	        notification_json([
+   178	            'ok' => false,
+   179	            'error' => 'notification_not_found',
+   180	            'message' => '対象の通知が見つかりませんでした。',
+   181	        ], 404);
+   182	    }
+   183	
+   184	    notification_json([
+   185	        'ok' => true,
+   186	        'id' => (int) $updatedId,
+   187	        'is_read' => true,
+   188	    ]);
+   189	} catch (Throwable $exception) {
+   190	    error_log(
+   191	        '[staff notifications read API] '
+   192	        . $exception->getMessage()
+   193	    );
+   194	
+   195	    notification_json([
+   196	        'ok' => false,
+   197	        'error' => 'notification_update_failed',
+   198	        'message' => '通知の既読処理に失敗しました。',
+   199	    ], 500);
+   200	}
+
+==================================================
+一括既読API
+==================================================
+     1	<?php
+     2	
+     3	declare(strict_types=1);
+     4	
+     5	header('Content-Type: application/json; charset=UTF-8');
+     6	header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+     7	
+     8	require_once dirname(__DIR__, 2) . '/lib/bootstrap.php';
+     9	
+    10	function notification_json(array $payload, int $status = 200): never
+    11	{
+    12	    http_response_code($status);
+    13	
+    14	    echo json_encode(
+    15	        $payload,
+    16	        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    17	    );
+    18	
+    19	    exit;
+    20	}
+    21	
+    22	function notification_resolve_pdo(): ?PDO
+    23	{
+    24	    global $pdo, $db;
+    25	
+    26	    if (isset($pdo) && $pdo instanceof PDO) {
+    27	        return $pdo;
+    28	    }
+    29	
+    30	    if (isset($db) && $db instanceof PDO) {
+    31	        return $db;
+    32	    }
+    33	
+    34	    foreach ([
+    35	        'db',
+    36	        'database',
+    37	        'get_db',
+    38	        'get_database',
+    39	        'staff_db',
+    40	        'app_db',
+    41	    ] as $functionName) {
+    42	        if (!function_exists($functionName)) {
+    43	            continue;
+    44	        }
+    45	
+    46	        try {
+    47	            $connection = $functionName();
+    48	
+    49	            if ($connection instanceof PDO) {
+    50	                return $connection;
+    51	            }
+    52	        } catch (Throwable) {
+    53	        }
+    54	    }
+    55	
+    56	    return null;
+    57	}
+    58	
+    59	function notification_resolve_staff_user_id(): ?int
+    60	{
+    61	    global $currentStaffUser, $staffUser, $currentUser;
+    62	
+    63	    $candidates = [
+    64	        $currentStaffUser ?? null,
+    65	        $staffUser ?? null,
+    66	        $currentUser ?? null,
+    67	        $_SESSION['staff_user'] ?? null,
+    68	        $_SESSION['current_staff_user'] ?? null,
+    69	        $_SESSION['user'] ?? null,
+    70	    ];
+    71	
+    72	    foreach ($candidates as $candidate) {
+    73	        if (!is_array($candidate)) {
+    74	            continue;
+    75	        }
+    76	
+    77	        foreach (['id', 'staff_user_id', 'user_id'] as $key) {
+    78	            if (
+    79	                isset($candidate[$key])
+    80	                && filter_var($candidate[$key], FILTER_VALIDATE_INT) !== false
+    81	            ) {
+    82	                $id = (int) $candidate[$key];
+    83	
+    84	                if ($id > 0) {
+    85	                    return $id;
+    86	                }
+    87	            }
+    88	        }
+    89	    }
+    90	
+    91	    foreach ([
+    92	        $_SESSION['staff_user_id'] ?? null,
+    93	        $_SESSION['staff_id'] ?? null,
+    94	        $_SESSION['user_id'] ?? null,
+    95	    ] as $candidateId) {
+    96	        if (filter_var($candidateId, FILTER_VALIDATE_INT) !== false) {
+    97	            $id = (int) $candidateId;
+    98	
+    99	            if ($id > 0) {
+   100	                return $id;
+   101	            }
+   102	        }
+   103	    }
+   104	
+   105	    return null;
+   106	}
+   107	
+   108	if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+   109	    header('Allow: POST');
+   110	
+   111	    notification_json([
+   112	        'ok' => false,
+   113	        'error' => 'method_not_allowed',
+   114	        'message' => 'POSTメソッドのみ利用できます。',
+   115	    ], 405);
+   116	}
+   117	
+   118	$pdo = notification_resolve_pdo();
+   119	$staffUserId = notification_resolve_staff_user_id();
+   120	
+   121	if (!$pdo instanceof PDO) {
+   122	    notification_json([
+   123	        'ok' => false,
+   124	        'error' => 'database_connection_not_found',
+   125	        'message' => 'データベース接続を取得できませんでした。',
+   126	    ], 500);
+   127	}
+   128	
+   129	if ($staffUserId === null) {
+   130	    notification_json([
+   131	        'ok' => false,
+   132	        'error' => 'unauthorized',
+   133	        'message' => 'ログイン中のスタッフを確認できませんでした。',
+   134	    ], 401);
+   135	}
+   136	
+   137	try {
+   138	    $statement = $pdo->prepare(
+   139	        <<<'SQL'
+   140	        UPDATE staff_notifications
+   141	        SET
+   142	            is_read = TRUE,
+   143	            read_at = COALESCE(read_at, CURRENT_TIMESTAMP),
+   144	            updated_at = CURRENT_TIMESTAMP
+   145	        WHERE user_id = :user_id
+   146	          AND is_read = FALSE
+   147	        SQL
+   148	    );
+   149	
+   150	    $statement->execute([
+   151	        ':user_id' => $staffUserId,
+   152	    ]);
+   153	
+   154	    notification_json([
+   155	        'ok' => true,
+   156	        'updated' => $statement->rowCount(),
+   157	        'unread' => 0,
+   158	    ]);
+   159	} catch (Throwable $exception) {
+   160	    error_log(
+   161	        '[staff notifications read-all API] '
+   162	        . $exception->getMessage()
+   163	    );
+   164	
+   165	    notification_json([
+   166	        'ok' => false,
+   167	        'error' => 'notifications_update_failed',
+   168	        'message' => '通知の一括既読処理に失敗しました。',
+   169	    ], 500);
+   170	}
+
+==================================================
+通知関連SQL
+==================================================
+staff/api/notifications/index.php:71:function notification_resolve_staff_user_id(): ?int
+staff/api/notifications/index.php:89:        foreach (['id', 'staff_user_id', 'user_id'] as $key) {
+staff/api/notifications/index.php:104:        $_SESSION['staff_user_id'] ?? null,
+staff/api/notifications/index.php:106:        $_SESSION['user_id'] ?? null,
+staff/api/notifications/index.php:118:        'current_staff_user_id',
+staff/api/notifications/index.php:119:        'staff_user_id',
+staff/api/notifications/index.php:120:        'authenticated_staff_user_id',
+staff/api/notifications/index.php:146:        'message' => 'GETメソッドのみ利用できます。',
+staff/api/notifications/index.php:156:        'message' => 'データベース接続を取得できませんでした。',
+staff/api/notifications/index.php:160:$staffUserId = notification_resolve_staff_user_id();
+staff/api/notifications/index.php:166:        'message' => 'ログイン中のスタッフを確認できませんでした。',
+staff/api/notifications/index.php:180:$category = strtolower(trim((string) ($_GET['category'] ?? 'all')));
+staff/api/notifications/index.php:182:if (!in_array($category, $allowedCategories, true)) {
+staff/api/notifications/index.php:185:        'error' => 'invalid_category',
+staff/api/notifications/index.php:186:        'message' => '指定された通知カテゴリは利用できません。',
+staff/api/notifications/index.php:210:        SELECT COUNT(*)
+staff/api/notifications/index.php:211:        FROM staff_notifications
+staff/api/notifications/index.php:212:        WHERE user_id = :user_id
+staff/api/notifications/index.php:218:        ':user_id' => $staffUserId,
+staff/api/notifications/index.php:223:    $whereCategory = '';
+staff/api/notifications/index.php:225:        ':user_id' => $staffUserId,
+staff/api/notifications/index.php:228:    if ($category !== 'all') {
+staff/api/notifications/index.php:229:        $whereCategory = ' AND category = :category';
+staff/api/notifications/index.php:230:        $parameters[':category'] = $category;
+staff/api/notifications/index.php:234:        SELECT
+staff/api/notifications/index.php:237:            category,
+staff/api/notifications/index.php:238:            level,
+staff/api/notifications/index.php:248:            updated_at
+staff/api/notifications/index.php:249:        FROM staff_notifications
+staff/api/notifications/index.php:250:        WHERE user_id = :user_id
+staff/api/notifications/index.php:251:        {$whereCategory}
+staff/api/notifications/index.php:272:            'category' => (string) ($row['category'] ?? 'system'),
+staff/api/notifications/index.php:273:            'level' => (string) ($row['level'] ?? 'info'),
+staff/api/notifications/index.php:275:            'message' => (string) ($row['body'] ?? ''),
+staff/api/notifications/index.php:293:        'category' => $category,
+staff/api/notifications/index.php:299:        . $exception->getMessage()
+staff/api/notifications/index.php:305:        'message' => '通知の取得に失敗しました。',
+staff/api/notifications/read-all.php:59:function notification_resolve_staff_user_id(): ?int
+staff/api/notifications/read-all.php:77:        foreach (['id', 'staff_user_id', 'user_id'] as $key) {
+staff/api/notifications/read-all.php:92:        $_SESSION['staff_user_id'] ?? null,
+staff/api/notifications/read-all.php:94:        $_SESSION['user_id'] ?? null,
+staff/api/notifications/read-all.php:114:        'message' => 'POSTメソッドのみ利用できます。',
+staff/api/notifications/read-all.php:119:$staffUserId = notification_resolve_staff_user_id();
+staff/api/notifications/read-all.php:125:        'message' => 'データベース接続を取得できませんでした。',
+staff/api/notifications/read-all.php:133:        'message' => 'ログイン中のスタッフを確認できませんでした。',
+staff/api/notifications/read-all.php:140:        UPDATE staff_notifications
+staff/api/notifications/read-all.php:144:            updated_at = CURRENT_TIMESTAMP
+staff/api/notifications/read-all.php:145:        WHERE user_id = :user_id
+staff/api/notifications/read-all.php:151:        ':user_id' => $staffUserId,
+staff/api/notifications/read-all.php:156:        'updated' => $statement->rowCount(),
+staff/api/notifications/read-all.php:162:        . $exception->getMessage()
+staff/api/notifications/read-all.php:167:        'error' => 'notifications_update_failed',
+staff/api/notifications/read-all.php:168:        'message' => '通知の一括既読処理に失敗しました。',
+staff/api/notifications/read.php:59:function notification_resolve_staff_user_id(): ?int
+staff/api/notifications/read.php:77:        foreach (['id', 'staff_user_id', 'user_id'] as $key) {
+staff/api/notifications/read.php:92:        $_SESSION['staff_user_id'] ?? null,
+staff/api/notifications/read.php:94:        $_SESSION['user_id'] ?? null,
+staff/api/notifications/read.php:114:        'message' => 'POSTメソッドのみ利用できます。',
+staff/api/notifications/read.php:119:$staffUserId = notification_resolve_staff_user_id();
+staff/api/notifications/read.php:125:        'message' => 'データベース接続を取得できませんでした。',
+staff/api/notifications/read.php:133:        'message' => 'ログイン中のスタッフを確認できませんでした。',
+staff/api/notifications/read.php:149:        'message' => '通知IDが正しくありません。',
+staff/api/notifications/read.php:158:        UPDATE staff_notifications
+staff/api/notifications/read.php:162:            updated_at = CURRENT_TIMESTAMP
+staff/api/notifications/read.php:164:          AND user_id = :user_id
+staff/api/notifications/read.php:171:        ':user_id' => $staffUserId,
+staff/api/notifications/read.php:174:    $updatedId = $statement->fetchColumn();
+staff/api/notifications/read.php:176:    if ($updatedId === false) {
+staff/api/notifications/read.php:180:            'message' => '対象の通知が見つかりませんでした。',
+staff/api/notifications/read.php:186:        'id' => (int) $updatedId,
+staff/api/notifications/read.php:192:        . $exception->getMessage()
+staff/api/notifications/read.php:197:        'error' => 'notification_update_failed',
+staff/api/notifications/read.php:198:        'message' => '通知の既読処理に失敗しました。',
+staff/lib/rental-server.php:40:            "SELECT
+staff/lib/rental-server.php:119:            "SELECT COUNT(*)
+staff/lib/rental-server.php:134:            "SELECT COUNT(*)
+staff/lib/rental-server.php:148:            "SELECT
+staff/lib/rental-server.php:160:             LEFT JOIN game_server_plans gsp
+staff/lib/rental-server.php:175:            "SELECT
+staff/lib/rental-server.php:191:             LEFT JOIN game_server_plans gsp
+staff/lib/rental-server.php:194:             LEFT JOIN users
+staff/lib/rental-server.php:195:                ON users.id = gso.user_id
+staff/lib/dashboard.php:12:        'SELECT
+staff/lib/dashboard.php:14:                WHERE assigned_user_id = :user_id
+staff/lib/dashboard.php:19:                WHERE assigned_user_id = :user_id
+staff/lib/dashboard.php:24:                WHERE assigned_user_id = :user_id
+staff/lib/dashboard.php:29:                WHERE assigned_user_id = :user_id
+staff/lib/dashboard.php:40:        'user_id' => $staffUserId,
+staff/lib/dashboard.php:50:        'SELECT
+staff/lib/dashboard.php:58:        FROM staff_notifications
+staff/lib/dashboard.php:59:        WHERE user_id = :user_id
+staff/lib/dashboard.php:66:        'user_id' => $staffUserId,
+staff/lib/dashboard.php:72:        'SELECT
+staff/lib/dashboard.php:81:            category.name AS category_name,
+staff/lib/dashboard.php:82:            category.slug AS category_slug
+staff/lib/dashboard.php:84:        LEFT JOIN staff_categories category
+staff/lib/dashboard.php:85:            ON category.id = task.category_id
+staff/lib/dashboard.php:86:        WHERE task.assigned_user_id = :user_id
+staff/lib/dashboard.php:104:        'user_id' => $staffUserId,
+staff/lib/dashboard.php:110:        'SELECT
+staff/lib/dashboard.php:128:                  AND announcement.target_id = :user_id
+staff/lib/dashboard.php:142:        'user_id' => $staffUserId,
+staff/lib/dashboard.php:168:            'message' => '今日の仕事はこんな感じです。',
+staff/lib/dashboard.php:175:            'message' => '現在の仕事はこんな感じです。',
+staff/lib/dashboard.php:182:            'message' =>
+staff/lib/dashboard.php:189:        'message' =>
+staff/lib/auth.php:71:        'INSERT INTO staff_users (
+staff/lib/auth.php:78:            updated_at
+staff/lib/auth.php:89:        DO UPDATE SET
+staff/lib/auth.php:92:            updated_at = CURRENT_TIMESTAMP
+staff/lib/permissions.php:24:        'SELECT 1
+staff/lib/permissions.php:26:        INNER JOIN account_roles role
+staff/lib/permissions.php:28:        INNER JOIN role_permissions role_permission
+staff/lib/permissions.php:30:        INNER JOIN permissions permission
+staff/lib/permissions.php:32:        WHERE user_role.user_id = :account_id
+staff/lib/permissions.php:59:        'SELECT
+staff/lib/permissions.php:69:        INNER JOIN account_roles role
+staff/lib/permissions.php:71:        WHERE user_role.user_id = :account_id
+staff/lib/permissions.php:84:        'SELECT DISTINCT
+staff/lib/permissions.php:87:        INNER JOIN role_permissions role_permission
+staff/lib/permissions.php:89:        INNER JOIN permissions permission
+staff/lib/permissions.php:91:        WHERE user_role.user_id = :account_id
+staff/lib/permissions.php:105:        'SELECT
+staff/lib/permissions.php:106:            category.id,
+staff/lib/permissions.php:107:            category.name,
+staff/lib/permissions.php:108:            category.slug,
+staff/lib/permissions.php:109:            category.description,
+staff/lib/permissions.php:110:            category.icon,
+staff/lib/permissions.php:111:            category.sort_order
+staff/lib/permissions.php:112:        FROM staff_user_categories user_category
+staff/lib/permissions.php:113:        INNER JOIN staff_categories category
+staff/lib/permissions.php:114:            ON category.id = user_category.category_id
+staff/lib/permissions.php:115:        WHERE user_category.user_id = :staff_user_id
+staff/lib/permissions.php:116:          AND category.is_active = TRUE
+staff/lib/permissions.php:118:            category.sort_order ASC,
+staff/lib/permissions.php:119:            category.id ASC'
+staff/lib/permissions.php:123:        'staff_user_id' => $staffUserId,
+staff/lib/permissions.php:129:        'SELECT
+staff/lib/permissions.php:136:        INNER JOIN staff_departments department
+staff/lib/permissions.php:138:        WHERE user_department.user_id = :staff_user_id
+staff/lib/permissions.php:147:        'staff_user_id' => $staffUserId,
+staff/lib/permissions.php:217:function staff_has_category(
+staff/lib/permissions.php:219:    string $categorySlug
+staff/lib/permissions.php:233:        as $category
+staff/lib/permissions.php:236:            (string) ($category['slug'] ?? '')
+staff/lib/permissions.php:237:            === $categorySlug
+staff/lib/permissions.php:354:    $categoryMatched = $categories === [];
+staff/lib/permissions.php:356:    foreach ($categories as $category) {
+staff/lib/permissions.php:358:            staff_has_category(
+staff/lib/permissions.php:360:                $category
+staff/lib/permissions.php:363:            $categoryMatched = true;
+staff/lib/permissions.php:405:        || $categoryMatched
+staff/lib/staff.php:120:            'message' => '今日の仕事はこんな感じです。',
+staff/lib/staff.php:127:            'message' => '現在の担当業務を確認しましょう。',
+staff/lib/staff.php:134:            'message' => '残っている仕事と連絡を確認しましょう。',
+staff/lib/staff.php:140:        'message' => '緊急の仕事だけ確認して、無理せず進めましょう。',
+lib/notifications.php:8:            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+lib/notifications.php:11:            link_url VARCHAR(255),
+lib/notifications.php:17:            updated_at TIMESTAMP NULL
+lib/notifications.php:23:        ADD COLUMN IF NOT EXISTS user_id INTEGER,
+lib/notifications.php:26:        ADD COLUMN IF NOT EXISTS link_url VARCHAR(255),
+lib/notifications.php:32:        ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NULL
+lib/notifications.php:36:        UPDATE user_direct_notifications
+lib/notifications.php:42:        UPDATE user_direct_notifications
+lib/notifications.php:56:        CREATE INDEX IF NOT EXISTS idx_user_direct_notifications_user_id
+lib/notifications.php:57:        ON user_direct_notifications(user_id)
+lib/notifications.php:67:        ON user_direct_notifications(user_id, dedupe_key)
+lib/notifications.php:74:            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+lib/notifications.php:79:            UNIQUE(user_id, notification_type, notification_id)
+lib/notifications.php:88:    string $message,
+lib/notifications.php:108:        INSERT INTO user_direct_notifications (
+lib/notifications.php:109:            user_id,
+lib/notifications.php:112:            link_url,
+lib/notifications.php:117:            updated_at
+lib/notifications.php:120:            :user_id,
+lib/notifications.php:123:            :link_url,
+lib/notifications.php:130:        ON CONFLICT (user_id, dedupe_key)
+lib/notifications.php:136:        "user_id" => $userId,
+lib/notifications.php:138:        "body" => $message,
+lib/notifications.php:139:        "link_url" => $targetUrl,
+
+==================================================
+直近Webログ
+==================================================

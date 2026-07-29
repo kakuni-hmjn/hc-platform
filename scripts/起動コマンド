@@ -1,0 +1,7 @@
+set -a
+source .env.audit.local
+set +a
+
+HC_SESSION_COOKIE='PHPSESSID=d9e06838f2c5cb528721085af6178fec' \
+./scripts/hc-dev.sh audit 2>&1 \
+  | tee storage/logs/dev-full-audit.log
