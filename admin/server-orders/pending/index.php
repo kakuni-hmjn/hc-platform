@@ -9,6 +9,9 @@ require_once __DIR__ . "/../../../lib/permissions.php";
 require_once __DIR__ . "/../../../lib/game_server_approval.php";
 
 $adminUser = require_role("admin");
+
+header('Location: /staff/rental-server/game-server/approvals/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
 $pdo = db();
 
 hc_server_approval_ensure_schema($pdo);

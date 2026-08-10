@@ -9,6 +9,9 @@ require_once __DIR__ . "/../../lib/permissions.php";
 
 $user = require_role("admin");
 
+header('Location: /staff/approvals/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
+
 $pageTitle = "プラン変更申請管理 | HC Platform";
 $pageDescription = "HC Platformの管理者向けプラン変更申請一覧ページです。";
 $pageCss = "/admin/plan-change-requests/plan-change-requests.css";

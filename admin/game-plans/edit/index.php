@@ -8,6 +8,13 @@ require_once __DIR__ . "/../../../lib/permissions.php";
 
 $user = require_role("admin");
 
+$staffPlanQuery = ['mode' => 'edit'];
+if (isset($_GET['id'])) {
+    $staffPlanQuery['id'] = max(0, (int) $_GET['id']);
+}
+header('Location: /staff/admin/services/game-plans/?' . http_build_query($staffPlanQuery), true, 302);
+exit;
+
 $pageTitle = "ゲームサーバープラン編集 | HC Platform";
 $pageDescription = "HC Platformの管理者向けゲームサーバープラン編集ページです。";
 $pageCss = "/admin/game-plans/game-plans.css";

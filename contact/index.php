@@ -8,7 +8,7 @@ require_once __DIR__ . "/../lib/auth.php";
 
 $pageTitle = "お問い合わせ | HC Platform";
 $pageDescription = "HC Platformへのお問い合わせページです。";
-$pageCss = "/contact/contact.css";
+$pageCss = "/contact/contact.css?v=2";
 
 $errors = [];
 $messages = [];
@@ -109,7 +109,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 ":ip_address" => client_ip() ?? null,
             ]);
 
-            $messages[] = "お問い合わせを送信しました。内容を確認後、必要に応じてご連絡します。";
+            $contactId = (int) $pdo->lastInsertId();
+
+            if (!empty($currentUser["id"]) && $contactId > 0) {
+                header(
+                    "Location: /dashboard/support/?id="
+                    . $contactId
+                    . "&created=1"
+                );
+                exit;
+            }
+
+            $messages[] = "お問い合わせを送信しました。スタッフからの返信は、ご入力のメールアドレスへお送りします。";
 
             $subject = "";
             $message = "";
@@ -154,8 +165,32 @@ require_once __DIR__ . "/../parts/head.php";
                 <div class="panel-head">
                     <div>
                         <p class="eyebrow">Form</p>
-                        <h2>お問い合わせフォーム</h2>
+                        <h2><?= $currentUser
+                            ? "サポートチャットを始める"
+                            : "お問い合わせフォーム" ?></h2>
                     </div>
+                </div>
+
+                <div class="contact-channel-notice contact-channel-notice--<?= $currentUser
+                    ? "account"
+                    : "email" ?>">
+                    <strong>
+                        <?= $currentUser
+                            ? "HCアカウント個別チャット"
+                            : "メールでのご返信" ?>
+                    </strong>
+                    <p>
+                        <?php if ($currentUser): ?>
+                            送信後、HCアカウント内のサポートチャットへ移動します。
+                            スタッフからの返信も同じ画面で確認できます。
+                        <?php else: ?>
+                            アカウントにログインせず送信した場合、スタッフからの返信は
+                            ご入力のメールアドレスへお送りします。
+                        <?php endif; ?>
+                    </p>
+                    <?php if ($currentUser): ?>
+                        <a href="/dashboard/support/">過去のサポートチャットを見る</a>
+                    <?php endif; ?>
                 </div>
 
                 <?php if ($messages): ?>
@@ -187,6 +222,7 @@ require_once __DIR__ . "/../parts/head.php";
                                 value="<?php echo h($name); ?>"
                                 maxlength="100"
                                 required
+                                <?= $currentUser ? "readonly" : "" ?>
                             >
                         </div>
 
@@ -199,6 +235,7 @@ require_once __DIR__ . "/../parts/head.php";
                                 value="<?php echo h($email); ?>"
                                 maxlength="120"
                                 required
+                                <?= $currentUser ? "readonly" : "" ?>
                             >
                         </div>
                     </div>
@@ -247,7 +284,9 @@ require_once __DIR__ . "/../parts/head.php";
                     <h3>返信について</h3>
                     <p>
                         内容によっては返信まで時間がかかる場合があります。
-                        返信が必要な場合は、正しいメールアドレスを入力してください。
+                        <?= $currentUser
+                            ? "返信が届くとHCアカウントへ通知します。"
+                            : "返信が必要な場合は、正しいメールアドレスを入力してください。" ?>
                     </p>
                 </article>
 

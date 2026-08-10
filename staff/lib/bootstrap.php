@@ -5,9 +5,11 @@ declare(strict_types=1);
 require_once __DIR__ . '/icon.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/permissions.php';
+require_once __DIR__ . '/page-access.php';
 require_once __DIR__ . '/dashboard.php';
 require_once __DIR__ . '/navigation.php';
 require_once __DIR__ . '/rental-server.php';
+require_once __DIR__ . '/workspace.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +23,8 @@ $staffAccountId = (int) (
     $staffAccount['id']
     ?? 0
 );
+
+staff_page_access_ensure_schema(staff_db());
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +55,10 @@ $staffUser = staff_find_or_create_user(
     $staffAccount
 );
 
+$staffWorkspacePreferences = staff_workspace_preferences_load(
+    (int) ($staffUser['id'] ?? 0)
+);
+
 /*
 |--------------------------------------------------------------------------
 | ロール・権限・部署・カテゴリ
@@ -60,6 +68,11 @@ $staffUser = staff_find_or_create_user(
 $staffContext = staff_load_context(
     $staffAccount,
     $staffUser
+);
+
+staff_page_access_require(
+    $staffContext,
+    (string) ($_SERVER['REQUEST_URI'] ?? '/staff/')
 );
 
 staff_require_permission(
@@ -81,9 +94,9 @@ $staffPrimaryRole = $staffContext['primary_role'];
 
 $staffDisplayName = trim(
     (string) (
-        $staffAccount['display_name']
+        $staffUser['display_name']
+        ?? $staffAccount['display_name']
         ?? $staffAccount['username']
-        ?? $staffUser['display_name']
         ?? 'Staff'
     )
 );

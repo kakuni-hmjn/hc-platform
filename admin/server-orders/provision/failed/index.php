@@ -9,6 +9,9 @@ require_once __DIR__ . "/../../../../lib/permissions.php";
 
 $adminUser = require_role("admin");
 
+header('Location: /staff/rental-server/game-server/provisioning/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
+
 $pageTitle = "ゲームサーバー作成失敗 | HC Platform";
 $pageDescription = "ゲームサーバー作成に失敗した契約の一覧です。";
 $pageCss = "/admin/server-orders/provision/failed/failed.css";

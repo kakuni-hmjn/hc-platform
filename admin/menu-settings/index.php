@@ -9,6 +9,9 @@ require_once __DIR__ . '/../lib/menu.php';
 
 $currentUser = require_role('admin');
 
+header('Location: /staff/admin/site/menu/', true, 302);
+exit;
+
 $pageTitle = '管理メニュー設定 | HC Platform';
 $pageDescription = '管理ページのカテゴリと表示設定を管理します。';
 $pageCss = '/admin/admin.css?v=20260718-8';

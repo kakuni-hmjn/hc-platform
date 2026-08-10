@@ -9,6 +9,9 @@ require_once __DIR__ . "/../../../lib/permissions.php";
 
 $user = require_role("admin");
 
+header('Location: /staff/rental-server/game-server/contracts/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
+
 $pageTitle = "契約詳細 | HC Platform";
 $pageDescription = "HC Platformの管理者向けゲームサーバー契約詳細ページです。";
 $pageCss = "/admin/server-orders/detail/detail.css";

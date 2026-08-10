@@ -18,6 +18,11 @@ function hc_server_approval_ensure_schema(PDO $pdo): void
     ");
 
     $pdo->exec("
+        ALTER TABLE ptero_servers
+        ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP NULL
+    ");
+
+    $pdo->exec("
         CREATE TABLE IF NOT EXISTS server_order_events (
             id BIGSERIAL PRIMARY KEY,
             order_id INTEGER NOT NULL,
@@ -32,6 +37,11 @@ function hc_server_approval_ensure_schema(PDO $pdo): void
             metadata_json JSONB NULL,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
+    ");
+
+    $pdo->exec("
+        ALTER TABLE server_order_events
+        ADD COLUMN IF NOT EXISTS metadata_json JSONB NULL
     ");
 
     $pdo->exec("

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/permissions.php';
+require_once __DIR__ . '/page-access.php';
 
 function staff_navigation_build(array $context): array
 {
@@ -137,6 +138,30 @@ function staff_navigation_build(array $context): array
                     'permission' => 'orders.view',
                     'children' => $gameServerChildren,
                 ],
+                [
+                    'label' => 'VPS',
+                    'href' => '/staff/rental-server/vps/',
+                    'icon' => 'memory',
+                    'permission' => 'orders.view',
+                ],
+                [
+                    'label' => 'ホスティング',
+                    'href' => '/staff/rental-server/hosting/',
+                    'icon' => 'language',
+                    'permission' => 'orders.view',
+                ],
+                [
+                    'label' => '専用サーバー',
+                    'href' => '/staff/rental-server/dedicated/',
+                    'icon' => 'dns',
+                    'permission' => 'orders.view',
+                ],
+                [
+                    'label' => 'コロケーション',
+                    'href' => '/staff/rental-server/colocation/',
+                    'icon' => 'domain',
+                    'permission' => 'orders.view',
+                ],
             ],
         ];
     }
@@ -168,6 +193,26 @@ function staff_navigation_build(array $context): array
                 'href' => '/staff/support/',
                 'icon' => 'support_agent',
                 'permission' => 'support.tickets.view',
+                'children' => [
+                    [
+                        'label' => '概要',
+                        'href' => '/staff/support/',
+                        'icon' => 'description',
+                        'permission' => 'support.tickets.view',
+                    ],
+                    [
+                        'label' => 'サポートチャット',
+                        'href' => '/staff/support/chat/',
+                        'icon' => 'forum',
+                        'permission' => 'support.tickets.view',
+                    ],
+                    [
+                        'label' => 'サポートメール',
+                        'href' => '/staff/support/email/',
+                        'icon' => 'mail',
+                        'permission' => 'support.tickets.view',
+                    ],
+                ],
             ],
             [
                 'label' => '決済・請求',
@@ -281,13 +326,27 @@ function staff_navigation_build(array $context): array
         || staff_can_access_admin($context)
     ) {
         $groups[] = [
-            'label' => 'システム管理',
+            'label' => staff_can_access_admin($context)
+                ? '上位管理'
+                : 'システム管理',
             'items' => [
+                [
+                    'label' => '管理センター',
+                    'href' => '/staff/admin/',
+                    'icon' => 'admin_panel_settings',
+                    'admin_only' => true,
+                ],
                 [
                     'label' => 'スタッフ管理',
                     'href' => '/staff/admin/users/',
                     'icon' => 'groups',
                     'permission' => 'staff.users.view',
+                ],
+                [
+                    'label' => 'ロール・権限管理',
+                    'href' => '/staff/admin/roles/',
+                    'icon' => 'admin_panel_settings',
+                    'permission' => 'staff.roles.manage',
                 ],
                 [
                     'label' => '有効権限',
@@ -347,6 +406,16 @@ function staff_navigation_filter_items(
     $visibleItems = [];
 
     foreach ($items as $item) {
+        if (!staff_page_access_allowed($context, (string) ($item['href'] ?? ''))) {
+            continue;
+        }
+        if (
+            !empty($item['admin_only'])
+            && !staff_can_access_admin($context)
+        ) {
+            continue;
+        }
+
         $permission = trim(
             (string) ($item['permission'] ?? '')
         );

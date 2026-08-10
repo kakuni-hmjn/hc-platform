@@ -10,6 +10,9 @@ require_once __DIR__ . "/../../lib/order_access.php";
 
 $adminUser = require_role("admin");
 
+header('Location: /staff/admin/services/order-settings/', true, 302);
+exit;
+
 $pageTitle = "申込受付設定 | HC Platform";
 $pageDescription = "サービスごとの新規申込受付状態を管理します。";
 $pageCss = "/admin/order-settings/order-settings.css";

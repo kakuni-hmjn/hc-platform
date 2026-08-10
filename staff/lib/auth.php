@@ -87,7 +87,10 @@ function staff_find_or_create_user(array $account): array
         )
         ON CONFLICT (account_id)
         DO UPDATE SET
-            display_name = EXCLUDED.display_name,
+            display_name = COALESCE(
+                NULLIF(staff_users.display_name, \'\'),
+                EXCLUDED.display_name
+            ),
             last_seen_at = CURRENT_TIMESTAMP,
             updated_at = CURRENT_TIMESTAMP
         RETURNING *'

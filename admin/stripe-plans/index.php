@@ -9,6 +9,9 @@ require_once __DIR__ . "/../../lib/permissions.php";
 
 $adminUser = require_role("admin");
 
+header('Location: /staff/admin/billing/stripe-plans/', true, 302);
+exit;
+
 $pageTitle = "Stripeプラン連携 | HC Platform";
 $pageDescription = "HCプランとStripe Product / Priceを連携します。";
 $pageCss = "/admin/stripe-plans/stripe-plans.css";

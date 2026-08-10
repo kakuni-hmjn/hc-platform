@@ -11,6 +11,9 @@ require_once __DIR__ . "/../../lib/pterodactyl.php";
 
 $adminUser = require_role("admin");
 
+header('Location: /staff/admin/customers/ptero-users/', true, 302);
+exit;
+
 $pageTitle = "ゲームサーバーパネルユーザー紐付け | HC Platform";
 $pageDescription = "HCユーザーとゲームサーバーパネルユーザーの紐付けを管理します。";
 $pageCss = "/admin/ptero-users/ptero-users.css";

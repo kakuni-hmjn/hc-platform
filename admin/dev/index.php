@@ -8,6 +8,9 @@ require_once __DIR__ . "/../../lib/permissions.php";
 
 $user = require_role("developer");
 
+header('Location: /staff/development/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
+
 $pageTitle = "開発者ページ | HC Platform";
 $pageDescription = "HC Platformの開発者専用ページです。";
 $pageCss = "/dev/dev.css";

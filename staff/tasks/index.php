@@ -98,6 +98,7 @@ $allowedStatuses = [
     'todo',
     'in_progress',
     'review',
+    'waiting',
     'completed',
     'cancelled',
 ];
@@ -170,6 +171,7 @@ function staff_tasks_status_label(
         'todo' => '未着手',
         'in_progress' => '対応中',
         'review' => 'レビュー',
+        'waiting' => '待機中',
         'completed' => '完了',
         'cancelled' => 'キャンセル',
         default => '不明',

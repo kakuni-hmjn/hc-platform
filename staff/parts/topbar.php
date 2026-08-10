@@ -20,6 +20,10 @@ $staffWorkStatusLabel = match ($staffWorkStatus) {
     'offline' => 'オフライン',
     default => 'オンライン',
 };
+
+$staffAvatarUrl = staff_workspace_asset_url(
+    $staffWorkspacePreferences['avatar_image_path'] ?? null
+);
 ?>
 
 <header class="staff-topbar">
@@ -29,6 +33,8 @@ $staffWorkStatusLabel = match ($staffWorkStatus) {
             class="staff-mobile-menu"
             data-staff-sidebar-open
             aria-label="メニューを開く"
+            aria-controls="staff-sidebar"
+            aria-expanded="false"
         >
             <?= staff_icon(
                 'menu',
@@ -264,10 +270,10 @@ $staffWorkStatusLabel = match ($staffWorkStatus) {
             )
         ): ?>
             <a
-                href="/admin/"
+                href="/staff/admin/"
                 class="staff-icon-button"
-                aria-label="管理画面"
-                title="管理画面"
+                aria-label="上位管理センター"
+                title="上位管理センター"
             >
                 <?= staff_icon(
                     'admin_panel_settings',
@@ -290,19 +296,23 @@ $staffWorkStatusLabel = match ($staffWorkStatus) {
                 title="アカウントメニュー"
             >
                 <span class="staff-topbar-profile__avatar">
-                    <?= htmlspecialchars(
-                        mb_strtoupper(
-                            mb_substr(
-                                $staffDisplayName,
-                                0,
-                                1,
+                    <?php if ($staffAvatarUrl !== null): ?>
+                        <img src="<?= htmlspecialchars($staffAvatarUrl, ENT_QUOTES, 'UTF-8') ?>" alt="">
+                    <?php else: ?>
+                        <?= htmlspecialchars(
+                            mb_strtoupper(
+                                mb_substr(
+                                    $staffDisplayName,
+                                    0,
+                                    1,
+                                    'UTF-8'
+                                ),
                                 'UTF-8'
                             ),
+                            ENT_QUOTES,
                             'UTF-8'
-                        ),
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
+                        ) ?>
+                    <?php endif; ?>
 
                     <span
                         class="staff-topbar-profile__status
@@ -348,19 +358,23 @@ $staffWorkStatusLabel = match ($staffWorkStatus) {
             >
                 <header class="staff-account-dropdown__header">
                     <span class="staff-account-dropdown__avatar">
-                        <?= htmlspecialchars(
-                            mb_strtoupper(
-                                mb_substr(
-                                    $staffDisplayName,
-                                    0,
-                                    1,
+                        <?php if ($staffAvatarUrl !== null): ?>
+                            <img src="<?= htmlspecialchars($staffAvatarUrl, ENT_QUOTES, 'UTF-8') ?>" alt="">
+                        <?php else: ?>
+                            <?= htmlspecialchars(
+                                mb_strtoupper(
+                                    mb_substr(
+                                        $staffDisplayName,
+                                        0,
+                                        1,
+                                        'UTF-8'
+                                    ),
                                     'UTF-8'
                                 ),
+                                ENT_QUOTES,
                                 'UTF-8'
-                            ),
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ) ?>
+                            ) ?>
+                        <?php endif; ?>
 
                         <span
                             class="staff-account-dropdown__status
@@ -401,6 +415,16 @@ $staffWorkStatusLabel = match ($staffWorkStatus) {
                 </header>
 
                 <nav class="staff-account-dropdown__nav">
+                    <a href="/staff/account/">
+                        <?= staff_icon('manage_accounts', '', 19) ?>
+                        <span>スタッフアカウント</span>
+                    </a>
+
+                    <a href="/staff/account/customize/">
+                        <?= staff_icon('palette', '', 19) ?>
+                        <span>ダッシュボード設定</span>
+                    </a>
+
                     <a href="/staff/">
                         <?= staff_icon('dashboard', '', 19) ?>
                         <span>スタッフダッシュボード</span>
@@ -430,13 +454,13 @@ $staffWorkStatusLabel = match ($staffWorkStatus) {
                     <div class="staff-account-dropdown__divider"></div>
 
                     <nav class="staff-account-dropdown__nav">
-                        <a href="/admin/">
+                        <a href="/staff/admin/">
                             <?= staff_icon(
                                 'admin_panel_settings',
                                 '',
                                 19
                             ) ?>
-                            <span>管理画面</span>
+                            <span>上位管理センター</span>
                         </a>
                     </nav>
                 <?php endif; ?>

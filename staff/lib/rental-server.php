@@ -118,7 +118,7 @@ function staff_rental_server_dashboard_load(): array
         $statement = $pdo->query(
             "SELECT COUNT(*)
              FROM game_server_plans
-             WHERE COALESCE(is_active, TRUE) = TRUE"
+             WHERE status = 'published'"
         );
 
         $result['counts']['plans'] = (int) (
@@ -277,4 +277,162 @@ function staff_rental_datetime(
     } catch (Throwable $exception) {
         return $value;
     }
+}
+
+function staff_rental_section_load(
+    string $section,
+    string $search = '',
+    string $status = '',
+    int $selectedId = 0
+): array {
+    $status = strtolower(trim($status));
+
+    if (in_array($status, ['all', 'any', '*'], true)) {
+        $status = '';
+    }
+
+    $pdo = staff_db();
+    $result = ['rows' => [], 'selected' => null, 'events' => [], 'errors' => []];
+
+    try {
+        if (in_array($section, ['contracts', 'approvals'], true)) {
+            $where = ['1 = 1'];
+            $params = [];
+            if ($section === 'approvals') {
+                $where[] = "gso.status IN ('pending_approval', 'approval_failed', 'rejected')";
+            }
+            if ($search !== '') {
+                $where[] = '(gso.server_name ILIKE :search OR u.username ILIKE :search OR u.email ILIKE :search OR CAST(gso.id AS TEXT) = :exact_id)';
+                $params['search'] = '%' . $search . '%';
+                $params['exact_id'] = ctype_digit($search) ? $search : '0';
+            }
+            if ($status !== '') {
+                $where[] = 'gso.status = :status';
+                $params['status'] = $status;
+            }
+            $statement = $pdo->prepare(
+                'SELECT gso.*, u.username, u.email, gsp.name AS plan_name,
+                        pn.label AS node_label
+                 FROM game_server_orders gso
+                 LEFT JOIN users u ON u.id = gso.user_id
+                 LEFT JOIN game_server_plans gsp ON gsp.id = gso.plan_id
+                 LEFT JOIN ptero_nodes pn ON pn.id = gso.selected_node_id
+                 WHERE ' . implode(' AND ', $where) . '
+                 ORDER BY gso.created_at DESC, gso.id DESC LIMIT 150'
+            );
+            $statement->execute($params);
+            $result['rows'] = $statement->fetchAll() ?: [];
+        } elseif ($section === 'provisioning') {
+            $where = ['1 = 1'];
+            $params = [];
+            if ($search !== '') {
+                $where[] = '(gso.server_name ILIKE :search OR u.username ILIKE :search OR CAST(pj.order_id AS TEXT) = :exact_id)';
+                $params['search'] = '%' . $search . '%';
+                $params['exact_id'] = ctype_digit($search) ? $search : '0';
+            }
+            if ($status !== '') {
+                $where[] = 'pj.status = :status';
+                $params['status'] = $status;
+            }
+            $statement = $pdo->prepare(
+                'SELECT pj.*, gso.server_name, gso.status AS order_status,
+                        u.username, u.email
+                 FROM provisioning_jobs pj
+                 LEFT JOIN game_server_orders gso ON gso.id = pj.order_id
+                 LEFT JOIN users u ON u.id = gso.user_id
+                 WHERE ' . implode(' AND ', $where) . '
+                 ORDER BY pj.created_at DESC, pj.id DESC LIMIT 150'
+            );
+            $statement->execute($params);
+            $result['rows'] = $statement->fetchAll() ?: [];
+        } elseif ($section === 'servers') {
+            $where = ['ps.deleted_at IS NULL'];
+            $params = [];
+            if ($search !== '') {
+                $where[] = '(ps.name ILIKE :search OR ps.ptero_identifier ILIKE :search OR u.username ILIKE :search OR u.email ILIKE :search)';
+                $params['search'] = '%' . $search . '%';
+            }
+            if ($status !== '') {
+                $where[] = 'ps.status = :status';
+                $params['status'] = $status;
+            }
+            $statement = $pdo->prepare(
+                'SELECT ps.*, u.username, u.email, gsp.name AS plan_name,
+                        pn.label AS node_label, gso.payment_status
+                 FROM ptero_servers ps
+                 LEFT JOIN users u ON u.id = ps.user_id
+                 LEFT JOIN game_server_plans gsp ON gsp.id = ps.plan_id
+                 LEFT JOIN ptero_nodes pn ON pn.id = ps.node_id
+                 LEFT JOIN game_server_orders gso ON gso.id = ps.order_id
+                 WHERE ' . implode(' AND ', $where) . '
+                 ORDER BY ps.created_at DESC, ps.id DESC LIMIT 150'
+            );
+            $statement->execute($params);
+            $result['rows'] = $statement->fetchAll() ?: [];
+        } elseif ($section === 'plans') {
+            $statement = $pdo->prepare(
+                "SELECT gsp.*,
+                        COALESCE(STRING_AGG(DISTINCT pn.label, ', '), '-') AS node_labels,
+                        COUNT(DISTINCT gso.id) FILTER (WHERE gso.status = 'active') AS active_contracts
+                 FROM game_server_plans gsp
+                 LEFT JOIN game_server_plan_nodes gspn ON gspn.plan_id = gsp.id
+                 LEFT JOIN ptero_nodes pn ON pn.id = gspn.node_id
+                 LEFT JOIN game_server_orders gso ON gso.plan_id = gsp.id
+                 WHERE (:search = '' OR gsp.name ILIKE :search_like OR gsp.slug ILIKE :search_like)
+                   AND (:status = '' OR gsp.status = :status)
+                 GROUP BY gsp.id ORDER BY gsp.sort_order, gsp.id"
+            );
+            $statement->execute(['search' => $search, 'search_like' => '%' . $search . '%', 'status' => $status]);
+            $result['rows'] = $statement->fetchAll() ?: [];
+        } elseif ($section === 'nodes') {
+            $statement = $pdo->prepare(
+                "SELECT pn.*,
+                        COUNT(DISTINCT ps.id) FILTER (WHERE ps.deleted_at IS NULL) AS server_count,
+                        COUNT(DISTINCT gspn.plan_id) AS plan_count
+                 FROM ptero_nodes pn
+                 LEFT JOIN ptero_servers ps ON ps.node_id = pn.id
+                 LEFT JOIN game_server_plan_nodes gspn ON gspn.node_id = pn.id
+                 WHERE (:search = '' OR pn.name ILIKE :search_like OR pn.label ILIKE :search_like OR pn.fqdn ILIKE :search_like)
+                   AND (:status = '' OR pn.status = :status)
+                 GROUP BY pn.id ORDER BY pn.sort_order, pn.id"
+            );
+            $statement->execute(['search' => $search, 'search_like' => '%' . $search . '%', 'status' => $status]);
+            $result['rows'] = $statement->fetchAll() ?: [];
+        }
+    } catch (Throwable $exception) {
+        $result['errors'][] = '管理データを取得できませんでした。DBマイグレーションの適用状況を確認してください。';
+    }
+
+    if ($selectedId <= 0 && in_array($section, ['contracts', 'approvals'], true) && $result['rows'] !== []) {
+        $selectedId = (int) ($result['rows'][0]['id'] ?? 0);
+    }
+    if ($selectedId > 0 && in_array($section, ['contracts', 'approvals'], true)) {
+        try {
+            $statement = $pdo->prepare(
+                'SELECT gso.*, u.username, u.email, gsp.name AS plan_name,
+                        pn.label AS node_label, ps.ptero_identifier, ps.status AS server_status
+                 FROM game_server_orders gso
+                 LEFT JOIN users u ON u.id = gso.user_id
+                 LEFT JOIN game_server_plans gsp ON gsp.id = gso.plan_id
+                 LEFT JOIN ptero_nodes pn ON pn.id = gso.selected_node_id
+                 LEFT JOIN ptero_servers ps ON ps.order_id = gso.id
+                 WHERE gso.id = :id LIMIT 1'
+            );
+            $statement->execute(['id' => $selectedId]);
+            $selected = $statement->fetch();
+            $result['selected'] = is_array($selected) ? $selected : null;
+            $statement = $pdo->prepare(
+                'SELECT event_type, title, message, old_status, new_status,
+                        old_payment_status, new_payment_status, created_at
+                 FROM server_order_events WHERE order_id = :id
+                 ORDER BY created_at DESC, id DESC LIMIT 100'
+            );
+            $statement->execute(['id' => $selectedId]);
+            $result['events'] = $statement->fetchAll() ?: [];
+        } catch (Throwable $exception) {
+            $result['errors'][] = '選択した契約の詳細を取得できませんでした。';
+        }
+    }
+
+    return $result;
 }

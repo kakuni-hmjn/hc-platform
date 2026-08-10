@@ -9,6 +9,9 @@ require_once __DIR__ . "/../../lib/permissions.php";
 
 $adminUser = require_role("admin");
 
+header('Location: /staff/billing/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
+
 $pageTitle = "請求・支払い管理 | HC Platform";
 $pageDescription = "HC Platformの管理者向け請求・支払い確認ページです。";
 $pageCss = "/admin/billing/billing.css";

@@ -1,11 +1,14 @@
 <?php
 session_start();
 
-require_once __DIR__ . "/../../lib/auth.php";
-require_once __DIR__ . "/../../lib/helpers.php";
-require_once __DIR__ . "/../../lib/permissions.php";
+require_once __DIR__ . "/../../../lib/auth.php";
+require_once __DIR__ . "/../../../lib/helpers.php";
+require_once __DIR__ . "/../../../lib/permissions.php";
 
 $user = require_role("developer");
+
+header('Location: /staff/admin/system/logs/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
 
 $pageTitle = "ログ確認 | HC Platform";
 $pageDescription = "HC Platformの開発者向けログ確認ページです。";

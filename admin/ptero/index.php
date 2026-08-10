@@ -8,6 +8,9 @@ require_once __DIR__ . "/../../lib/pterodactyl.php";
 
 $user = require_role("admin");
 
+header('Location: /staff/rental-server/game-server/pterodactyl/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
+
 $pageTitle = "ゲームサーバーパネル連携確認 | HC Platform";
 $pageDescription = "HC Platformの管理者向けゲームサーバーパネル API接続確認ページです。";
 $pageCss = "/admin/ptero/ptero.css";

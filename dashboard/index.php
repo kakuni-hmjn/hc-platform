@@ -54,6 +54,7 @@ $directUnreadCount = 0;
 $personalUnreadCount = 0;
 $globalUnreadCount = 0;
 $totalUnreadNotificationCount = 0;
+$supportChatCount = 0;
 
 try {
     $stmt = $pdo->prepare("
@@ -148,6 +149,21 @@ try {
 
 $personalUnreadCount = $personalEventUnreadCount + $directUnreadCount;
 $totalUnreadNotificationCount = $personalUnreadCount + $globalUnreadCount;
+
+try {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) AS count
+        FROM contacts
+        WHERE user_id = :user_id
+    ");
+    $stmt->execute([
+        "user_id" => (int)$currentUser["id"],
+    ]);
+    $row = $stmt->fetch();
+    $supportChatCount = (int)($row["count"] ?? 0);
+} catch (Throwable $e) {
+    $supportChatCount = 0;
+}
 
 require_once __DIR__ . "/../parts/head.php";
 ?>
@@ -284,11 +300,19 @@ require_once __DIR__ . "/../parts/head.php";
                         </p>
                     </a>
 
-                    <a href="/contact/" class="dashboard-action-card reveal">
-                        <span>Support</span>
-                        <h3>お問い合わせ</h3>
+                    <a href="/dashboard/support/" class="dashboard-action-card reveal">
+                        <span>Support Chat</span>
+                        <div class="dashboard-card-title-line">
+                            <h3>サポートチャット</h3>
+
+                            <?php if ($supportChatCount > 0): ?>
+                                <strong class="dashboard-card-count">
+                                    <?php echo h((string)$supportChatCount); ?> 件
+                                </strong>
+                            <?php endif; ?>
+                        </div>
                         <p>
-                            サービス利用中の相談、サーバー構成の相談、サポート依頼はこちらから送信できます。
+                            スタッフとの個別チャットを確認し、そのまま返信できます。新しい相談もここから開始できます。
                         </p>
                     </a>
                 </div>

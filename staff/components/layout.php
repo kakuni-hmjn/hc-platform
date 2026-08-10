@@ -9,6 +9,7 @@ function staff_layout_start(array $options = []): void
     global $staffRoleName;
     global $staffRoleSlug;
     global $staffNavigation;
+    global $staffWorkspacePreferences;
 
     $title = trim(
         (string) (
@@ -43,6 +44,28 @@ function staff_layout_start(array $options = []): void
         ?? true
     );
 
+    $useWorkspaceBackground = (bool) (
+        $options['workspace_background']
+        ?? false
+    );
+    $workspacePreferences = staff_workspace_normalize(
+        (array) $staffWorkspacePreferences
+    );
+    $workspaceBackgroundMode = (string) $workspacePreferences['background_mode'];
+    if (
+        $workspaceBackgroundMode === 'image'
+        && $workspacePreferences['background_image_path'] === null
+    ) {
+        $workspaceBackgroundMode = 'plain';
+    }
+    $staffMainClass = 'staff-main';
+    $staffMainStyle = '';
+    if ($useWorkspaceBackground) {
+        $staffMainClass .= ' staff-main--personal-workspace';
+        $staffMainClass .= ' staff-main--workspace-' . $workspaceBackgroundMode;
+        $staffMainStyle = staff_workspace_inline_style($workspacePreferences);
+    }
+
     ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -66,18 +89,23 @@ function staff_layout_start(array $options = []): void
     </title>
 
     <link
-        href="https://fonts.googleapis.com/icon?family=Material+Icons"
         rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="/staff/staff.css?v=1784437057"
+        href="/staff/staff.css?v=1786000006"
     >
 
     <link
         rel="stylesheet"
         href="/staff/navigation.css?v=1"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/staff/support/support.css?v=9"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/staff/management.css?v=11"
     >
 </head>
 <body>
@@ -90,8 +118,17 @@ function staff_layout_start(array $options = []): void
                 . '/../parts/topbar.php'; ?>
 
             <main
-                class="staff-main"
+                class="<?= htmlspecialchars(
+                    $staffMainClass,
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>"
                 data-staff-main
+                <?= $staffMainStyle !== '' ? 'style="' . htmlspecialchars(
+                    $staffMainStyle,
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) . '"' : '' ?>
             >
                 <div
                     class="staff-page"
@@ -162,14 +199,18 @@ function staff_layout_end(): void
     <?php require __DIR__
         . '/search-palette.php'; ?>
 
+    <script src="/staff/icon-upgrade.js?v=1" defer></script>
+    <script src="/staff/responsive-tables.js?v=1" defer></script>
+
     <script
-        src="/staff/navigation.js?v=1784437057"
+        src="/staff/navigation.js?v=1784437058"
         defer
     ></script>
 
-    <script src="/staff/staff.js?v=1785294209"></script>
+    <script src="/staff/staff.js?v=1785303000"></script>
     <script src="/staff/account-menu.js?v=1784391309" defer></script>
     <script src="/staff/search-palette.js?v=1784437057" defer></script>
+    <script src="/staff/support/support.js?v=7" defer></script>
 </body>
 </html>
 <?php

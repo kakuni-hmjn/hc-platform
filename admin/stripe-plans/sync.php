@@ -13,7 +13,7 @@ $pdo = db();
 
 function stripe_sync_redirect(): void
 {
-    header("Location: /admin/stripe-plans/");
+    header("Location: /staff/admin/billing/stripe-plans/");
     exit;
 }
 

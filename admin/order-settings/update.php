@@ -21,7 +21,7 @@ function order_settings_flash(string $type, string $message): void
 
 function order_settings_redirect(): void
 {
-    header("Location: /admin/order-settings/");
+    header("Location: /staff/admin/services/order-settings/");
     exit;
 }
 

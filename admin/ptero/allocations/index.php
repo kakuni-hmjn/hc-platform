@@ -10,6 +10,9 @@ require_once __DIR__ . "/../../../lib/pterodactyl.php";
 
 $adminUser = require_role("admin");
 
+header('Location: /staff/rental-server/game-server/nodes/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
+
 $pageTitle = "接続ポート枠確認 | HC Platform";
 $pageDescription = "ゲームサーバーパネル Nodeごとの空きAllocationを確認します。";
 $pageCss = "/admin/ptero/allocations/allocations.css";

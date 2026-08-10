@@ -9,6 +9,9 @@ require_once __DIR__ . "/../../lib/permissions.php";
 
 $user = require_role("admin");
 
+header('Location: /staff/admin/site/header/', true, 302);
+exit;
+
 $pageTitle = "ヘッダー表示設定 | HC Platform";
 $pageDescription = "ヘッダーのOperationメニュー表示を管理します。";
 $pageCss = "/admin/header-settings/header-settings.css";

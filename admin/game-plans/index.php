@@ -9,6 +9,9 @@ require_once __DIR__ . "/../../lib/permissions.php";
 
 $user = require_role("admin");
 
+header('Location: /staff/admin/services/game-plans/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
+
 $pageTitle = "ゲームサーバープラン管理 | HC Platform";
 $pageDescription = "HC Platformの管理者向けゲームサーバープラン管理ページです。";
 $pageCss = "/admin/game-plans/game-plans.css";

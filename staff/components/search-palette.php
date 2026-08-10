@@ -36,15 +36,53 @@ $staffSearchPages = [
 if (
     isset($staffContext)
     && is_array($staffContext)
+    && function_exists('staff_has_permission')
+    && (
+        staff_has_permission(
+            $staffContext,
+            'support.tickets.view'
+        )
+        || (
+            function_exists('staff_can_access_admin')
+            && staff_can_access_admin($staffContext)
+        )
+    )
+) {
+    array_splice(
+        $staffSearchPages,
+        3,
+        0,
+        [
+            [
+                'title' => 'お問い合わせ概要',
+                'description' => 'お問い合わせ内容と顧客情報を確認',
+                'url' => '/staff/support/',
+                'icon' => 'description',
+                'keywords' => 'support contact inquiry ticket 問い合わせ 概要 内容',
+            ],
+            [
+                'title' => 'サポートチャット',
+                'description' => 'HCアカウントとの個別チャット',
+                'url' => '/staff/support/chat/',
+                'icon' => 'forum',
+                'keywords' => 'support chat 問い合わせ チャット 返信',
+            ],
+        ]
+    );
+}
+
+if (
+    isset($staffContext)
+    && is_array($staffContext)
     && function_exists('staff_can_access_admin')
     && staff_can_access_admin($staffContext)
 ) {
     $staffSearchPages[] = [
-        'title' => '管理画面',
-        'description' => 'HC Platform管理画面を開く',
-        'url' => '/admin/',
+        'title' => '上位管理センター',
+        'description' => 'Webサイト全体と各サービスの管理機能を開く',
+        'url' => '/staff/admin/',
         'icon' => 'admin_panel_settings',
-        'keywords' => 'admin 管理者 settings 設定',
+        'keywords' => 'admin 管理者 上位管理 全体管理 サービス管理 settings 設定',
     ];
 }
 ?>

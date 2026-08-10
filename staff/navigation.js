@@ -2,6 +2,7 @@
     'use strict';
 
     const pageSelector = '[data-staff-page]';
+    const supportPathPrefix = '/staff/support/';
     const progress = document.querySelector(
         '[data-staff-navigation-progress]'
     );
@@ -23,6 +24,71 @@
         } catch {
             return '/';
         }
+    };
+
+    const isSupportUrl = (value) => {
+        try {
+            const url = new URL(
+                value,
+                window.location.origin
+            );
+
+            return normalizePath(url.toString())
+                .startsWith(supportPathPrefix);
+        } catch {
+            return false;
+        }
+    };
+
+    const captureScrollSnapshot = () => ({
+        windowX: window.scrollX,
+        windowY: window.scrollY,
+        elements: Array.from(
+            document.querySelectorAll(
+                '[data-staff-preserve-scroll]'
+            )
+        ).reduce((positions, element) => {
+            const key = element.dataset.staffPreserveScroll;
+
+            if (key) {
+                positions[key] = {
+                    top: element.scrollTop,
+                    left: element.scrollLeft
+                };
+            }
+
+            return positions;
+        }, {})
+    });
+
+    const restoreScrollSnapshot = (snapshot) => {
+        if (!snapshot) {
+            return;
+        }
+
+        requestAnimationFrame(() => {
+            document.querySelectorAll(
+                '[data-staff-preserve-scroll]'
+            ).forEach((element) => {
+                const key = element.dataset.staffPreserveScroll;
+                const position = key
+                    ? snapshot.elements[key]
+                    : null;
+
+                if (!position) {
+                    return;
+                }
+
+                element.scrollTop = position.top;
+                element.scrollLeft = position.left;
+            });
+
+            window.scrollTo({
+                left: snapshot.windowX,
+                top: snapshot.windowY,
+                behavior: 'instant'
+            });
+        });
     };
 
     const setProgress = (state) => {
@@ -50,43 +116,112 @@
 
     const updateActiveNavigation = (url) => {
         const currentPath = normalizePath(url);
+        const items = Array.from(
+            document.querySelectorAll('.staff-nav-item')
+        );
 
-        document
-            .querySelectorAll('.staff-nav-item')
-            .forEach((item) => {
+        const candidates = items
+            .map((item) => {
                 const href = item.getAttribute('href');
 
                 if (!href) {
-                    return;
+                    return null;
                 }
 
                 const itemPath = normalizePath(href);
+                const exact = currentPath === itemPath;
+                const prefix = itemPath !== '/staff/'
+                    && currentPath.startsWith(itemPath);
 
-                const active =
-                    currentPath === itemPath
-                    || (
-                        itemPath !== '/staff/'
-                        && currentPath.startsWith(
-                            itemPath
-                        )
-                    );
+                if (!exact && !prefix) {
+                    return null;
+                }
 
-                item.classList.toggle(
-                    'staff-nav-item--active',
-                    active
+                const entry = item.closest(
+                    '[data-staff-nav-entry]'
+                );
+                const depthClass = Array.from(
+                    entry?.classList ?? []
+                ).find((name) => (
+                    name.startsWith('staff-nav-entry--depth-')
+                ));
+                const depth = Number(
+                    depthClass?.replace(
+                        'staff-nav-entry--depth-',
+                        ''
+                    ) ?? 0
                 );
 
-                if (active) {
-                    item.setAttribute(
-                        'aria-current',
-                        'page'
-                    );
-                } else {
-                    item.removeAttribute(
-                        'aria-current'
-                    );
-                }
-            });
+                return {
+                    item,
+                    itemPath,
+                    exact,
+                    depth
+                };
+            })
+            .filter(Boolean)
+            .sort((a, b) => (
+                Number(b.exact) - Number(a.exact)
+                || b.itemPath.length - a.itemPath.length
+                || b.depth - a.depth
+            ));
+
+        const activeItem = candidates[0]?.item ?? null;
+
+        items.forEach((item) => {
+            const active = item === activeItem;
+
+            item.classList.toggle(
+                'staff-nav-item--active',
+                active
+            );
+            item.classList.remove(
+                'staff-nav-item--ancestor'
+            );
+
+            if (active) {
+                item.setAttribute('aria-current', 'page');
+            } else {
+                item.removeAttribute('aria-current');
+            }
+        });
+
+        let childEntry = activeItem?.closest(
+            '[data-staff-nav-entry]'
+        ) ?? null;
+
+        while (childEntry) {
+            const parentEntry = childEntry.parentElement
+                ?.closest('[data-staff-nav-entry]');
+
+            if (!parentEntry) {
+                break;
+            }
+
+            const parentLink = parentEntry.querySelector(
+                ':scope > .staff-nav-entry__row > .staff-nav-item'
+            );
+            const parentToggle = parentEntry.querySelector(
+                ':scope > .staff-nav-entry__row '
+                + '[data-staff-nav-toggle]'
+            );
+            const parentChildren = parentEntry.querySelector(
+                ':scope > [data-staff-nav-children]'
+            );
+
+            parentLink?.classList.add(
+                'staff-nav-item--ancestor'
+            );
+            parentEntry.classList.add('is-expanded');
+            parentToggle?.setAttribute('aria-expanded', 'true');
+
+            if (parentChildren) {
+                parentChildren.hidden = false;
+                parentChildren.style.height = '';
+            }
+
+            childEntry = parentEntry;
+        }
     };
 
     const animatePage = (page) => {
@@ -108,11 +243,16 @@
     };
 
     const closeMobileSidebar = () => {
-        document
-            .querySelector('[data-staff-sidebar]')
-            ?.classList.remove(
-                'staff-sidebar--open'
-            );
+        const sidebar = document.querySelector(
+            '[data-staff-sidebar]'
+        );
+        const openButton = document.querySelector(
+            '[data-staff-sidebar-open]'
+        );
+
+        sidebar?.classList.remove(
+            'staff-sidebar--open'
+        );
 
         document
             .querySelector(
@@ -123,6 +263,11 @@
             );
 
         document.body.style.overflow = '';
+        openButton?.setAttribute('aria-expanded', 'false');
+
+        if (window.matchMedia('(max-width: 1024px)').matches) {
+            sidebar?.setAttribute('aria-hidden', 'true');
+        }
     };
 
     const shouldHandleLink = (
@@ -178,7 +323,12 @@
     const replacePage = (
         documentNode,
         targetUrl,
-        push
+        {
+            push,
+            seamless,
+            scrollSnapshot,
+            previousUrl
+        }
     ) => {
         const incomingPage =
             documentNode.querySelector(
@@ -206,7 +356,8 @@
         if (push) {
             window.history.pushState(
                 {
-                    staffNavigation: true
+                    staffNavigation: true,
+                    preservePosition: seamless
                 },
                 '',
                 targetUrl
@@ -221,21 +372,27 @@
                 pageSelector
             );
 
-        if (newPage) {
+        if (newPage && !seamless) {
             animatePage(newPage);
         }
 
-        window.scrollTo({
-            top: 0,
-            behavior: 'instant'
-        });
+        if (seamless) {
+            restoreScrollSnapshot(scrollSnapshot);
+        } else {
+            window.scrollTo({
+                top: 0,
+                behavior: 'instant'
+            });
+        }
 
         document.dispatchEvent(
             new CustomEvent(
                 'staff:navigation-complete',
                 {
                     detail: {
-                        url: targetUrl
+                        url: targetUrl,
+                        previousUrl,
+                        seamless
                     }
                 }
             )
@@ -252,6 +409,12 @@
             target,
             window.location.origin
         );
+        const previousUrl = window.location.href;
+        const seamless = isSupportUrl(previousUrl)
+            && isSupportUrl(url.toString());
+        const scrollSnapshot = seamless
+            ? captureScrollSnapshot()
+            : null;
 
         if (navigating) {
             currentController?.abort();
@@ -266,9 +429,11 @@
                 pageSelector
             );
 
-        currentPage?.classList.add(
-            'staff-page--leaving'
-        );
+        if (!seamless) {
+            currentPage?.classList.add(
+                'staff-page--leaving'
+            );
+        }
 
         setProgress('loading');
 
@@ -310,7 +475,12 @@
             replacePage(
                 documentNode,
                 url.toString(),
-                push
+                {
+                    push,
+                    seamless,
+                    scrollSnapshot,
+                    previousUrl
+                }
             );
 
             setProgress('complete');

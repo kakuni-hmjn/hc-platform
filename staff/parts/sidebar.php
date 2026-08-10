@@ -11,6 +11,10 @@ $currentPath = is_string($currentPath)
     ? staff_sidebar_normalize_path($currentPath)
     : '/staff/';
 
+$staffAvatarUrl = staff_workspace_asset_url(
+    $staffWorkspacePreferences['avatar_image_path'] ?? null
+);
+
 function staff_sidebar_initial(string $name): string
 {
     $name = trim($name);
@@ -220,6 +224,7 @@ function staff_sidebar_render_items(
 ?>
 
 <aside
+    id="staff-sidebar"
     class="staff-sidebar"
     data-staff-sidebar
 >
@@ -229,7 +234,15 @@ function staff_sidebar_render_items(
             class="staff-sidebar__brand-link"
             aria-label="スタッフコンソール ホーム"
         >
-            <div class="staff-brand-mark">HC</div>
+            <span class="staff-brand-mark" aria-hidden="true">
+                <img
+                    src="/assets/logo.png"
+                    alt=""
+                    width="38"
+                    height="38"
+                    draggable="false"
+                >
+            </span>
 
             <div class="staff-brand-copy">
                 <strong>Staff Console</strong>
@@ -286,11 +299,15 @@ function staff_sidebar_render_items(
 
     <div class="staff-sidebar__account">
         <div class="staff-account-avatar">
-            <?= htmlspecialchars(
-                staff_sidebar_initial($staffDisplayName),
-                ENT_QUOTES,
-                'UTF-8'
-            ) ?>
+            <?php if ($staffAvatarUrl !== null): ?>
+                <img src="<?= htmlspecialchars($staffAvatarUrl, ENT_QUOTES, 'UTF-8') ?>" alt="">
+            <?php else: ?>
+                <?= htmlspecialchars(
+                    staff_sidebar_initial($staffDisplayName),
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>
+            <?php endif; ?>
         </div>
 
         <div class="staff-sidebar__account-copy">

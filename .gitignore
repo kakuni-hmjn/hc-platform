@@ -34,3 +34,4 @@ vendor/
 .env.*
 !.env.example
 .env.audit.local
+.DS_Store

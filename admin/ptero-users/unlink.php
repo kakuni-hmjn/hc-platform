@@ -20,7 +20,7 @@ function admin_ptero_users_flash(string $type, string $message): void
 
 function admin_ptero_users_redirect(): void
 {
-    header("Location: /admin/ptero-users/");
+    header("Location: /staff/admin/customers/ptero-users/");
     exit;
 }
 

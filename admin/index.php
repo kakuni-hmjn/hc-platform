@@ -9,6 +9,11 @@ require_once __DIR__ . '/lib/menu.php';
 
 $currentUser = require_role('admin');
 
+if (!isset($_GET['legacy'])) {
+    header('Location: /staff/admin/', true, 302);
+    exit;
+}
+
 $pageTitle = '管理ダッシュボード | HC Platform';
 $pageDescription = 'HC Platformの管理機能一覧です。';
 $pageCss = '/admin/admin.css?v=20260718-8';

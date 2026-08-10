@@ -8,6 +8,9 @@ require_once __DIR__ . "/../../lib/permissions.php";
 
 $user = require_role("admin");
 
+header('Location: /staff/admin/site/services/' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''), true, 302);
+exit;
+
 $pageTitle = "事業管理 | HC Platform";
 $pageDescription = "HC Platformの管理者向け事業管理ページです。";
 $pageCss = "/admin/services/services.css";

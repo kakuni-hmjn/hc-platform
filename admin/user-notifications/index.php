@@ -9,6 +9,9 @@ require_once __DIR__ . "/../../lib/permissions.php";
 
 $adminUser = require_role("admin");
 
+header('Location: /staff/admin/site/user-notifications/', true, 302);
+exit;
+
 $pageTitle = "個別通知管理 | HC Platform";
 $pageDescription = "特定ユーザーへあなた宛通知を送信します。";
 $pageCss = "/admin/user-notifications/user-notifications.css";
