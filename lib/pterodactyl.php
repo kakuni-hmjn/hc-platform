@@ -203,22 +203,39 @@ function hc_ptero_request(string $method, string $path, array $payload = []): ar
         }
     }
 
+    /*
+     * Pterodactyl Application API は suspend / unsuspend / delete 等で
+     * HTTP 204 No Content を正常レスポンスとして返す。
+     * 2xx + 空bodyは成功として扱う。
+     */
+    if ($statusCode >= 200 && $statusCode < 300) {
+        if ($statusCode === 204 || trim((string)$responseBody) === "") {
+            return [];
+        }
+
+        $decoded = json_decode($responseBody, true);
+
+        if (!is_array($decoded)) {
+            throw new RuntimeException(
+                "Pterodactyl APIレスポンスを解析できませんでした。HTTP {$statusCode}"
+            );
+        }
+
+        return $decoded;
+    }
+
     $decoded = json_decode($responseBody, true);
 
-    if (!is_array($decoded)) {
-        throw new RuntimeException("Pterodactyl APIレスポンスを解析できませんでした。HTTP {$statusCode}");
-    }
-
-    if ($statusCode < 200 || $statusCode >= 300) {
-        $message = $decoded["errors"][0]["detail"]
+    $message = is_array($decoded)
+        ? (
+            $decoded["errors"][0]["detail"]
             ?? $decoded["errors"][0]["title"]
             ?? $decoded["message"]
-            ?? "Pterodactyl APIエラーが発生しました。HTTP {$statusCode}";
+            ?? "Pterodactyl APIエラーが発生しました。HTTP {$statusCode}"
+        )
+        : "Pterodactyl APIエラーが発生しました。HTTP {$statusCode}";
 
-        throw new RuntimeException($message);
-    }
-
-    return $decoded;
+    throw new RuntimeException($message);
 }
 
 function hc_ptero_create_server(array $payload): array
@@ -338,6 +355,7 @@ if (!function_exists("ptero_config")) {
             "default_node_id" => (int)hc_ptero_env("PTERO_DEFAULT_NODE_ID", "1"),
             "default_nest_id" => (int)hc_ptero_env("PTERO_DEFAULT_NEST_ID", "1"),
             "default_egg_id" => (int)hc_ptero_env("PTERO_DEFAULT_EGG_ID", "1"),
+            "default_location_id" => (int)hc_ptero_env("PTERO_DEFAULT_LOCATION_ID", "1"),
         ];
     }
 }
