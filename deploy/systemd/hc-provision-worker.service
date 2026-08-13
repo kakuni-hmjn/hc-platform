@@ -1,0 +1,21 @@
+[Unit]
+Description=HC Platform Game Server Provision Worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/html
+
+ExecStart=/usr/bin/php /var/www/html/bin/provision-worker.php
+
+Restart=always
+RestartSec=5
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -320,7 +320,7 @@ function provision_game_server_order(PDO $pdo, int $orderId): array
         "name" => $serverName,
         "user" => $pteroUserId,
         "egg" => $eggId,
-        "docker_image" => $order["ptero_docker_image"] ?: "ghcr.io/pterodactyl/yolks:java_21",
+        "docker_image" => $order["ptero_docker_image"] ?: "ghcr.io/pterodactyl/yolks:java_25",
         "startup" => $order["ptero_startup_command"] ?: "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{SERVER_JARFILE}}",
         "environment" => [
             "SERVER_JARFILE" => "server.jar",

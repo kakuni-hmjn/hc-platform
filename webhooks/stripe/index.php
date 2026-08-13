@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../lib/stripe.php";
 require_once __DIR__ . "/../../lib/game_server_payment.php";
 
 $pdo = db();
-$config = stripe_config();
 
 $payload = file_get_contents("php://input");
-$signature = $_SERVER["HTTP_STRIPE_SIGNATURE"] ?? "";
+$signature = (string)($_SERVER["HTTP_STRIPE_SIGNATURE"] ?? "");
 
 if ($payload === false || $payload === "") {
     http_response_code(400);
@@ -16,38 +17,38 @@ if ($payload === false || $payload === "") {
     exit;
 }
 
-if (!empty($config["mock"])) {
-    http_response_code(200);
-    echo "Mock mode";
-    exit;
-}
+try {
+    $webhookSecret = hc_stripe_webhook_secret();
+} catch (Throwable $e) {
+    error_log("[stripe webhook] " . $e->getMessage());
 
-if (empty($config["webhook_secret"])) {
     http_response_code(500);
     echo "Webhook secret is not configured";
     exit;
 }
 
-if (!stripe_load_sdk()) {
-    http_response_code(500);
-    echo "Stripe SDK is not available";
-    exit;
-}
+if (!hc_stripe_verify_webhook_signature(
+    $payload,
+    $signature,
+    $webhookSecret
+)) {
+    error_log("[stripe webhook] invalid signature");
 
-try {
-    $event = \Stripe\Webhook::constructEvent(
-        $payload,
-        $signature,
-        $config["webhook_secret"]
-    );
-} catch (Throwable $e) {
     http_response_code(400);
     echo "Invalid signature";
     exit;
 }
 
-$eventId = $event->id;
-$eventType = $event->type;
+$event = json_decode($payload);
+
+if (!is_object($event) || empty($event->id) || empty($event->type)) {
+    http_response_code(400);
+    echo "Invalid event";
+    exit;
+}
+
+$eventId = (string)$event->id;
+$eventType = (string)$event->type;
 
 try {
     $insertEvent = $pdo->prepare("
@@ -82,37 +83,73 @@ try {
     $pdo->beginTransaction();
 
     if ($eventType === "checkout.session.completed") {
-        $session = $event->data->object;
+        $session = $event->data->object ?? null;
 
-        mark_game_server_order_paid_by_session($pdo, (string)$session->id, [
-            "customer" => isset($session->customer) ? (string)$session->customer : null,
-            "subscription" => isset($session->subscription) ? (string)$session->subscription : null,
-            "payment_intent" => isset($session->payment_intent) ? (string)$session->payment_intent : null,
-        ]);
+        if (!is_object($session) || empty($session->id)) {
+            throw new RuntimeException(
+                "checkout.session.completed payload is invalid"
+            );
+        }
+
+        $result = mark_game_server_order_paid_by_session(
+            $pdo,
+            (string)$session->id,
+            [
+                "customer" => isset($session->customer)
+                    ? (string)$session->customer
+                    : null,
+
+                "subscription" => isset($session->subscription)
+                    ? (string)$session->subscription
+                    : null,
+
+                "payment_intent" => isset($session->payment_intent)
+                    ? (string)$session->payment_intent
+                    : null,
+            ]
+        );
+
+        if (!$result) {
+            throw new RuntimeException(
+                "No matching game server order for checkout session"
+            );
+        }
     }
 
     if ($eventType === "checkout.session.expired") {
-        $session = $event->data->object;
-        $orderId = isset($session->metadata->order_id) ? (int)$session->metadata->order_id : 0;
+        $session = $event->data->object ?? null;
+
+        $orderId = isset($session->metadata->order_id)
+            ? (int)$session->metadata->order_id
+            : 0;
 
         if ($orderId > 0) {
-            mark_game_server_order_cancelled_by_id($pdo, $orderId);
+            mark_game_server_order_cancelled_by_id(
+                $pdo,
+                $orderId
+            );
         }
     }
 
     if ($eventType === "invoice.paid") {
-        $invoice = $event->data->object;
-        $subscriptionId = isset($invoice->subscription) ? (string)$invoice->subscription : "";
+        $invoice = $event->data->object ?? null;
+
+        $subscriptionId = isset($invoice->subscription)
+            ? (string)$invoice->subscription
+            : "";
 
         if ($subscriptionId !== "") {
             $stmt = $pdo->prepare("
                 UPDATE game_server_orders
                 SET
                     payment_status = 'paid',
-                    next_payment_due_at = NOW() + INTERVAL '30 days',
+                    next_payment_due_at =
+                        NOW() + INTERVAL '30 days',
                     updated_at = NOW()
-                WHERE stripe_subscription_id = :stripe_subscription_id
+                WHERE stripe_subscription_id =
+                    :stripe_subscription_id
             ");
+
             $stmt->execute([
                 "stripe_subscription_id" => $subscriptionId,
             ]);
@@ -120,8 +157,11 @@ try {
     }
 
     if ($eventType === "invoice.payment_failed") {
-        $invoice = $event->data->object;
-        $subscriptionId = isset($invoice->subscription) ? (string)$invoice->subscription : "";
+        $invoice = $event->data->object ?? null;
+
+        $subscriptionId = isset($invoice->subscription)
+            ? (string)$invoice->subscription
+            : "";
 
         if ($subscriptionId !== "") {
             $stmt = $pdo->prepare("
@@ -129,8 +169,10 @@ try {
                 SET
                     payment_status = 'failed',
                     updated_at = NOW()
-                WHERE stripe_subscription_id = :stripe_subscription_id
+                WHERE stripe_subscription_id =
+                    :stripe_subscription_id
             ");
+
             $stmt->execute([
                 "stripe_subscription_id" => $subscriptionId,
             ]);
@@ -138,21 +180,28 @@ try {
     }
 
     if ($eventType === "customer.subscription.deleted") {
-        $subscription = $event->data->object;
-        $subscriptionId = (string)$subscription->id;
+        $subscription = $event->data->object ?? null;
 
-        $stmt = $pdo->prepare("
-            UPDATE game_server_orders
-            SET
-                status = 'cancelled',
-                payment_status = 'cancelled',
-                cancelled_at = NOW(),
-                updated_at = NOW()
-            WHERE stripe_subscription_id = :stripe_subscription_id
-        ");
-        $stmt->execute([
-            "stripe_subscription_id" => $subscriptionId,
-        ]);
+        $subscriptionId = isset($subscription->id)
+            ? (string)$subscription->id
+            : "";
+
+        if ($subscriptionId !== "") {
+            $stmt = $pdo->prepare("
+                UPDATE game_server_orders
+                SET
+                    status = 'cancelled',
+                    payment_status = 'cancelled',
+                    cancelled_at = NOW(),
+                    updated_at = NOW()
+                WHERE stripe_subscription_id =
+                    :stripe_subscription_id
+            ");
+
+            $stmt->execute([
+                "stripe_subscription_id" => $subscriptionId,
+            ]);
+        }
     }
 
     $markProcessed = $pdo->prepare("
@@ -162,6 +211,7 @@ try {
             processed_at = NOW()
         WHERE stripe_event_id = :stripe_event_id
     ");
+
     $markProcessed->execute([
         "stripe_event_id" => $eventId,
     ]);
@@ -174,6 +224,15 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
+
+    error_log(
+        "[stripe webhook] "
+        . $eventType
+        . " "
+        . $eventId
+        . " "
+        . $e->getMessage()
+    );
 
     http_response_code(500);
     echo "Webhook processing failed";
