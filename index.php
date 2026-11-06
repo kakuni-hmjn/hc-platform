@@ -40,7 +40,7 @@ $heroPanel = $currentUser ? [
         [
             "label" => "Services",
             "title" => "サービス一覧",
-            "text" => "提供中のHCサービスを確認",
+            "text" => "HCのサービスと公開状況を確認",
             "url" => "/services/",
         ],
         [
@@ -75,7 +75,7 @@ $heroPanel = $currentUser ? [
         [
             "label" => "Services",
             "title" => "サービスを見る",
-            "text" => "提供中のサービスを確認",
+            "text" => "サービスごとの公開状況を確認",
             "url" => "/services/",
         ],
     ],
@@ -209,7 +209,8 @@ require_once __DIR__ . "/parts/head.php";
                         <a href="/register/" class="button ghost">アカウント作成</a>
                     <?php endif; ?>
 
-                    <a href="/contact/" class="button ghost">お問い合わせ</a>
+                    <a href="/guides/" class="button ghost">技術ガイド</a>
+<a href="/contact/" class="button ghost">お問い合わせ</a>
                 </div>
             </div>
 

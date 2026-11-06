@@ -14,13 +14,10 @@ require_once __DIR__ . "/../parts/head.php";
         <div class="container">
             <div class="company-hero-content reveal">
                 <p class="eyebrow">HMJn company</p>
-                <h1>
-                    <span>運営紹介ページは</span>
-                    <span>準備中です。</span>
-                </h1>
+                <h1>HMJn companyの運営紹介</h1>
                 <p>
-                    HMJn companyの活動内容、運営方針、今後の展開について紹介するページを準備しています。
-                    現在はHC Platformの正式公開に向けて、アカウント基盤やサービスページの整備を進めています。
+                    HMJn companyはHC Platformを運営しています。Webサービスの提供状況や今後の取り組みを、各ページで確認できるよう案内しています。
+                    アカウント基盤とお問い合わせ窓口を公開し、ゲームサーバーレンタルなどのサービスは提供準備を進めています。
                 </p>
 
                 <div class="company-actions">
@@ -35,25 +32,25 @@ require_once __DIR__ . "/../parts/head.php";
         <div class="container">
             <div class="company-status-card reveal">
                 <p class="eyebrow">Coming Soon</p>
-                <h2>公開準備中の内容</h2>
+                <h2>運営方針と取り組み</h2>
 
                 <div class="company-status-grid">
                     <div>
                         <span>01</span>
                         <h3>運営方針</h3>
-                        <p>HC Platformを通じて提供していくサービス方針を掲載予定です。</p>
+                        <p>サービスごとに「提供中」「開発中」「計画中」を区別し、利用者が公開状況を確認しやすい案内を心がけています。</p>
                     </div>
 
                     <div>
                         <span>02</span>
                         <h3>サービス展開</h3>
-                        <p>ゲームサーバー、制作支援、配信活動を支える仕組みを整理して掲載予定です。</p>
+                        <p>ゲームサーバーレンタルを中心に開発を進めています。今後の予定は事業一覧に掲載し、提供状況と区別してお知らせします。</p>
                     </div>
 
                     <div>
                         <span>03</span>
                         <h3>お問い合わせ</h3>
-                        <p>正式公開に合わせて、問い合わせ窓口やサポート情報を掲載予定です。</p>
+                        <p>サービスやアカウントに関するご連絡は、<a href="/contact/">お問い合わせフォーム</a>から受け付けています。</p>
                     </div>
                 </div>
             </div>

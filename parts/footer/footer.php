@@ -44,6 +44,8 @@ if (function_exists("current_user")) {
                     <h2>Site</h2>
                     <a href="/">トップページ</a>
                     <a href="/services/">事業一覧</a>
+                    <a href="/guides/">技術ガイド</a>
+                    <a href="/faq/">よくある質問</a>
                     <a href="/news/">お知らせ</a>
                     <a href="/contact/">お問い合わせ</a>
                 </div>

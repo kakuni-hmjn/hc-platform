@@ -137,7 +137,7 @@ require_once __DIR__ . "/../parts/head.php";
                 <p class="eyebrow">Business</p>
                 <h2>展開中・準備中の事業</h2>
                 <p>
-                    HC Platformで展開している事業・今後公開予定のサービス一覧です。
+                    HC Platformの事業と公開状況を一覧でご案内しています。提供中・開発中・計画中の違いを確認し、利用できるサービスをお選びください。
                     提供ステータスで絞り込みできます。
                 </p>
             </div>

@@ -98,8 +98,7 @@ require_once __DIR__ . "/../parts/head.php";
                 <article class="side-card notice-card">
                     <h3>お問い合わせについて</h3>
                     <p>
-                        お問い合わせ窓口は正式公開に向けて準備中です。
-                        公開後、サポート・契約・技術的な連絡先を順次掲載します。
+                        お問い合わせは<a href="/contact/">お問い合わせフォーム</a>から受け付けています。サービスやアカウントに関するお問い合わせをご送信いただけます。
                     </p>
                 </article>
             </aside>
@@ -112,9 +111,9 @@ require_once __DIR__ . "/../parts/head.php";
             <div class="company-preview-card reveal">
                 <div>
                     <p class="eyebrow">HMJn company</p>
-                    <h2>運営紹介ページは準備中です</h2>
+                    <h2>HMJn companyの運営紹介</h2>
                     <p>
-                        HMJn companyの活動内容、運営方針、今後の展開について紹介するページを準備しています。
+                        HMJn companyの運営方針、サービスへの取り組み、お問い合わせ方法を紹介しています。
                         現在はHC Platformの公開準備を優先して進めています。
                     </p>
                 </div>
