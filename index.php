@@ -391,7 +391,7 @@ require_once __DIR__ . "/parts/head.php";
                             </a>
                         <?php else: ?>
                             <span class="service-coming-soon">
-                                詳細準備中
+                                詳細ページは未公開です
                             </span>
                         <?php endif; ?>
                     </div>

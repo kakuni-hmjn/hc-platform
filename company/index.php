@@ -1,6 +1,6 @@
 <?php
-$pageTitle = "運営紹介 | HMJn company";
-$pageDescription = "HMJn companyの運営紹介ページです。現在準備中です。";
+$pageTitle = "運営紹介 | HMJn Co.";
+$pageDescription = "HMJn Co.の運営概要、HC Platformの事業内容、現在のサービス提供状況、お問い合わせ方法をご案内します。";
 $pageCss = "/company/company.css";
 
 require_once __DIR__ . "/../parts/head.php";
@@ -13,10 +13,10 @@ require_once __DIR__ . "/../parts/head.php";
     <section class="company-hero">
         <div class="container">
             <div class="company-hero-content reveal">
-                <p class="eyebrow">HMJn company</p>
-                <h1>HMJn companyの運営紹介</h1>
+                <p class="eyebrow">HMJn Co.</p>
+                <h1>HMJn Co.の運営紹介</h1>
                 <p>
-                    HMJn companyはHC Platformを運営しています。Webサービスの提供状況や今後の取り組みを、各ページで確認できるよう案内しています。
+                    HMJn Co.はHC Platformを運営しています。Webサービスの提供状況や今後の取り組みを、各ページで確認できるよう案内しています。
                     アカウント基盤とお問い合わせ窓口を公開し、ゲームサーバーレンタルなどのサービスは提供準備を進めています。
                 </p>
 
