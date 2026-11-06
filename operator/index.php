@@ -1,6 +1,6 @@
 <?php
 $pageTitle = "運営情報 | HC Platform";
-$pageDescription = "HC Platformの運営情報ページです。運営名、サービス状況、公開準備中の内容について掲載しています。";
+$pageDescription = "HC Platformの運営主体、運営方針、サービスの公開状況、お問い合わせ方法をご案内します。";
 $pageCss = "/operator/operator.css";
 
 require_once __DIR__ . "/../parts/head.php";
@@ -35,7 +35,7 @@ require_once __DIR__ . "/../parts/head.php";
                         <p class="eyebrow">Service</p>
                         <h2>HC Platformについて</h2>
                     </div>
-                    <span>公開準備中</span>
+                    <span>サービス提供準備中</span>
                 </div>
 
                 <p>
@@ -62,7 +62,7 @@ require_once __DIR__ . "/../parts/head.php";
 
                     <div>
                         <span>現在の状態</span>
-                        <strong>正式公開に向けて準備中</strong>
+                        <strong>ゲームサーバーレンタルは正式提供に向けて準備中</strong>
                     </div>
                 </div>
             </section>
@@ -127,6 +127,9 @@ require_once __DIR__ . "/../parts/head.php";
         <div class="container">
             <div class="section-heading reveal">
                 <p class="eyebrow">Roadmap</p>
+                <!-- HC_ADSENSE_PHASE2A_OPERATOR_START -->
+                <p>公開されているアカウント機能やお問い合わせ窓口と、正式提供に向けて開発中の有料サービスを区別してご案内します。各事業の提供状況は<a href="/services/">事業一覧</a>、運営方針は<a href="/company/">運営紹介</a>をご確認ください。</p>
+                <!-- HC_ADSENSE_PHASE2A_OPERATOR_END -->
                 <h2>今後の予定</h2>
                 <p>
                     機能を一つずつ整備し、正式公開に向けて準備を進めています。
