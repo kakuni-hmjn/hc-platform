@@ -1,6 +1,6 @@
 <?php
 $pageTitle = "運営情報 | HC Platform";
-$pageDescription = "HC Platformの運営主体、運営方針、サービスの公開状況、お問い合わせ方法をご案内します。";
+$pageDescription = "HMJn Co.が運営するHC Platformの運営情報。事業内容、長野県のデータセンター所在地、サービスの開発状況、お問い合わせ先をご案内します。";
 $pageCss = "/operator/operator.css";
 
 require_once __DIR__ . "/../parts/head.php";
@@ -18,7 +18,7 @@ require_once __DIR__ . "/../parts/head.php";
                 <p class="eyebrow">Operator</p>
                 <h1>運営情報</h1>
                 <p>
-                    HC Platformは、HMJn companyが運営するサービスサイトです。
+                    HC Platformは、HMJn Co.が運営するサービスサイトです。
                     ゲーム、制作、配信、コミュニティ活動を支えるインフラサービスとして、
                     正式公開に向けて準備を進めています。
                 </p>
@@ -62,7 +62,7 @@ require_once __DIR__ . "/../parts/head.php";
 
                     <div>
                         <span>現在の状態</span>
-                        <strong>ゲームサーバーレンタルは正式提供に向けて準備中</strong>
+                        <strong>ゲームサーバーレンタルは正式公開に向けて開発中</strong>
                     </div>
                 </div>
             </section>
@@ -95,6 +95,23 @@ require_once __DIR__ . "/../parts/head.php";
                     </div>
                 </article>
 
+                                <!-- HC_ADSENSE_PHASE2B_PROFILE_BEGIN -->
+                <article class="side-card hc-operator-profile">
+                    <h3>運営概要</h3>
+                    <p>HMJn Co.は、HC Platformを通じて、サーバーインフラとデジタル分野のサービス開発に取り組んでいます。</p>
+                    <h3>事業・活動分野</h3>
+                    <ul>
+                        <li>レンタルサーバー</li>
+                        <li>プラグイン・ソフトウェア開発</li>
+                        <li>ゲーミングデバイス</li>
+                        <li>クリエイター・コミュニティ支援</li>
+                    </ul>
+                    <h3>データセンター</h3>
+                    <p>所在地：長野県</p>
+                    <h3>現在の提供状況</h3>
+                    <p>ゲームサーバーレンタルは正式公開に向けて開発中です。その他の事業の最新状況は<a href="/services/">事業一覧</a>をご確認ください。</p>
+                </article>
+                <!-- HC_ADSENSE_PHASE2B_PROFILE_END -->
                 <article class="side-card notice-card">
                     <h3>お問い合わせについて</h3>
                     <p>
@@ -110,10 +127,10 @@ require_once __DIR__ . "/../parts/head.php";
         <div class="container">
             <div class="company-preview-card reveal">
                 <div>
-                    <p class="eyebrow">HMJn company</p>
-                    <h2>HMJn companyの運営紹介</h2>
+                    <p class="eyebrow">HMJn Co.</p>
+                    <h2>HMJn Co.の運営紹介</h2>
                     <p>
-                        HMJn companyの運営方針、サービスへの取り組み、お問い合わせ方法を紹介しています。
+                        HMJn Co.の事業・活動分野、データセンター所在地、サービス提供状況、お問い合わせ方法をご案内します。
                         現在はHC Platformの公開準備を優先して進めています。
                     </p>
                 </div>
