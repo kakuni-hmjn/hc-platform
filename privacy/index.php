@@ -15,7 +15,7 @@ require_once __DIR__ . "/../parts/head.php";
                 <p class="eyebrow">Privacy</p>
                 <h1>プライバシーポリシー</h1>
                 <p>
-                    HMJn Co.が運営するHC Platformにおける個人情報の取扱い、利用目的、お問い合わせ方法をご案内します。
+                    HMJn Companyが運営するHC Platformにおける個人情報の取扱い、利用目的、お問い合わせ方法をご案内します。
                 </p>
             </div>
         </div>

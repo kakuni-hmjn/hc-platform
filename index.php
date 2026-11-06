@@ -488,7 +488,7 @@ require_once __DIR__ . "/parts/head.php";
                 <p class="eyebrow">Operation</p>
                 <h2>運営について</h2>
                 <p>
-                    HC Platformは、HMJn companyが運営するWebサービス・コミュニティ関連プラットフォームです。
+                    HC Platformは、HMJn Companyが運営するWebサービス・コミュニティ関連プラットフォームです。
                     サービス公開と継続的な改善に向けて、必要な機能を順次整備しています。
                 </p>
             </div>

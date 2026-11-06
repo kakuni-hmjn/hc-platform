@@ -34,7 +34,7 @@ if (function_exists("current_user")) {
 
                 <div class="footer-company">
                     <span>Operation</span>
-                    <strong>HMJn company</strong>
+                    <strong>HMJn Company</strong>
                 </div>
             </div>
 
@@ -76,7 +76,7 @@ if (function_exists("current_user")) {
 
         <div class="footer-bottom">
             <p>
-                © <?php echo date("Y"); ?> HMJn company / HC Platform. All rights reserved.
+                © <?php echo date("Y"); ?> HMJn Company / HC Platform. All rights reserved.
             </p>
 
             <div class="footer-bottom-links">
