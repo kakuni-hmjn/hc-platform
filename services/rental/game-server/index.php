@@ -55,7 +55,7 @@ $flow = [
     ],
     [
         "title" => "サーバー作成",
-        "text" => "管理者確認後、Pterodactyl上にゲームサーバーを作成します。",
+        "text" => "決済確認後、Pterodactyl上で自動構築を開始します。構築に問題がある場合は個別に確認します。",
     ],
 ];
 
@@ -163,21 +163,23 @@ require_once __DIR__ . "/../../../parts/head.php";
   <img src="/assets/game-server-minecraft.png" alt="" class="game-title-mobile-image" aria-hidden="true" draggable="false">
 </div>
                 <p>
-                    Minecraft Java / Bedrock Editionに対応したゲームサーバーレンタルを整備中です。
+                    Minecraft Java版を中心に提供準備を進めながら、申込・決済・自動構築の連携を導入しています。
                     Paper、Purpur、Fabric、Forge、NeoForgeなど、用途に合わせたサーバー構成を選べる形を目指します。
                 </p>
 
                 <div class="hero-badges">
-                    <span>Java対応予定</span>
+                    <span>Java版中心</span>
                     <span>BE対応予定</span>
                     <span>MOD対応予定</span>
                     <span>国内サーバー運用</span>
                 </div>
 
                 <div class="game-actions">
-                    <a href="/order/game-server/" class="button primary">今すぐサーバーを入手</a>
+                    <a href="/order/game-server/" class="button primary">申込条件を確認する</a>
                     <a href="/services/rental/" class="button ghost">レンタル事業へ戻る</a>
                 </div>
+                <!-- HC_ADSENSE_PHASE2U_PUBLIC_COPY_20261107: temporary billing safety notice -->
+                <p>手動更新の新規申込みは、安全確認のため一時停止しています。自動更新を希望する場合は、申込画面の料金・契約条件を確認してください。</p>
             </div>
 
             <div class="game-hero-side reveal">
@@ -186,10 +188,10 @@ require_once __DIR__ . "/../../../parts/head.php";
                 </div>
 
                 <aside class="game-status-card">
-                    <span>Preparing</span>
-                    <h2>Minecraft向けサーバーから開始予定</h2>
+                    <span>先行提供・開発中</span>
+                    <h2>Minecraft Java版から段階的に提供</h2>
                     <p>
-                        まずはMinecraft Javaを中心に、管理パネルから申し込み・承認・サーバー作成までスムーズに進められる仕組みを整備していきます。
+                        Minecraft Java版向けに申込・決済・Pterodactyl自動構築の連携を進めています。現在は正式公開前のため、提供構成と契約方式を申込前に確認してください。
                     </p>
                 </aside>
             </div>
@@ -452,7 +454,7 @@ require_once __DIR__ . "/../../../parts/head.php";
                 <p class="eyebrow">Flow</p>
                 <h2>利用開始までの流れ</h2>
                 <p>
-                    初期段階では、申し込み後に管理者が内容を確認してからサーバーを作成します。
+                    申込みと決済の確認後に自動構築を開始する方式です。提供開始までの時間は構成や処理状況により異なります。
                 </p>
             </div>
 
@@ -484,17 +486,17 @@ require_once __DIR__ . "/../../../parts/head.php";
             <div class="ptero-list reveal">
                 <article>
                     <h3>サーバー作成</h3>
-                    <p>管理者確認後、Pterodactyl APIでサーバーを作成します。</p>
+                    <p>決済確認後、Pterodactyl APIを通じて自動構築を開始します。</p>
                 </article>
 
                 <article>
                     <h3>利用状況の表示</h3>
-                    <p>将来的に、HC Platformのマイページから契約中のサーバーを確認できるようにします。</p>
+                    <p>HC Platformのマイページで契約情報を確認できる構成を整備しています。</p>
                 </article>
 
                 <article>
                     <h3>自動化への拡張</h3>
-                    <p>決済や在庫管理、ノード選択と連携して自動作成へ拡張していきます。</p>
+                    <p>自動構築を導入し、障害時の復旧・契約期限・更新処理の検証を継続しています。</p>
                 </article>
             </div>
 
