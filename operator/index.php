@@ -1,4 +1,5 @@
 <?php
+// HC_ADSENSE_PHASE2W_OPERATOR_STATUS_20261107
 $pageTitle = "運営情報 | HC Platform";
 $pageDescription = "HMJn Companyが運営するHC Platformの運営情報。事業内容、長野県のデータセンター所在地、サービスの開発状況、お問い合わせ先をご案内します。";
 $pageCss = "/operator/operator.css";
@@ -87,15 +88,15 @@ require_once __DIR__ . "/../parts/head.php";
                         </div>
                         <div>
                             <span>プラン契約</span>
-                            <strong>準備中</strong>
+                            <strong>検証中</strong>
                         </div>
                         <div>
                             <span>決済連携</span>
-                            <strong>準備中</strong>
+                            <strong>検証中</strong>
                         </div>
                         <div>
                             <span>サーバー自動作成</span>
-                            <strong>準備中</strong>
+                            <strong>検証中</strong>
                         </div>
                     </div>
                 </article>
@@ -168,13 +169,13 @@ require_once __DIR__ . "/../parts/head.php";
                 <article class="roadmap-card reveal">
                     <span>02</span>
                     <h3>契約・注文機能</h3>
-                    <p>プラン選択、注文作成、購入履歴、契約状況の表示機能を追加予定。</p>
+                    <p>プラン選択・注文作成・契約状況表示を実装し、正式公開に向けて動作検証と安全性の確認を進めています。</p>
                 </article>
 
                 <article class="roadmap-card reveal">
                     <span>03</span>
                     <h3>決済・サーバー連携</h3>
-                    <p>支払い完了後にPterodactyl Panel側へ連携する仕組みを準備予定。</p>
+                    <p>Stripe決済とPterodactylのサーバー自動構築を連携し、提供フローを検証しています。現在、手動更新による新規申込みは安全確認のため一時停止しています。</p>
                 </article>
             </div>
         </div>
