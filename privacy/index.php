@@ -24,7 +24,7 @@ require_once __DIR__ . "/../parts/head.php";
     <section class="section legal-section">
         <div class="container legal-container">
             <article class="legal-card reveal">
-                <p class="legal-updated">最終更新日：2026年5月31日</p>
+                <p class="legal-updated">最終更新日：2026年11月7日</p>
 
                 <h2>1. 基本方針</h2>
                 <p>
