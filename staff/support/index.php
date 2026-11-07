@@ -236,6 +236,30 @@ $tickets = staff_support_list(
 );
 $staffOptions = staff_support_staff_options($pdo);
 
+// HC_PHASE2Z_DISCLOSURE_QUEUE_20261107
+// Read-only queue. This is NOT an outgoing notification or a legal SLA guarantee.
+$disclosureQueue = ['available' => false, 'pending' => 0];
+try {
+    $disclosureStatement = $pdo->prepare(
+        "SELECT COUNT(*) AS pending_count
+         FROM contacts
+         WHERE category = :category
+           AND subject = :subject
+           AND status IN ('open', 'in_progress', 'waiting')"
+    );
+    $disclosureStatement->execute([
+        'category' => 'billing',
+        'subject' => '特定商取引法に基づく販売者情報の開示請求',
+    ]);
+    $disclosureQueue = [
+        'available' => true,
+        'pending' => (int) $disclosureStatement->fetchColumn(),
+    ];
+} catch (Throwable $e) {
+    // A failed check must not falsely appear as zero pending requests.
+    error_log('HC_PHASE2Z_DISCLOSURE_QUEUE_READ_FAILED');
+}
+
 $requestedId = filter_input(
     INPUT_GET,
     'id',
@@ -326,6 +350,20 @@ staff_layout_start([
             <div><span>本日の解決</span><strong><?= (int) $counts['resolved_today'] ?></strong></div>
         </div>
     </header>
+
+    <?php if (!$disclosureQueue['available']): ?>
+        <div class="support-flash support-flash--warning" role="alert">
+            <span>販売者情報の開示請求件数を取得できませんでした。担当者は問い合わせ一覧を直接確認してください。</span>
+        </div>
+    <?php elseif ($disclosureQueue['pending'] > 0): ?>
+        <div class="support-flash support-flash--warning" role="alert">
+            <span>
+                販売者情報の開示請求が <?= (int) $disclosureQueue['pending'] ?> 件未解決です。
+                購入前の照会に遅滞なく対応できるよう優先して確認してください。
+                <a href="/staff/support/?view=overview&amp;q=<?= rawurlencode('特定商取引法に基づく販売者情報の開示請求') ?>">対象を表示</a>
+            </span>
+        </div>
+    <?php endif; ?>
 
     <?php if (is_array($flash)): ?>
         <div class="support-flash support-flash--<?= staff_ui_escape(
