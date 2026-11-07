@@ -25,7 +25,14 @@ require_once __DIR__ . "/../../../parts/head.php";
 </tbody></table></div></section>
 <section class="hc-guide-section"><h2>プラグインとMODは同じではない</h2><p>プラグインはサーバー側で機能を追加する方法で、Paper系では権限管理や保護、運営補助などに使われます。一方、MODはブロックやシステムの追加などゲーム内容を大きく変更できる反面、必要に応じて参加者のゲーム側にも導入が必要です。</p><p>「Paperを使えばすべてのMODが動く」「Fabric用MODはPaperのpluginsフォルダに入れれば動く」といった理解は誤りです。サーバーソフトと拡張機能の配布ページで、対応ローダー・ゲームバージョン・依存関係を確認してください。</p></section>
 <section class="hc-guide-section"><h2>実際に選ぶ手順</h2><ol><li>参加者のエディション（Java版・統合版）とゲームバージョンを揃える。</li><li>導入したい機能を「標準」「プラグイン」「MOD」に分ける。</li><li>対応するサーバーソフトを選び、少人数で起動・接続・負荷を検証する。</li><li>サーバーソフト変更前にワールド、設定ファイル、プラグイン・MOD一式をバックアップする。</li></ol><div class="hc-guide-note"><p><strong>よくある混同：</strong>Java版のPaperサーバーに統合版プレイヤーを接続させたい場合、PaperだけではなくGeyser等による接続方式の追加検討が必要です。詳しくは<a href="/guides/minecraft/crossplay/">クロスプレイの解説</a>を参照してください。</p></div></section>
-<section class="hc-guide-next"><h2>参考資料</h2><p><a href="https://docs.papermc.io/paper/getting-started/">PaperMC公式：Getting started</a>。実際のJavaバージョン要件や最新の構築方法は公式情報を優先してください。</p><p><a class="hc-guide-backlink" href="/guides/minecraft/">Minecraftガイド一覧へ戻る</a></p><p class="hc-guide-meta">編集：HC Platform ／ 2026年11月6日公開用原稿</p></section></article>
+<!-- HC_PHASE2AE_ARTICLE_UPDATE_20261107 -->
+<section class="hc-guide-section"><h2>目的別の選び方：3つのケース</h2><div class="hc-guide-table-wrap"><table><thead><tr><th>遊び方</th><th>最初に検討する構成</th><th>選定時の確認点</th></tr></thead><tbody>
+<tr><td>少人数で公式に近い動作を楽しむ</td><td>Vanilla</td><td>追加機能が不要か、参加者のバージョンが揃うかを確認する。</td></tr>
+<tr><td>権限管理や保護など運営機能を追加したい</td><td>Paper</td><td>利用予定のプラグインが対象バージョンに対応しているか確認する。</td></tr>
+<tr><td>新しいブロックやシステムをMODで追加したい</td><td>FabricまたはNeoForge等</td><td>MODごとのローダー、依存関係、クライアント側の導入条件を揃える。</td></tr>
+</tbody></table></div><p>この表は構成を絞るための出発点です。実際に必要なMOD・プラグインが決まっている場合は、その配布元が指定する動作環境を優先してください。</p></section>
+<section class="hc-guide-section"><h2>公開前の確認チェックリスト</h2><ol><li>検証用ワールドで、利用予定のサーバーソフトとゲームバージョンの組み合わせを固定する。</li><li>Java版・統合版など、参加予定の端末から接続できるか確認する。</li><li>必要なプラグイン・MODを一つずつ導入し、起動ログのエラーを確認する。</li><li>参加者が集まる場面のTPS・MSPT、メモリ、ネットワークの状態を確認する。測定方法は<a href="/guides/minecraft/memory/">負荷の解説</a>を参照する。</li><li>ワールドと設定ファイルのバックアップを取得し、別の環境に復元できることを確認する。</li></ol><p>サーバーソフトを変更する場合は、既存ワールドを直接上書きせず、コピーで互換性を試してください。</p></section>
+<section class="hc-guide-next"><h2>参考資料</h2><p><a href="https://docs.papermc.io/paper/getting-started/">PaperMC公式：Getting started</a>。実際のJavaバージョン要件や最新の構築方法は公式情報を優先してください。</p><p><a class="hc-guide-backlink" href="/guides/minecraft/">Minecraftガイド一覧へ戻る</a></p><p class="hc-guide-meta">編集：HC Platform ／ 最終確認：2026年11月7日</p></section></article>
 </div></main>
 <?php include __DIR__ . "/../../../parts/footer/footer.php"; ?>
 <script src="/common/base.js"></script>

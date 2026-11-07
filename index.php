@@ -8,7 +8,7 @@ require_once __DIR__ . "/lib/db.php";
 $currentUser = current_user();
 
 $pageTitle = "HC Platform | HCと共にある生活";
-$pageDescription = "HC Platformは、ゲームサーバー、Webサービス、クリエイター支援、コミュニティ運営を通して、遊びと創作を支えるためのプラットフォームです。";
+$pageDescription = "HC Platformの技術ガイドとサービス情報。Minecraftサーバーの選び方、TPS・MSPT、Java版と統合版、Linux・VPSの安全な運用を解説します。";
 $pageCss = "/index.css";
 $enableAdsense = true;
 
@@ -196,12 +196,13 @@ require_once __DIR__ . "/parts/head.php";
                 </h1>
 
                 <p class="hero-lead">
-                    HC Platformは、ゲームサーバー、Webサービス、クリエイター支援、
-                    コミュニティ運営を通して、遊びと創作を支えるためのプラットフォームです。
+                    HC Platformは、ゲームサーバー、Webサービス、クリエイター支援を目指すプラットフォームです。
+                    Minecraftのサーバー選定や負荷の調べ方、Linuxの運用知識を、契約不要の技術ガイドとして公開しています。
+                    各サービスの提供状況は事業一覧をご確認ください。
                 </p>
 
                 <div class="hero-actions">
-                    <a href="#services" class="button primary">事業を見る</a>
+                    <a href="/guides/" class="button primary">技術ガイドを読む</a>
 
                     <?php if ($currentUser): ?>
                         <a href="/dashboard/" class="button ghost">ダッシュボードへ</a>
@@ -209,7 +210,7 @@ require_once __DIR__ . "/parts/head.php";
                         <a href="/register/" class="button ghost">アカウント作成</a>
                     <?php endif; ?>
 
-                    <a href="/guides/" class="button ghost">技術ガイド</a>
+                    <a href="#services" class="button ghost">事業一覧</a>
 <a href="/contact/" class="button ghost">お問い合わせ</a>
                 </div>
             </div>
@@ -256,6 +257,40 @@ require_once __DIR__ . "/parts/head.php";
 
             </aside>
 
+        </div>
+    </section>
+
+    <!-- HC_PHASE2AE_ADSENSE_GUIDE_FOCUS_20261107 -->
+    <section class="section guide-section" aria-labelledby="hc-knowledge-title">
+        <div class="container">
+            <div class="section-heading reveal">
+                <p class="eyebrow">HC TECH GUIDES</p>
+                <h2 id="hc-knowledge-title">サーバー構築・運用に役立つ技術ガイド</h2>
+                <p>ゲームサーバーを自分で構築する方にも役立つよう、ソフトウェアの選び方、性能の確認方法、ネットワークやLinuxの初期設定を解説しています。記事は無料で閲覧でき、HCサービスの契約は不要です。</p>
+            </div>
+            <div class="guide-grid">
+                <a href="/guides/minecraft/server-types/" class="guide-card reveal">
+                    <span>MINECRAFT / SOFTWARE</span>
+                    <h3>Vanilla・Paper・MODの選び方</h3>
+                    <p>どのサーバーソフトを使うべきか、導入前の確認事項と利用目的別に比較します。</p>
+                </a>
+                <a href="/guides/minecraft/memory/" class="guide-card reveal">
+                    <span>MINECRAFT / PERFORMANCE</span>
+                    <h3>TPS・MSPTとメモリ</h3>
+                    <p>人数だけで容量を決めず、ラグの原因を測定値から切り分ける方法を紹介します。</p>
+                </a>
+                <a href="/guides/minecraft/crossplay/" class="guide-card reveal">
+                    <span>MINECRAFT / CROSSPLAY</span>
+                    <h3>Java版と統合版の接続</h3>
+                    <p>Geyserによる接続の仕組み、認証、ポート設定で確認する点を整理します。</p>
+                </a>
+                <a href="/guides/vps/initial-security/" class="guide-card reveal">
+                    <span>LINUX / SECURITY</span>
+                    <h3>VPSの初期セキュリティ</h3>
+                    <p>SSH鍵、公開ポート、更新とバックアップを安全な順序で確認します。</p>
+                </a>
+            </div>
+            <p class="hc-guide-meta"><a href="/guides/">技術ガイド一覧</a> ／ <a href="/faq/">よくある質問</a>。各記事は一般的な技術情報であり、HCでの提供プランや機能は<a href="/services/">事業一覧</a>をご確認ください。</p>
         </div>
     </section>
 

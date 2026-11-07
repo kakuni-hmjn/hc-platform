@@ -27,7 +27,15 @@ require_once __DIR__ . "/../../../parts/head.php";
 <p>Paperでは公式ドキュメントが示すとおり、より詳細な負荷分析には <code>/spark</code> を使えます。必要な権限・バージョンを確認し、問題が発生している時間帯に計測してください。</p></section>
 <section class="hc-guide-section"><h2>メモリの割り当てと計測</h2><p>Javaの <code>-Xmx</code> はJavaヒープの上限で、サーバーコンテナ全体のメモリ上限と同じではありません。Javaプロセスにはヒープ以外の領域も必要です。ホストやコンテナが許容する容量すべてを <code>-Xmx</code> に指定せず、環境に余裕を設けます。</p><p>プラグインやMODを導入する場合、起動時の使用量だけでなく、ワールド読み込みや多数の参加者が集まったときのピークを確認してください。スワップによる激しい待ち時間、ガベージコレクションの停止、ディスク負荷が重なると体感の遅延につながります。</p></section>
 <section class="hc-guide-section"><h2>ラグを切り分ける4ステップ</h2><ol><li><strong>再現条件を控える：</strong>人数、時刻、ワールド、使用MOD・プラグイン、起こる操作を記録する。</li><li><strong>サーバー処理を見る：</strong>TPS・MSPTとsparkのレポートで処理の偏りを調べる。</li><li><strong>資源使用量を見る：</strong>CPUのコアごとの負荷、メモリ、GC、ディスクI/Oを併せて確認する。</li><li><strong>ネットワークとクライアントを分ける：</strong>全員に起こるか、一部の人だけか、FPS低下なのかを確認する。</li></ol><div class="hc-guide-note"><p><strong>HCでの推奨：</strong>人数を根拠なく保証するのではなく、使用する実機ノードでTPS・MSPT・メモリ使用量を計測してから安全側の収容目安を決める方法が適切です。本記事に未実施の性能測定結果は掲載していません。</p></div></section>
-<section class="hc-guide-next"><h2>参考資料</h2><p><a href="https://docs.papermc.io/paper/reference/commands/">PaperMC公式：TPS・MSPT・spark</a> ／ <a href="https://docs.papermc.io/paper/profiling/">PaperMC公式：Profiling</a></p><p><a class="hc-guide-backlink" href="/guides/minecraft/">Minecraftガイド一覧へ戻る</a></p><p class="hc-guide-meta">編集：HC Platform ／ 2026年11月6日公開用原稿</p></section></article>
+<!-- HC_PHASE2AE_ARTICLE_UPDATE_20261107 -->
+<section class="hc-guide-section"><h2>負荷試験の記録テンプレート</h2><p>「いつも重い」「人数が増えると落ちる」といった感覚だけでなく、同じ条件で繰り返し測れるように記録を残します。以下は記録すべき項目の例で、HCで実測した数値ではありません。</p><div class="hc-guide-table-wrap"><table><thead><tr><th>記録する項目</th><th>確認する理由</th></tr></thead><tbody>
+<tr><td>ゲームバージョン・サーバーソフト・導入プラグイン</td><td>条件変更による性能差と互換性問題を切り分ける。</td></tr>
+<tr><td>同時接続人数・プレイヤーの活動（探索、戦闘、建築等）</td><td>単なる人数では見えない負荷の種類を把握する。</td></tr>
+<tr><td>TPS・MSPTの通常時と高負荷時</td><td>一時的な遅延と継続的な処理不足を区別する。</td></tr>
+<tr><td>Javaヒープ使用量・GC・コンテナのメモリ</td><td>メモリ不足、GC停止、ヒープ外消費を調べる。</td></tr>
+<tr><td>CPUコア別使用率・ディスクI/O・通信遅延</td><td>CPU以外のボトルネックを見落とさないため。</td></tr>
+</tbody></table></div><p>設定変更は一度に一項目ずつ行い、変更前後で同じ遊び方を再現して比較します。新規チャンク生成や大量エンティティが発生する場面も別に測定すると、平均値だけでは分からない問題を見つけやすくなります。</p></section>
+<section class="hc-guide-next"><h2>参考資料</h2><p><a href="https://docs.papermc.io/paper/reference/commands/">PaperMC公式：TPS・MSPT・spark</a> ／ <a href="https://docs.papermc.io/paper/profiling/">PaperMC公式：Profiling</a></p><p><a class="hc-guide-backlink" href="/guides/minecraft/">Minecraftガイド一覧へ戻る</a></p><p class="hc-guide-meta">編集：HC Platform ／ 最終確認：2026年11月7日</p></section></article>
 </div></main>
 <?php include __DIR__ . "/../../../parts/footer/footer.php"; ?>
 <script src="/common/base.js"></script>
