@@ -137,6 +137,7 @@ try {
             gso.status,
             gso.payment_status,
             gso.amount,
+            gso.billing_type,
             gso.currency,
             gso.stripe_checkout_session_id,
 
@@ -163,6 +164,13 @@ try {
 
     if (!$order) {
         throw new RuntimeException("契約が見つからないか、表示権限がありません。");
+    }
+
+    // HC_PHASE2S_MANUAL_RENEWAL_CHECKOUT_GUARD_20261107
+    // Fail closed: manual_renewal must never create a recurring Stripe subscription.
+    // This is a temporary safety stop; NOT a manual-renewal payment implementation.
+    if ((string)($order["billing_type"] ?? "") !== "auto_subscription") {
+        throw new RuntimeException("手動更新の新規決済は安全確認のため一時停止しています。請求は作成していません。お問い合わせください。");
     }
 
     $paymentStatus = (string)$order["payment_status"];

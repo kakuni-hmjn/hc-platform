@@ -37,7 +37,7 @@ $form = [
     "server_software" => "paper",
     "minecraft_version" => "latest",
     "player_count_estimate" => "",
-    "billing_type" => "auto_subscription",
+    "billing_type" => "",
     "note" => "",
 ];
 
@@ -127,7 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $form["server_software"] = $_POST["server_software"] ?? "paper";
     $form["minecraft_version"] = trim($_POST["minecraft_version"] ?? "latest");
     $form["player_count_estimate"] = trim($_POST["player_count_estimate"] ?? "");
-    $form["billing_type"] = $_POST["billing_type"] ?? "auto_subscription";
+    $form["billing_type"] = $_POST["billing_type"] ?? "";
     $form["note"] = trim($_POST["note"] ?? "");
 
     $selectedPlan = null;
@@ -157,8 +157,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errors[] = "サーバーソフトが不正です。";
     }
 
-    if (!in_array($form["billing_type"], ["auto_subscription", "manual_renewal"], true)) {
-        $errors[] = "支払いタイプが不正です。";
+    // HC_PHASE2S_MANUAL_RENEWAL_CHECKOUT_GUARD_20261107
+    // Temporary stop until manual one-time Checkout + lifecycle are verified.
+    if ($form["billing_type"] !== "auto_subscription") {
+        $errors[] = "現在、手動更新の新規受付を一時停止しています。自動更新を希望する場合のみ明示的に選択してください。";
     }
 
     $playerCount = null;
@@ -435,19 +437,20 @@ require_once __DIR__ . "/../../parts/head.php";
                 <section class="form-section">
                     <div class="form-section-head">
                         <h3>支払いタイプ</h3>
-                        <p>毎月自動更新か、1ヶ月ごとの手動更新を選択できます。</p>
+                        <p>手動更新は安全性の検証が終わるまで受付停止中です。自動更新を希望する方のみ選択してください。</p>
                     </div>
 
                     <div class="billing-grid">
-                        <label class="billing-card recommended">
+                        <label class="billing-card">
                             <input
                                 type="radio"
                                 name="billing_type"
                                 value="auto_subscription"
+                                required
                                 <?php echo $form["billing_type"] === "auto_subscription" ? "checked" : ""; ?>
                             >
 
-                            <span>おすすめ</span>
+                            <span>受付中</span>
                             <strong>毎月自動更新</strong>
                             <p>
                                 カード、Apple Pay、Google Payなどで毎月自動更新します。
@@ -460,14 +463,14 @@ require_once __DIR__ . "/../../parts/head.php";
                                 type="radio"
                                 name="billing_type"
                                 value="manual_renewal"
-                                <?php echo $form["billing_type"] === "manual_renewal" ? "checked" : ""; ?>
+                                disabled
                             >
 
-                            <span>PayPay向け</span>
+                            <span>受付停止中</span>
                             <strong>1ヶ月ごとの手動更新</strong>
                             <p>
                                 1ヶ月分をその都度支払う方式です。
-                                PayPayなどの単発決済に対応しやすい方式です。
+                                単発決済と更新期限管理の検証後に受付を再開する予定です。
                             </p>
                         </label>
                     </div>
