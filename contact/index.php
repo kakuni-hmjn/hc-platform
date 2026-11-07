@@ -30,6 +30,16 @@ $categories = [
     "other" => "その他",
 ];
 
+// HC_PHASE2Y_DISCLOSURE_INTAKE_20261107
+// Reuse the existing billing category; no schema change or login requirement.
+$commerceDisclosureRequest = ($_SERVER["REQUEST_METHOD"] === "GET")
+    && (string)($_GET["purpose"] ?? "") === "commerce-disclosure";
+if ($commerceDisclosureRequest) {
+    $category = "billing";
+    $subject = "特定商取引法に基づく販売者情報の開示請求";
+    $message = "商品・サービスの申込みを検討しています。特定商取引法に基づき、事業者の氏名、事業上の住所、連絡可能な電話番号の開示を請求します。";
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $csrfToken = $_POST["csrf_token"] ?? "";
 
@@ -146,6 +156,9 @@ require_once __DIR__ . "/../parts/head.php";
                 <p>
                     HC Platformへのご質問、不具合報告、サービスに関するお問い合わせはこちらから送信できます。
                 </p>
+                <?php if ($commerceDisclosureRequest): ?>
+                    <p>特定商取引法に基づく販売者情報の開示請求を受け付けます。ログインは不要です。氏名・住所・電話番号の提供を購入前に希望する場合は、以下のフォームからお問い合わせください。</p>
+                <?php endif; ?>
             </div>
 
             <aside class="contact-side-card reveal">

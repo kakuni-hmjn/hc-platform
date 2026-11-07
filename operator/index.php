@@ -120,8 +120,12 @@ require_once __DIR__ . "/../parts/head.php";
                 <!-- HC_ADSENSE_PHASE2B_PROFILE_END -->
                 <article class="side-card notice-card">
                     <h3>お問い合わせについて</h3>
+                    <!-- HC_PHASE2Y_DISCLOSURE_INTAKE_20261107 -->
                     <p>
                         お問い合わせは<a href="/contact/">お問い合わせフォーム</a>から受け付けています。サービスやアカウントに関するお問い合わせをご送信いただけます。
+                    </p>
+                    <p>
+                        特定商取引法に基づく販売事業者の氏名・住所・電話番号の開示を希望する場合は、<a href="/contact/?purpose=commerce-disclosure">販売者情報の開示請求フォーム</a>をご利用ください。購入前の請求も受け付けます。
                     </p>
                 </article>
             </aside>
