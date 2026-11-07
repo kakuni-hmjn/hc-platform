@@ -32,8 +32,14 @@ $categories = [
 
 // HC_PHASE2Y_DISCLOSURE_INTAKE_20261107
 // Reuse the existing billing category; no schema change or login requirement.
-$commerceDisclosureRequest = ($_SERVER["REQUEST_METHOD"] === "GET")
-    && (string)($_GET["purpose"] ?? "") === "commerce-disclosure";
+// HC_PHASE2AA_DISCLOSURE_NOTICE_20261107: preserve intent through POST errors/edits.
+$commerceDisclosureRequest = (
+    ($_SERVER["REQUEST_METHOD"] === "GET")
+    && (string)($_GET["purpose"] ?? "") === "commerce-disclosure"
+) || (
+    ($_SERVER["REQUEST_METHOD"] === "POST")
+    && (string)($_POST["hc_commerce_disclosure"] ?? "") === "1"
+);
 if ($commerceDisclosureRequest) {
     $category = "billing";
     $subject = "特定商取引法に基づく販売者情報の開示請求";
@@ -48,6 +54,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $category = $_POST["category"] ?? "general";
     $subject = trim($_POST["subject"] ?? "");
     $message = trim($_POST["message"] ?? "");
+
+    if ($commerceDisclosureRequest) {
+        // Canonical DB category/subject regardless of editable form fields.
+        $category = "billing";
+        $subject = "特定商取引法に基づく販売者情報の開示請求";
+    }
 
     if (!csrf_check($csrfToken)) {
         $errors[] = "不正なリクエストです。もう一度お試しください。";
@@ -86,6 +98,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!$errors) {
         try {
             $pdo = db();
+            $disclosureTransactionStarted = false;
+            if ($commerceDisclosureRequest) {
+                if ($pdo->inTransaction()) {
+                    throw new RuntimeException('Unexpected active contact transaction');
+                }
+                $pdo->beginTransaction();
+                $disclosureTransactionStarted = true;
+            }
 
             $stmt = $pdo->prepare("
                 INSERT INTO contacts (
@@ -121,6 +141,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $contactId = (int) $pdo->lastInsertId();
 
+            if ($commerceDisclosureRequest) {
+                require_once __DIR__ . "/../lib/hc_disclosure_staff_notifications.php";
+                hc_disclosure_staff_notice($pdo, $contactId);
+                $pdo->commit();
+                $disclosureTransactionStarted = false;
+            }
+
             if (!empty($currentUser["id"]) && $contactId > 0) {
                 header(
                     "Location: /dashboard/support/?id="
@@ -136,6 +163,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $message = "";
             $category = "general";
         } catch (Throwable $e) {
+            if ($commerceDisclosureRequest) {
+                if (!empty($disclosureTransactionStarted)
+                    && isset($pdo)
+                    && $pdo instanceof PDO
+                    && $pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                // No private requester data or SMTP credentials in logs.
+                error_log('HC_PHASE2AA_DISCLOSURE_CONTACT_OR_NOTICE_FAILED');
+            }
             $errors[] = "お問い合わせの送信中にエラーが発生しました。";
         }
     }
@@ -224,6 +261,9 @@ require_once __DIR__ . "/../parts/head.php";
 
                 <form action="/contact/" method="post" class="contact-form">
                     <input type="hidden" name="csrf_token" value="<?php echo h(csrf_token()); ?>">
+                    <?php if ($commerceDisclosureRequest): ?>
+                        <input type="hidden" name="hc_commerce_disclosure" value="1">
+                    <?php endif; ?>
 
                     <div class="form-grid">
                         <div class="form-group">
