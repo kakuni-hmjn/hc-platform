@@ -26,7 +26,7 @@ require_once __DIR__ . "/../../parts/head.php";
 <section class="hc-guide-faq-item"><h2>Q. サーバーは起動しているのに接続できません。</h2><p>使用エディションとバージョン、接続先アドレスとポート、ファイアウォール、ホワイトリスト、認証設定を順に確認してください。原因を断定せず、サーバーログのエラーを起点に調べます。</p></section>
 <section class="hc-guide-faq-item"><h2>Q. HCのレンタルサーバーは現在申込できますか？</h2><p>サービスごとの提供状況は<a href="/services/">公式サービス一覧</a>を確認してください。このFAQでは、決済や自動構築など開発中の機能について、利用可能であるとの案内は行っていません。</p></section>
 <section class="hc-guide-faq-item"><h2>Q. 問い合わせはどこから送れますか？</h2><p><a href="/contact/">お問い合わせフォーム</a>をご利用ください。契約中のサポート機能がある場合は、ログイン後の案内をご確認ください。</p></section>
-<section class="hc-guide-next"><h2>さらに詳しく</h2><p>まずは<a href="/guides/minecraft/">Minecraft技術ガイド一覧</a>から、構築目的に合う記事を読んでください。</p><p class="hc-guide-meta">編集：HC Platform ／ 2026年11月6日公開用原稿</p></section></article>
+<section class="hc-guide-next"><h2>さらに詳しく</h2><p>まずは<a href="/guides/minecraft/">Minecraft技術ガイド一覧</a>から、構築目的に合う記事を読んでください。</p><p class="hc-guide-meta">編集：HC Platform</p></section></article>
 </div></main>
 <?php include __DIR__ . "/../../parts/footer/footer.php"; ?>
 <script src="/common/base.js"></script>
