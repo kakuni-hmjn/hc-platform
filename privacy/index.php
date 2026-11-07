@@ -93,7 +93,7 @@ require_once __DIR__ . "/../parts/head.php";
 
                 <!-- HC_ADSENSE_PHASE2A_PRIVACY_START -->
                 <p>外部サービスの機能を利用する際には、その機能に必要な情報が委託先等に送信される場合があります。決済機能を利用する際の入力情報の取扱いについては、申込画面および決済事業者が提供する案内もご確認ください。</p>
-                <p>広告配信を今後導入する場合は、利用する広告サービスやCookie等の取扱いに応じて必要な案内を追加します。</p>
+                <p>当サイトにはGoogle AdSenseの広告コードを設置しています。広告が配信される場合、Googleなどの第三者配信事業者がCookie、ウェブビーコン、IPアドレス等を利用し、当サイトや他のサイトへのアクセス情報に基づく広告配信や効果測定を行うことがあります。Googleは広告Cookieを使用し、利用者に関連性の高い広告を表示する場合があります。利用者は<a href="https://myadcenter.google.com/">Googleの広告設定</a>からパーソナライズド広告を管理できます。Googleによる情報の取扱いについては<a href="https://policies.google.com/technologies/partner-sites">Googleの案内</a>もご確認ください。</p>
                 <!-- HC_ADSENSE_PHASE2A_PRIVACY_END -->
                 <h2>8. 安全管理措置</h2>
                 <p>
