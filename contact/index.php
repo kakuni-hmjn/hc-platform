@@ -146,6 +146,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 hc_disclosure_staff_notice($pdo, $contactId);
                 $pdo->commit();
                 $disclosureTransactionStarted = false;
+            } else {
+                // HC_PHASE3B_ORDINARY_CONTACT_ALERT: best effort, no customer data exposed.
+                require_once __DIR__ . "/../lib/hc_staff_support_notifications.php";
+                hc_support_staff_notice($pdo, $contactId, 'new_contact');
             }
 
             if (!empty($currentUser["id"]) && $contactId > 0) {

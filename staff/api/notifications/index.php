@@ -169,6 +169,7 @@ if ($staffUserId === null) {
 
 $allowedCategories = [
     'all',
+    'general',
     'system',
     'order',
     'user',

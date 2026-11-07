@@ -283,45 +283,16 @@ function contact_chat_notify_assignee(
     string $body,
     int $messageId
 ): void {
-    $assignedAccountId = (int) ($contact['assigned_to'] ?? 0);
-
-    if ($assignedAccountId <= 0) {
-        return;
-    }
-
-    try {
-        $statement = $pdo->prepare(
-            "INSERT INTO staff_notifications (
-                user_id,
-                type,
-                title,
-                body,
-                action_url,
-                is_read,
-                created_at
-            )
-            SELECT
-                staff_user.id,
-                'support_reply',
-                :title,
-                :body,
-                :action_url,
-                FALSE,
-                CURRENT_TIMESTAMP
-            FROM staff_users staff_user
-            WHERE staff_user.account_id = :account_id
-              AND staff_user.status = 'active'
-            LIMIT 1"
-        );
-        $statement->execute([
-            'title' => 'サポートチャットに返信が届きました',
-            'body' => mb_substr($body, 0, 240),
-            'action_url' => '/staff/support/?id=' . (int) $contact['id'],
-            'account_id' => $assignedAccountId,
-        ]);
-    } catch (Throwable) {
-        // 通知失敗でチャット送信を止めない。
-    }
+    // HC_PHASE3B_CUSTOMER_REPLY_ALERT: notify the assignee or eligible staff pool.
+    // Deliberately do not copy customer message content into staff_notifications.
+    require_once __DIR__ . '/hc_staff_support_notifications.php';
+    hc_support_staff_notice(
+        $pdo,
+        (int) ($contact['id'] ?? 0),
+        'customer_reply',
+        $messageId,
+        (int) ($contact['assigned_to'] ?? 0)
+    );
 }
 
 function contact_chat_notify_customer(
