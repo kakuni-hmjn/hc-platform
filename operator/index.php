@@ -56,6 +56,11 @@ require_once __DIR__ . "/../parts/head.php";
                     </div>
 
                     <div>
+                        <span>運営形態</span>
+                        <strong>個人事業（法人登記なし）</strong>
+                    </div>
+
+                    <div>
                         <span>提供予定サービス</span>
                         <strong>ゲームサーバーレンタル</strong>
                     </div>
@@ -98,7 +103,7 @@ require_once __DIR__ . "/../parts/head.php";
                                 <!-- HC_ADSENSE_PHASE2B_PROFILE_BEGIN -->
                 <article class="side-card hc-operator-profile">
                     <h3>運営概要</h3>
-                    <p>HMJn Companyは、HC Platformを通じて、サーバーインフラとデジタル分野のサービス開発に取り組んでいます。</p>
+                    <p>HMJn Companyは法人ではなく、個人事業としてHC Platformを運営しています。サーバーインフラとデジタル分野のサービス開発に取り組んでいます。</p>
                     <h3>事業・活動分野</h3>
                     <ul>
                         <li>レンタルサーバー</li>
@@ -107,7 +112,7 @@ require_once __DIR__ . "/../parts/head.php";
                         <li>クリエイター・コミュニティ支援</li>
                     </ul>
                     <h3>データセンター</h3>
-                    <p>所在地：長野県</p>
+                    <p>所在地：長野県（データセンターの所在地であり、販売事業者の住所を示すものではありません）</p>
                     <h3>現在の提供状況</h3>
                     <p>ゲームサーバーレンタルは正式公開に向けて開発中です。その他の事業の最新状況は<a href="/services/">事業一覧</a>をご確認ください。</p>
                 </article>
