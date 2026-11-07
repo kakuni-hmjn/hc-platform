@@ -31,7 +31,7 @@ require_once __DIR__ . "/../parts/head.php";
     <section class="section company-status-section">
         <div class="container">
             <div class="company-status-card reveal">
-                <p class="eyebrow">Coming Soon</p>
+                <p class="eyebrow">About</p>
                 <h2>運営方針と取り組み</h2>
 
                 <div class="company-status-grid">
