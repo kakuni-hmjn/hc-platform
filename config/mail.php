@@ -11,6 +11,8 @@ return [
     "smtp_user" => getenv("SMTP_USER") ?: "",
     "smtp_password" => getenv("SMTP_PASSWORD") ?: "",
 
+    // Configure ONLY after a real receiving inbox/forwarder is verified.
+    "support_reply_to" => getenv("HC_SUPPORT_REPLY_TO") ?: "",
     "from_email" => getenv("MAIL_FROM_ADDRESS") ?: "no-reply@hc-jp.net",
     "from_name" => getenv("MAIL_FROM_NAME") ?: "HCPlatform",
 ];

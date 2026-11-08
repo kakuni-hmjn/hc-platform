@@ -273,8 +273,12 @@ $selected = staff_support_find($pdo, $selectedId);
 if (
     $view === 'chat'
     && $selected !== null
-    && empty($selected['user_id'])
+    && (empty($selected['user_id']) || ($selected['preferred_reply_channel'] ?? null) === 'email')
 ) {
+    $selected = null;
+}
+if ($view === 'email' && $selected !== null
+    && ($selected['preferred_reply_channel'] ?? null) === 'chat') {
     $selected = null;
 }
 $messages = $selected !== null
@@ -565,6 +569,11 @@ staff_layout_start([
                             <dl>
                                 <div><dt>お名前</dt><dd><?= staff_ui_escape($selected['name'] ?? '') ?></dd></div>
                                 <div><dt>メール</dt><dd><?= staff_ui_escape($selected['email'] ?? '') ?></dd></div>
+                                <div><dt>希望返信方法</dt><dd><?= match ($selected['preferred_reply_channel'] ?? null) {
+                                    'chat' => 'HC Accountチャット',
+                                    'email' => 'メール',
+                                    default => '未指定（以前の問い合わせ）',
+                                } ?></dd></div>
                                 <div><dt>カテゴリ</dt><dd><?= staff_ui_escape(staff_support_category_label(
                                     (string) ($selected['category'] ?? '')
                                 )) ?></dd></div>
@@ -590,7 +599,7 @@ staff_layout_start([
                             ) ?></strong>
                             <p>
                                 <?= $isAccountChat
-                                    ? 'HCアカウントの個別チャットとメール返信を選べます。'
+                                    ? '選択された希望返信方法を確認して回答してください。'
                                     : 'このお問い合わせはメールで対応してください。' ?>
                             </p>
                             <?php if ($isAccountChat): ?>
@@ -744,6 +753,9 @@ staff_layout_start([
                             <div>
                                 <strong>メールで返信</strong>
                                 <span><?= staff_ui_escape($selected['email'] ?? '') ?> へ送信します</span>
+                                <?php if (($selected['preferred_reply_channel'] ?? null) === 'chat'): ?>
+                                    <small>この問い合わせはチャット返信が指定されています。チャット画面をご利用ください。</small>
+                                <?php endif; ?>
                             </div>
                         </header>
                         <textarea

@@ -91,9 +91,11 @@ function staff_support_counts(
     string $channel = 'all'
 ): array
 {
-    $where = $channel === 'chat'
-        ? ' WHERE user_id IS NOT NULL'
-        : '';
+    $where = match ($channel) {
+        'chat' => " WHERE user_id IS NOT NULL AND preferred_reply_channel IS DISTINCT FROM 'email'",
+        'email' => " WHERE preferred_reply_channel = 'email' OR (preferred_reply_channel IS NULL AND user_id IS NULL)",
+        default => '',
+    };
     $row = $pdo->query(
         "SELECT
             COUNT(*) AS all_count,
@@ -160,7 +162,9 @@ function staff_support_list(
     };
 
     if ($channel === 'chat') {
-        $where[] = 'contact.user_id IS NOT NULL';
+        $where[] = "contact.user_id IS NOT NULL AND contact.preferred_reply_channel IS DISTINCT FROM 'email'";
+    } elseif ($channel === 'email') {
+        $where[] = "(contact.preferred_reply_channel = 'email' OR (contact.preferred_reply_channel IS NULL AND contact.user_id IS NULL))";
     }
 
     if ($status !== 'all') {
@@ -220,6 +224,7 @@ function staff_support_list(
         contact.email,
         contact.category,
         contact.subject,
+        contact.preferred_reply_channel,
         contact.status,
         contact.assigned_to,
         contact.handled_at,
@@ -603,6 +608,14 @@ function staff_support_add_message(
         );
     }
 
+    // HC_PHASE3H_REPLY_CHANNEL_V1: enforce explicit per-ticket preference.
+    if ($mode === 'reply') {
+        $preferred = (string) ($ticket['preferred_reply_channel'] ?? '');
+        if (in_array($preferred, ['chat', 'email'], true) && $preferred !== $deliveryChannel) {
+            throw new InvalidArgumentException('このお問い合わせの希望返信方法と一致しません。');
+        }
+    }
+
     if (
         $deliveryChannel === 'chat'
         && (int) ($ticket['user_id'] ?? 0) <= 0
@@ -757,6 +770,13 @@ function staff_support_deliver_reply(
     }
 
     $config = require __DIR__ . '/../../config/mail.php';
+    // Never send a support email that leads back to an unreceivable no-reply address.
+    $supportReplyTo = trim((string) ($config['support_reply_to'] ?? ''));
+    if (($config['mode'] ?? 'log') === 'smtp'
+        && !filter_var($supportReplyTo, FILTER_VALIDATE_EMAIL)) {
+        error_log('HC_PHASE3H_SUPPORT_REPLY_TO_NOT_CONFIGURED');
+        return 'failed';
+    }
 
     $name = trim((string) ($ticket['name'] ?? 'お客さま'));
     $subjectValue = preg_replace(
@@ -801,7 +821,8 @@ function staff_support_deliver_reply(
         (string) ($config['from_name'] ?? 'HC Platform'),
         $email,
         $subject,
-        $message
+        $message,
+        $supportReplyTo !== '' ? $supportReplyTo : null
     );
 
     return $sent ? 'sent' : 'failed';

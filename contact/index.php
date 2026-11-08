@@ -20,6 +20,8 @@ $email = $currentUser["email"] ?? "";
 $category = "general";
 $subject = "";
 $message = "";
+// HC_PHASE3H_REPLY_CHANNEL_V1: selected separately for each ticket.
+$replyChannel = $currentUser ? "chat" : "email";
 
 $categories = [
     "general" => "一般的なお問い合わせ",
@@ -54,11 +56,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $category = $_POST["category"] ?? "general";
     $subject = trim($_POST["subject"] ?? "");
     $message = trim($_POST["message"] ?? "");
+    $replyChannel = $currentUser
+        ? trim((string) ($_POST["reply_channel"] ?? ""))
+        : "email";
+    // The account identity, not the posted readonly inputs, is authoritative.
+    if ($currentUser) {
+        $name = trim((string) ($currentUser["username"] ?? ""));
+        $email = trim((string) ($currentUser["email"] ?? ""));
+    }
 
     if ($commerceDisclosureRequest) {
         // Canonical DB category/subject regardless of editable form fields.
         $category = "billing";
         $subject = "特定商取引法に基づく販売者情報の開示請求";
+    }
+
+    if (!in_array($replyChannel, ["chat", "email"], true)) {
+        $errors[] = "返信方法を選んでください。";
     }
 
     if (!csrf_check($csrfToken)) {
@@ -116,7 +130,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     subject,
                     message,
                     status,
-                    ip_address
+                    ip_address,
+                    preferred_reply_channel
                 ) VALUES (
                     :user_id,
                     :name,
@@ -125,7 +140,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     :subject,
                     :message,
                     'open',
-                    :ip_address
+                    :ip_address,
+                    :reply_channel
                 )
             ");
 
@@ -137,6 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 ":subject" => $subject,
                 ":message" => $message,
                 ":ip_address" => client_ip() ?? null,
+                ":reply_channel" => $replyChannel,
             ]);
 
             $contactId = (int) $pdo->lastInsertId();
@@ -152,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 hc_support_staff_notice($pdo, $contactId, 'new_contact');
             }
 
-            if (!empty($currentUser["id"]) && $contactId > 0) {
+            if (!empty($currentUser["id"]) && $contactId > 0 && $replyChannel === "chat") {
                 header(
                     "Location: /dashboard/support/?id="
                     . $contactId
@@ -161,7 +178,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 exit;
             }
 
-            $messages[] = "お問い合わせを送信しました。スタッフからの返信は、ご入力のメールアドレスへお送りします。";
+            $messages[] = $replyChannel === "email"
+                ? "お問い合わせを受け付けました。スタッフからの返信はメールでお送りします。メール返信はHC Accountのチャットに自動反映されません。"
+                : "お問い合わせを受け付けました。サポートチャットで返信をご確認ください。";
 
             $subject = "";
             $message = "";
@@ -220,30 +239,18 @@ require_once __DIR__ . "/../parts/head.php";
                     <div>
                         <p class="eyebrow">Form</p>
                         <h2><?= $currentUser
-                            ? "サポートチャットを始める"
+                            ? "返信方法を選んでお問い合わせ"
                             : "お問い合わせフォーム" ?></h2>
                     </div>
                 </div>
 
-                <div class="contact-channel-notice contact-channel-notice--<?= $currentUser
-                    ? "account"
-                    : "email" ?>">
-                    <strong>
-                        <?= $currentUser
-                            ? "HCアカウント個別チャット"
-                            : "メールでのご返信" ?>
-                    </strong>
-                    <p>
-                        <?php if ($currentUser): ?>
-                            送信後、HCアカウント内のサポートチャットへ移動します。
-                            スタッフからの返信も同じ画面で確認できます。
-                        <?php else: ?>
-                            アカウントにログインせず送信した場合、スタッフからの返信は
-                            ご入力のメールアドレスへお送りします。
-                        <?php endif; ?>
-                    </p>
+                <div class="contact-channel-notice contact-channel-notice--<?= $currentUser ? "account" : "email" ?>">
+                    <strong><?= $currentUser ? "返信方法を選択できます" : "メールでのご返信" ?></strong>
+                    <p><?= $currentUser
+                        ? "チャットを選ぶとHC Account内で返信を確認できます。メールを選ぶと登録メールアドレスで受け取れます。"
+                        : "未ログインの場合は入力されたメールアドレスに返信します。" ?></p>
                     <?php if ($currentUser): ?>
-                        <a href="/dashboard/support/">過去のサポートチャットを見る</a>
+                        <a href="/dashboard/support/">サポートチャットを見る</a>
                     <?php endif; ?>
                 </div>
 
@@ -267,6 +274,24 @@ require_once __DIR__ . "/../parts/head.php";
                     <input type="hidden" name="csrf_token" value="<?php echo h(csrf_token()); ?>">
                     <?php if ($commerceDisclosureRequest): ?>
                         <input type="hidden" name="hc_commerce_disclosure" value="1">
+                    <?php endif; ?>
+
+                    <?php if ($currentUser): ?>
+                        <fieldset class="hc-reply-choice" aria-label="返信方法">
+                            <legend>返信方法</legend>
+                            <div class="hc-reply-choice__options">
+                                <label class="hc-reply-choice__option">
+                                    <input type="radio" name="reply_channel" value="chat" required
+                                        <?= $replyChannel === "chat" ? "checked" : "" ?>>
+                                    <span><strong>HC Accountチャット</strong><small>アカウント内で返信を確認（おすすめ）</small></span>
+                                </label>
+                                <label class="hc-reply-choice__option">
+                                    <input type="radio" name="reply_channel" value="email" required
+                                        <?= $replyChannel === "email" ? "checked" : "" ?>>
+                                    <span><strong>メール</strong><small>登録メールアドレスで返信を受信。チャットには自動表示されません</small></span>
+                                </label>
+                            </div>
+                        </fieldset>
                     <?php endif; ?>
 
                     <div class="form-grid">
@@ -342,7 +367,7 @@ require_once __DIR__ . "/../parts/head.php";
                     <p>
                         内容によっては返信まで時間がかかる場合があります。
                         <?= $currentUser
-                            ? "返信が届くとHCアカウントへ通知します。"
+                            ? "選択した返信方法に応じてスタッフが回答します。"
                             : "返信が必要な場合は、正しいメールアドレスを入力してください。" ?>
                     </p>
                 </article>

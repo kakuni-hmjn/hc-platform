@@ -95,6 +95,7 @@ function contact_chat_list_for_user(PDO $pdo, int $userId): array
             ' . $latestAtSql . ' AS latest_at
         FROM contacts contact
         WHERE contact.user_id = :user_id
+          AND contact.preferred_reply_channel IS DISTINCT FROM \'email\'
         ORDER BY latest_at DESC, contact.id DESC
         LIMIT 100'
     );
@@ -118,6 +119,7 @@ function contact_chat_find_for_user(
         FROM contacts contact
         WHERE contact.id = :contact_id
           AND contact.user_id = :user_id
+          AND contact.preferred_reply_channel IS DISTINCT FROM \'email\'
         LIMIT 1'
     );
     $statement->execute([

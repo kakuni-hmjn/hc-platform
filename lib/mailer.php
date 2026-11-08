@@ -100,16 +100,26 @@ function send_smtp_mail(
     string $fromName,
     string $toEmail,
     string $subject,
-    string $body
+    string $body,
+    ?string $replyTo = null
 ): bool {
     if ($host === "" || $username === "" || $password === "" || $fromEmail === "") {
         mail_error_log("SMTP設定が不足しています。");
         return false;
     }
 
+    if ($replyTo !== null && (!filter_var($replyTo, FILTER_VALIDATE_EMAIL)
+        || preg_match('/[\r\n]/', $replyTo))) {
+        mail_error_log('SMTP Reply-To設定が無効です。');
+        return false;
+    }
+
     $headers = [];
     $headers[] = "From: " . mb_encode_mimeheader($fromName, "UTF-8") . " <{$fromEmail}>";
     $headers[] = "To: <{$toEmail}>";
+    if ($replyTo !== null) {
+        $headers[] = "Reply-To: <{$replyTo}>";
+    }
     $headers[] = "Subject: " . mb_encode_mimeheader($subject, "UTF-8");
     $headers[] = "MIME-Version: 1.0";
     $headers[] = "Content-Type: text/plain; charset=UTF-8";
